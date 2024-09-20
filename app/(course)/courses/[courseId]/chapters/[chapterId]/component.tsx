@@ -27,7 +27,6 @@ const ChapterIdPage = async ({
   const {
     chapter,
     course,
-    muxData,
     attachments,
     nextChapter,
     userProgress,
@@ -65,15 +64,15 @@ const ChapterIdPage = async ({
               {chapter.title}
             </h2>
         <div className="p-4">
-          <VideoPlayer
+          {/* <VideoPlayer
             chapterId={params.chapterId}
             title={chapter.title}
             courseId={params.courseId}
             nextChapterId={nextChapter?.id}
-            playbackId={muxData?.playbackId!}
+
             isLocked={isLocked}
             completeOnEnd={completeOnEnd}
-          />
+          /> */}
         </div>
         <div>
           <div className="p-4 flex flex-col md:flex-row items-center justify-between">

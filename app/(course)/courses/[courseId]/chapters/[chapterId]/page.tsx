@@ -68,7 +68,7 @@ const ChapterIdPage = async ({
         <h2 className="text-2xl font-semibold mb-2 ml-4 mt-4">
           {chapter.title}
         </h2>
-        <div className="p-4">
+        {/* <div className="p-4">
           {chapter.videoUrl && !isLocked && (
             <iframe
               width="880"
@@ -79,7 +79,7 @@ const ChapterIdPage = async ({
               allowFullScreen
             ></iframe>
           )}
-        </div>
+        </div> */}
         <div>
           <div className="p-4 flex flex-col md:flex-row items-center justify-between">
             {purchase ? (
