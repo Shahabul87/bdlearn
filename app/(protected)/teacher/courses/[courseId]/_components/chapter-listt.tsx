@@ -17,12 +17,12 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 interface ChaptersListProps {
-  items:Section[];
+  items:Chapter[];
   onReorder: (updateData: { id: string; position: number }[]) => void;
   onEdit: (id: string) => void;
 };
 
-export const ChaptersList = ({
+export const ChaptersListPage = ({
   items,
   onReorder,
   onEdit

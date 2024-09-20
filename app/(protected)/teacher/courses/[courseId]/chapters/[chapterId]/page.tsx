@@ -10,13 +10,14 @@ import { Banner } from "@/components/banner";
 import { ChapterTitleForm } from "./_components/chapter-title-form";
 import { ChapterDescriptionForm } from "./_components/chapter-description-form";
 import { ChapterAccessForm } from "./_components/chapter-access-form";
-import { ChapterVideoForm } from "./_components/chapter-video-form";
+
+
 import { ChapterActions } from "./_components/chapter-actions";
 import { ChapterLearningOutcomeForm } from "./_components/chapter-learning-outcome-form";
 import { ChaptersSectionForm } from "./_components/chapter-section-form";
 import { ListChecks } from "lucide-react";
 import { ChaptersForm } from "../../_components/chapters-form";
-import { ChapterYoutubeVideoForm } from "./_components/chapter-youtubevideo-form";
+
 
 const ChapterIdPage = async ({
   params
