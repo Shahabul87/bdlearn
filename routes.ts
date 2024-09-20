@@ -8,12 +8,14 @@
 export const publicRoutes: string[] = [
     "/",
     "/auth/new-verification",
-    "/search",
+    "/searchbar",
     "/api/uploadthing",
     "/api/webhook",
     "/portfolio",
     "/blog",
-    "/courses"
+    "/courses",
+    "/courses/[courseId]",
+    "/about"
     
     
      
@@ -44,4 +46,4 @@ export const publicRoutes: string[] = [
    * The default redirect path after logging in
    * @type {string}
    */
-  export const DEFAULT_LOGIN_REDIRECT: string = "/settings";
+  export const DEFAULT_LOGIN_REDIRECT: string = "/user";

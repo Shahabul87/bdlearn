@@ -8,6 +8,7 @@ import {toast} from "sonner";
 import { useRouter } from "next/navigation";
 import { Attachment, Course } from "@prisma/client";
 import Image from "next/image";
+import { UploadButton } from "@/utils/uploadthing";
 
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";
@@ -111,14 +112,26 @@ export const AttachmentForm = ({
       )}
       {isEditing && (
         <div>
-          <FileUpload
+          {/* <FileUpload
             endpoint="courseAttachment"
             onChange={(url) => {
               if (url) {
                 onSubmit({ url: url });
               }
             }}
-          />
+          /> */}
+          <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={(res) => {
+                onSubmit({url:res?.[0].url });
+                console.log("Files: ", res);
+                alert("Upload Completed");
+              }}
+              onUploadError={(error: Error) => {
+                // Do something with the error.
+                alert(`ERROR! ${error.message}`);
+              }}
+            />
           <div className="text-xs text-muted-foreground mt-4">
             Add anything your students might need to complete the course.
           </div>

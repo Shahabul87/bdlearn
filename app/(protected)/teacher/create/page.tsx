@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
+import { SidebarDemo } from "@/components/ui/sidebar-demo";
 
 import {
   Form,
@@ -49,6 +50,7 @@ const CreatePage = () => {
   }
 
   return ( 
+    <SidebarDemo>
     <div className="max-w-5xl mx-auto flex md:items-center md:justify-center h-full p-6">
       <div>
         <h1 className="text-2xl">
@@ -104,6 +106,7 @@ const CreatePage = () => {
         </Form>
       </div>
     </div>
+    </SidebarDemo>
    );
 }
  

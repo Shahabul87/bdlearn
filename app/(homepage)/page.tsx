@@ -8,6 +8,12 @@ import { TypewriterEffectSmoothDemo } from "@/components/typewriterdemo";
 import { MainNavBar } from "@/components/navbar/main-navbar";
 import { InfiniteMovingCardsDemo } from "@/components/infinite-moving-cards-demo";
 import { HomeComponentOne } from "./home-component-one";
+import { AppleCardsCarouselDemo } from "@/components/cardscarousel/cards-carousel-demo";
+import { Header } from "./header";
+import { Footer } from "./footer";
+import { CallToAction } from "./calltoaction";
+import { HeaderAfterLogin } from "./header-after-login";
+import { currentUser } from '@/lib/auth'
 
 
 
@@ -27,6 +33,7 @@ const Home = async({
       name: "asc"
     }
   });
+  const user =await currentUser();
 
   const courses = await getCoursesForHomepage({...searchParams});
 
@@ -35,20 +42,34 @@ const Home = async({
     
     <>
       
-      {/* <div className="">
-          <MainNavBar />
-      </div> */}
+      {!user? (
+                 <>
+                    <div className="">
+                       <Header />
+                    </div>
+               </> ):
+               (
+                <>
+                <HeaderAfterLogin />
+                </>
+               )}      
+          
       <HomeComponentOne />
-      <InfiniteMovingCardsDemo />
-      <Separator className="mt-10"/>
+      {/* <InfiniteMovingCardsDemo /> */}
       <div className ="h-full w-full mt-0 p-4 ">
-          <div className="p-6 space-y-4 ">
+          <div className="p-6 space-y-4 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
             <Categories
               items={categories}
             />
           </div>
-          <Separator className="mb-4"/>
-          <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4">
+          <div className='section-heading'>
+            <h2 className="section-title">Courses</h2>
+            <p className="section-description my-5">
+              Free forever. Upgrade for unlimited tasks, better security, and
+              exclusive features.
+            </p>
+          </div>
+          <div className="p-4 grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 ">
             {courses.map((item) => (
                 <CourseCardHome
                   key={item.id}
@@ -68,6 +89,20 @@ const Home = async({
             )}
           
       </div>
+         <div className='section-heading'>
+            <h2 className="section-title">Blogs</h2>
+            <p className="section-description my-5">
+              Free forever. Upgrade for unlimited tasks, better security, and
+              exclusive features.
+            </p>
+          </div>
+          <div className='container'>
+            <AppleCardsCarouselDemo />
+          </div>
+    
+      <CallToAction />
+      <Footer />
+     
          
     </>
       

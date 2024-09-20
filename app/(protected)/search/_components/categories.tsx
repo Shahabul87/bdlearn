@@ -1,4 +1,5 @@
 "use client";
+import { motion} from "framer-motion";
 
 import { Category } from "@prisma/client";
 import {
@@ -31,7 +32,18 @@ const iconMap: Record<Category["name"], IconType> = {
 export const Categories = ({ items, }: CategoriesProps) => {
   
     return (
-      <div className="flex items-center gap-x-2 overflow-x-auto pb-2">
+      <motion.div 
+        className="flex items-center gap-x-2  pb-2 "
+        animate={{
+          translateX: "-50%",
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: "linear",
+          repeatType: "loop",
+        }}
+      >
         {items.map((item) => (
           <CategoryItem
             key={item.id}
@@ -40,6 +52,14 @@ export const Categories = ({ items, }: CategoriesProps) => {
             value={item.id}
           />
         ))}
-      </div>
+           {items.map((item) => (
+          <CategoryItem
+            key={item.id}
+            label={item.name}
+            icon={iconMap[item.name]}
+            value={item.id}
+          />
+        ))}
+      </motion.div>
     )
 }

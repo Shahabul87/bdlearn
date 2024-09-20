@@ -1,5 +1,6 @@
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { SidebarDemo } from "@/components/ui/sidebar-demo";
 
 import { getAnalytics } from "@/actions/get-analytics";
 
@@ -22,7 +23,7 @@ const AnalyticsPage = async () => {
   } = await getAnalytics(userId);
 
   return ( 
-    <div className="p-6">
+    <SidebarDemo>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <DataCard
           label="Total Revenue"
@@ -37,7 +38,7 @@ const AnalyticsPage = async () => {
       <Chart
         data={data}
       />
-    </div>
+    </SidebarDemo>
    );
 }
  

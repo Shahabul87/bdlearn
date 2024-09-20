@@ -19,7 +19,7 @@ const guestRoutes = [
   {
     icon: Compass,
     label: "Browse",
-    href: "/search",
+    href: "/searchbar",
   },
   {
     icon: List,

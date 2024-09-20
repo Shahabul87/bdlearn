@@ -11,6 +11,8 @@ import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";
+import { UploadButton } from "@/utils/uploadthing";
+
 
 interface ImageFormProps {
   initialData: Course
@@ -30,6 +32,7 @@ export const ImageForm = ({
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = () => setIsEditing((current) => !current);
+  const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -43,6 +46,8 @@ export const ImageForm = ({
       toast.error("Something went wrong");
     }
   }
+ 
+  
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
@@ -84,14 +89,27 @@ export const ImageForm = ({
       )}
       {isEditing && (
         <div>
-          <FileUpload
+          {/* <FileUpload
             endpoint="courseImage"
             onChange={(url) => {
               if (url) {
                 onSubmit({ imageUrl: url });
               }
             }}
-          />
+          /> */}
+          <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={(res) => {
+                onSubmit({ imageUrl: res?.[0].url });
+                console.log("Files: ", res);
+                alert("Upload Completed");
+              }}
+              onUploadError={(error: Error) => {
+                // Do something with the error.
+                alert(`ERROR! ${error.message}`);
+              }}
+            />
+    
           <div className="text-xs text-muted-foreground mt-4">
             16:9 aspect ratio recommended
           </div>

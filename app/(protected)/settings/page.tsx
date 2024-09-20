@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition, useState } from "react";
 import { useSession } from "next-auth/react";
+import {SidebarDemo } from "@/components/ui/sidebar-demo";
 
 import { Switch } from "@/components/ui/switch";
 import {
@@ -75,6 +76,7 @@ const SettingsPage = () => {
   }
 
   return ( 
+    <SidebarDemo>
     <Card className="w-full h-full rounded-none">
       <CardHeader>
         <p className="text-2xl font-semibold text-center">
@@ -228,6 +230,7 @@ const SettingsPage = () => {
         </Form>
       </CardContent>
     </Card>
+    </SidebarDemo>
    );
 }
  

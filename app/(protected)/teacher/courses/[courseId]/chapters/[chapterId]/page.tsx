@@ -56,15 +56,20 @@ const ChapterIdPage = async ({
   const requiredFields = [
     chapter.title,
     chapter.description,
-    chapter.videoUrl,
+    chapter.learningOutcomes,
+    chapter.sections.some(section => section.isPublished),
   ];
+
+ 
 
   const totalFields = requiredFields.length;
   const completedFields = requiredFields.filter(Boolean).length;
 
   const completionText = `(${completedFields}/${totalFields})`;
 
-  const isComplete = requiredFields.every(Boolean);
+  //const isComplete = requiredFields.every(Boolean);
+  const isComplete = requiredFields.filter(item=>item==true)
+ 
 
   return (
     <>

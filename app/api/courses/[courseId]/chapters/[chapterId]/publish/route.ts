@@ -95,9 +95,10 @@ export async function PATCH(
         id: params.chapterId,
       }
     });
+    //console.log(chapter)
 
     // Check for the presence of required fields in the chapter
-    if (!chapter || !chapter.title || !chapter.description || !chapter.videoUrl) {
+    if (!chapter || !chapter.title || !chapter.description) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 

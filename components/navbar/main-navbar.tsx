@@ -68,7 +68,11 @@ export const MainNavBar =()=>{
                                 </div>
                                 </MenuItem>
                         </div>
-                        <div className ="col-span-3 flex items-center justify-center text-white">এখানে টপিক সার্চ করুন </div>
+                        <div className ="col-span-3 flex items-center justify-center">
+                             <Link href="/searchbar" className=" text-white no-underline hover:underline hover:text-yellow-400 p-4">
+                                     এখানে টপিক সার্চ করুন
+                            </Link>
+                        </div>
                         <div className=" col-span-1 flex items-center justify-center">
                             <Link href="/blog" className=" text-white no-underline hover:underline hover:text-yellow-400 p-4">
                                 Blog
