@@ -68,8 +68,8 @@ export const SectionAccessForm = ({
   }
 
   return (
-    <div className="mt-6 border bg-slate-100 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between">
+    <div className="mt-6 border border-[#94a3b8] bg-gray-700 rounded-md p-4">
+      <div className="font-medium flex items-center justify-between text-white/90">
         Section access
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
@@ -84,8 +84,8 @@ export const SectionAccessForm = ({
       </div>
       {!isEditing && (
         <p className={cn(
-          "text-sm mt-2",
-          !initialData.isFree && "text-slate-500 italic"
+          "text-sm mt-2 text-white/60",
+          !initialData.isFree && "text-cyan-400 italic font-semibold"
         )}>
           {initialData.isFree ? (
             <>This section is free for preview.</>
@@ -104,7 +104,7 @@ export const SectionAccessForm = ({
               control={form.control}
               name="isFree"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 bg-white/90">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
@@ -112,7 +112,7 @@ export const SectionAccessForm = ({
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormDescription>
+                    <FormDescription className="text-black font-semibold">
                       Check this box if you want to make this section free for preview
                     </FormDescription>
                   </div>

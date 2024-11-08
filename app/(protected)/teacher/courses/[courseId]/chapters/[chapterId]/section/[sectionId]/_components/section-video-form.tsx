@@ -54,29 +54,32 @@ export const SectionYoutubeVideoForm = ({
   }
 
   return (
-    <div className="mt-6 border bg-slate-100 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between">
+    <div className="mt-6 border border-[#94a3b8] bg-gray-700  rounded-md p-4">
+      <div className="font-medium flex items-center justify-between text-white/90 mb-2">
         Section video
         <Button onClick={toggleEdit} variant="ghost">
-          {isEditing ? "Cancel" : (initialData.videoUrl ? "Edit video" : "Add a video")}
+          {isEditing ? "Cancel" : (initialData.videoUrl ? "Edit video" : "Add video link")}
         </Button>
       </div>
       {!isEditing ? (
         initialData.videoUrl ? (
-          <div className="relative aspect-video mt-2">
+          <div className="relative aspect-video mt-4">
             {/* Displaying YouTube iframe if videoUrl exists */}
+            
             <iframe
-              width="950"
-              height="550"
+              width="700"
+              height="400"
+              className="rounded-md"
               src={`https://www.youtube.com/embed/${new URL(videoUrl).searchParams.get("v")}`}
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             ></iframe>
+            
           </div>
         ) : (
-          <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md">
+          <div className="flex items-center justify-center h-60 bg-slate-300 rounded-md">
             <Pencil className="h-10 w-10 text-slate-500" /> {/* Adjusted for consistency */}
           </div>
         )
@@ -86,17 +89,18 @@ export const SectionYoutubeVideoForm = ({
             value={videoUrl}
             onChange={(e) => setVideoUrl(e.target.value)}
             placeholder="Paste YouTube video URL here"
+            className="text-cyan-400 font-semibold bg-gray-600"
           />
           <div className ="pt-2">
           <Button type="submit">Save</Button>
           </div>
         </form>
       )}
-      {initialData.videoUrl && !isEditing && (
-        <div className="text-xs text-muted-foreground mt-2">
+      {/* {initialData.videoUrl && !isEditing && (
+        <div className="text-xs text-white/90 mt-2">
           Videos can take a few minutes to process. Refresh the page if the video does not appear.
         </div>
-      )}
+      )} */}
     </div>
   )
 }

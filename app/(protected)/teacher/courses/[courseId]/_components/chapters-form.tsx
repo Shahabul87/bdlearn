@@ -80,13 +80,13 @@ export const ChaptersForm = ({ initialData,courseId }: ChaptersFormProps) => {
   }
 
   return (
-    <div className="relative mt-6 border bg-slate-100 rounded-md p-4">
+    <div className="relative mt-6 border border-[#94a3b8] bg-gray-700 rounded-md p-4">
       {isUpdating && (
         <div className="absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-m flex items-center justify-center">
           <Loader2 className="animate-spin h-6 w-6 text-sky-700" />
         </div>
       )}
-      <div className="font-medium flex items-center justify-between">
+      <div className="font-medium flex items-center justify-between text-white/90">
         Course chapters
         <Button onClick={toggleCreating} variant="ghost">
           {isCreating ? (
@@ -114,6 +114,7 @@ export const ChaptersForm = ({ initialData,courseId }: ChaptersFormProps) => {
                     <Input
                       disabled={isSubmitting}
                       placeholder="e.g. 'Introduction to the course'"
+                      className="text-cyan-400 font-semibold bg-gray-600"
                       {...field}
                     />
                   </FormControl>
@@ -131,7 +132,7 @@ export const ChaptersForm = ({ initialData,courseId }: ChaptersFormProps) => {
         </Form>
       )}
       {!isCreating && (
-        <div className={cn("text-sm mt-2", !initialData.chapters.length && "text-slate-500 italic")}>
+        <div className={cn("text-sm mt-2", !initialData.chapters.length && "text-cyan-500 italic font-semibold")}>
           {!initialData.chapters.length && "No chapters"}
           <ChaptersListPage
             onEdit={onEdit}
@@ -141,7 +142,7 @@ export const ChaptersForm = ({ initialData,courseId }: ChaptersFormProps) => {
         </div>
       )}
       {!isCreating && (
-        <p className="text-xs text-muted-foreground mt-4">
+        <p className="text-xs mt-4 text-white/90">
           Drag and drop to reorder the chapters
         </p>
       )}

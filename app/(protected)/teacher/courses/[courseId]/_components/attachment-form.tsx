@@ -58,8 +58,8 @@ export const AttachmentForm = ({
   }
 
   return (
-    <div className="mt-6 border bg-slate-100 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between">
+    <div className="mt-6 border border-[#94a3b8] bg-gray-700 rounded-md p-4">
+      <div className="font-medium flex items-center justify-between text-white/90">
         Course attachments
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing && (
@@ -76,7 +76,7 @@ export const AttachmentForm = ({
       {!isEditing && (
         <>
           {initialData.attachments.length === 0 && (
-            <p className="text-sm mt-2 text-slate-500 italic">
+            <p className="text-sm mt-2 text-cyan-500 italic font-semibold">
               No attachments yet
             </p>
           )}
@@ -125,7 +125,7 @@ export const AttachmentForm = ({
                 alert(`ERROR! ${error.message}`);
               }}
             />
-          <div className="text-xs text-muted-foreground mt-4">
+          <div className="text-xs text-white/70 mt-4">
             Add anything your students might need to complete the course.
           </div>
         </div>

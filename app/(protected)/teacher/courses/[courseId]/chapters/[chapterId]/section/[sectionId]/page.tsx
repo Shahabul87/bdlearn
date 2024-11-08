@@ -2,18 +2,18 @@ import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Eye, LayoutDashboard, Video } from "lucide-react";
-
+import { Header } from "@/app/(homepage)/header";
+import { HeaderAfterLogin } from "@/app/(homepage)/header-after-login";
+import { SidebarDemo } from "@/components/ui/sidebar-demo";
 import { db } from "@/lib/db";
 import { IconBadge } from "@/components/icon-badge";
 import { Banner } from "@/components/banner"
-
-// import { ChapterActions } from "./_components/chapter-actions";
-// import { ListChecks } from "lucide-react";
-
 import { SectionTitleForm } from "./_components/section-title-form";
 import { SectionAccessForm } from "./_components/section-access-form";
 import { SectionYoutubeVideoForm } from "./_components/section-video-form";
 import { SectionActions } from "./_components/sections-actions";
+import { VideoSectionForm } from "./_components/_videos/video-section";
+import { BlogSectionForm } from "./_components/_blogs/blog-section";
 
 const SectionIdPage = async ({
   params
@@ -25,20 +25,50 @@ const SectionIdPage = async ({
     if (!user?.id) {
         return redirect("/");
       }
-
-  //const userId = user?.id;
   
 
+      const section = await db.section.findFirst({
+        where: {
+          id: params.sectionId,
+          chapterId: params.chapterId,
+        },
+        include: {
+          videos: true,
+          blogs: true,
+          articles: true,
+          notes: true,
+        },
+      });
 
-  const section = await db.section.findUnique({
-    where: {
-      id: params.sectionId,
-      chapterId: params.chapterId
-    },
-  });
+      const chapter = await db.chapter.findFirst({
+        where: {
+          id: params.chapterId,
+          courseId: params.courseId,
+        },
+        include: {
+          sections: {
+            orderBy: {
+              position: "asc",
+            },
+            include: {
+              videos: true,
+              blogs: true,
+              articles: true,
+              notes: true,
+            },
+          },
+        },
+      });
+      
+
+      //console.log(section)
 
 
   if (!section) {
+    return redirect("/")
+  }
+
+  if (!chapter) {
     return redirect("/")
   }
 
@@ -56,6 +86,18 @@ const SectionIdPage = async ({
 
   return (
     <>
+    {!user? (
+                            <>
+                                <div className="">
+                                <Header />
+                                </div>
+                        </> ):
+                        (
+                            <>
+                            <HeaderAfterLogin />
+                            </>
+               )}
+       <SidebarDemo>
       {!section.isPublished && (
         <Banner
           variant="warning"
@@ -63,21 +105,22 @@ const SectionIdPage = async ({
         />
       )}
       <div className="p-6">
-        <div className="flex items-center justify-between bg-red-400">
+      <div className="px-2">
+        <div className="flex items-center justify-between ">
           <div className="w-full">
             <Link
               href={`/teacher/courses/${params.courseId}/chapters/${params.chapterId}`}
-              className="flex items-center text-xl hover:opacity-75 transition mb-6"
+              className="flex items-center text-xl text-white/90 hover:opacity-75 transition mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to chapter page
             </Link>
-            <div className="flex items-center justify-between w-full bg-blue-500 rounded-md p-4">
+            <div className="flex items-center justify-between w-full bg-gray-700 p-2 px-10 border border-[#94a3b8] rounded-md">
                 <div className="flex flex-col gap-y-2 ">
-                  <h1 className="text-2xl font-medium">
+                  <h1 className="text-2xl font-medium text-white">
                     Section Creation
                   </h1>
-                  <span className="text-sm text-slate-700">
+                  <span className="text-sm text-cyan-500">
                     Complete all fields {completionText}
                   </span>
                 </div>
@@ -91,13 +134,15 @@ const SectionIdPage = async ({
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6 mt-16 bg-blue-500 p-4 rounded-md">
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16 bg-gray-700 p-4 rounded-md">
           <div className="space-y-4">
-            <div>
+            <div className="">
+              <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={LayoutDashboard} />
-                <h2 className="text-xl">
-                  Customize your chapter section
+                <h2 className="text-xl text-white/90 font-semibold">
+                  Customize Your Chapter Section
                 </h2>
               </div>
               <SectionTitleForm
@@ -106,12 +151,15 @@ const SectionIdPage = async ({
                 chapterId={params.chapterId}
                 sectionId={params.sectionId}
               />
+              </div>
         
             </div>
-            <div>
+            
+          </div>
+          <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={Eye} />
-                <h2 className="text-xl">
+                <h2 className="text-xl text-white/90 font-semibold">
                   Access Settings
                 </h2>
               </div>
@@ -122,11 +170,12 @@ const SectionIdPage = async ({
                 sectionId={params.sectionId}
               />
             </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-x-2">
+          
+        </div>
+        <div>
+            <div className="flex items-center gap-x-2 mt-5">
               <IconBadge icon={Video} />
-              <h2 className="text-xl">
+              <h2 className="text-xl text-white/90 font-semibold">
                 Add Sections Video Link
               </h2>
             </div>
@@ -137,8 +186,35 @@ const SectionIdPage = async ({
                 sectionId={params.sectionId}
             />
           </div>
-        </div>
+          <h1 className="text-white/90 text-center text-3xl font-bold md:text-5xl p-4 mt-10">Sections for Personal Learning</h1>
+          <div className="flex items-center gap-x-2 mt-5">
+            <IconBadge icon={Video} />
+            <h2 className="text-xl text-white/90 font-semibold ">
+              Add Video Sections
+            </h2>
+          </div>
+            <VideoSectionForm 
+              chapter={chapter}
+              courseId={params.courseId}
+              chapterId={params.chapterId}
+              sectionId={params.sectionId}
+            />
+
+        <div className="flex items-center gap-x-2 mt-5">
+            <IconBadge icon={Video} />
+            <h2 className="text-xl text-white/90 font-semibold ">
+              Add Blog Sections
+            </h2>
+          </div>
+            <BlogSectionForm 
+              chapter={chapter}
+              courseId={params.courseId}
+              chapterId={params.chapterId}
+              sectionId={params.sectionId}
+            />
+
       </div>
+      </SidebarDemo>
     </>
    );
 }

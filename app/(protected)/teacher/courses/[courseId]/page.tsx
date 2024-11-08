@@ -13,13 +13,20 @@ import { ChaptersForm } from "./_components/chapters-form";
 import { Actions } from "./_components/actions";
 import { IconBadge } from "@/components/icon-badge";
 import { Banner } from "@/components/banner";
+import { FileUploadForm } from "./_components/file-upload-form";
+import { Header } from "@/app/(homepage)/header";
+import { HeaderAfterLogin } from "@/app/(homepage)/header-after-login";
+import { SidebarDemo } from "@/components/ui/sidebar-demo";
+import { ImageFormNew } from "./_components/image-upload-form";
+import { ImageFormCombined } from "./_components/image-upload-form-combined";
+import ConditionalHeader from "@/app/(homepage)/user-header";
 
 
 
 const CourseIdPage = async ({params}:{params:{courseId:string}})=> {
 
 
-   const user = await currentUser();
+   const user:any = await currentUser();
 
    if(!user?.id){
        return redirect("/");
@@ -46,6 +53,8 @@ const CourseIdPage = async ({params}:{params:{courseId:string}})=> {
     },
   });
 
+  //console.log(course)
+
    const categories = await db.category.findMany({
     orderBy: {
       name: "asc",
@@ -66,7 +75,7 @@ const CourseIdPage = async ({params}:{params:{courseId:string}})=> {
   ];
   // 
 
- console.log(requiredFields)
+ //console.log(requiredFields)
   const totalFields = requiredFields.length;
   const completedFields = requiredFields.filter(Boolean).length;
 
@@ -78,32 +87,39 @@ const CourseIdPage = async ({params}:{params:{courseId:string}})=> {
 
   return (
     <>
+    
+         <div>
+            <ConditionalHeader user={user} />
+         </div> 
+      <SidebarDemo>
       {!course.isPublished && (
         <Banner
           label="This course is unpublished. It will not be visible to the students."
         />
       )}
       <div className="p-6">
-        <div className="flex items-center justify-between bg-sky-400 p-2 rounded-md">
-          <div className="flex flex-col gap-y-2">
-            <h1 className="text-2xl font-medium">
-              Course setup
-            </h1>
-            <span className="text-sm text-slate-800">
-              Complete all fields {completionText}
-            </span>
+        <div className="px-">
+          <div className="flex items-center justify-between bg-gray-700 p-2 px-10 border border-[#94a3b8] rounded-md">
+            <div className="flex flex-col gap-y-2">
+              <h1 className="text-2xl font-medium text-white">
+                Course setup
+              </h1>
+              <span className="text-sm text-cyan-500">
+                Complete all fields {completionText}
+              </span>
+            </div>
+            <Actions
+              disabled={!isComplete}
+              courseId={params.courseId}
+              isPublished={course.isPublished}
+            />
           </div>
-          <Actions
-            disabled={!isComplete}
-            courseId={params.courseId}
-            isPublished={course.isPublished}
-          />
         </div>
-        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6 mt-6 bg-violet-500 p-2 rounded-md">
+        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6 mt-6 p-2 rounded-md">
           <div>
             <div className="flex items-center gap-x-2">
               <IconBadge icon={LayoutDashboard} />
-              <h2 className="text-xl">
+              <h2 className="text-xl text-white/90 font-semibold">
                 Customize your course
               </h2>
             </div>
@@ -115,10 +131,7 @@ const CourseIdPage = async ({params}:{params:{courseId:string}})=> {
               initialData={course}
               courseId={course.id}
             />
-            <ImageForm
-              initialData={course}
-              courseId={course.id}
-            />
+
             <CategoryForm
               initialData={course}
               courseId={course.id}
@@ -127,12 +140,25 @@ const CourseIdPage = async ({params}:{params:{courseId:string}})=> {
                 value: category.id,
               }))}
             />
+            {/* <ImageFormNew
+              initialData={course}
+              courseId={course.id}
+            /> */}
+            {/* <FileUploadForm
+              initialData={course}
+              courseId={course.id}
+            />  */}
+           <ImageFormCombined
+              initialData={course}
+              courseId={course.id}
+            />
+           
           </div>
           <div className="space-y-6">
                   <div>
                     <div className="flex items-center gap-x-2">
                       <IconBadge icon={ListChecks} />
-                      <h2 className="text-xl">
+                      <h2 className="text-xl text-white/90 font-semibold">
                         Course chapters
                       </h2>
                     </div>
@@ -144,7 +170,7 @@ const CourseIdPage = async ({params}:{params:{courseId:string}})=> {
               <div>
                 <div className="flex items-center gap-x-2">
                   <IconBadge icon={CircleDollarSign} />
-                  <h2 className="text-xl">
+                  <h2 className="text-xl text-white/90 font-semibold">
                     Sell your course
                   </h2>
                 </div>
@@ -156,7 +182,7 @@ const CourseIdPage = async ({params}:{params:{courseId:string}})=> {
               <div>
                 <div className="flex items-center gap-x-2">
                   <IconBadge icon={File} />
-                  <h2 className="text-xl">
+                  <h2 className="text-xl text-white/90 font-semibold">
                     Resources & Attachments
                   </h2>
                 </div>
@@ -168,6 +194,7 @@ const CourseIdPage = async ({params}:{params:{courseId:string}})=> {
           </div>
         </div>
       </div>
+      </SidebarDemo> 
     </>
    );
 }

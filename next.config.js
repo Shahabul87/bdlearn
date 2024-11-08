@@ -12,16 +12,22 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'assets.aceternity.com',
-        // Optionally, you can specify a port and pathname prefix
-        // port: '',
-        // pathname: '/path/to/images/*',
+        
       },
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
-        // Optionally, you can specify a port and pathname prefix
-        // port: '',
-        // pathname: '/path/to/images/*',
+      
+      },
+      {
+        protocol: 'https',
+        hostname: "your-cdn.com",
+      
+      },
+      {
+        protocol: 'https',
+        hostname: "res.cloudinary.com",
+      
       },
     ],
   },

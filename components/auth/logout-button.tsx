@@ -17,7 +17,7 @@ export const LogoutButton = ({
   };
 
   return (
-    <span onClick={onClick} className=" flex cursor-pointer">
+    <span onClick={onClick} className=" flex cursor-pointer hover:text-cyan-500">
       {children}
     </span>
   );

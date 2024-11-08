@@ -30,11 +30,11 @@ export default async function RootLayout({
   return (
    <SessionProvider session={session}>
       <html lang="en" className="relative">
-        <body className={clsx(dmSans.className, "antialiased bg-[#EAEEFE]")}>
+        <body className={clsx(dmSans.className, "antialiased bg-gray-800")}>
           <ConfettiProvider />
           <Toaster />
          
-          <main className ="px-6">             
+          <main className ="">             
               {children}
           </main> 
         </body>

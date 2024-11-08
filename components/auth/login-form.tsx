@@ -71,9 +71,10 @@ export const LoginForm = () => {
   return (
     <CardWrapper
       headerLabel="Welcome back"
-      backButtonLabel="Create a new account"
+      backButtonLabel="Create account"
       backButtonHref="/auth/register"
       showSocial
+      className="bg-gray-700 text-gray-300 border-gray-500 md:w-[550px]"
     >
       <Form {...form}>
         <form 
@@ -93,6 +94,7 @@ export const LoginForm = () => {
                         {...field}
                         disabled={isPending}
                         placeholder="123456"
+                         className="border-0 rounded-none border-b border-gray-500 outline-below focus:outline-none focus:border-blue-500 focus-visible:ring-0"
                       />
                     </FormControl>
                     <FormMessage />
@@ -112,8 +114,9 @@ export const LoginForm = () => {
                         <Input
                           {...field}
                           disabled={isPending}
-                          placeholder="john.doe@example.com"
+                          placeholder="sham@example.com"
                           type="email"
+                          className="border-0 rounded-none border-b border-gray-500 outline-below focus:outline-none focus:border-blue-500 focus-visible:ring-0"
                         />
                       </FormControl>
                       <FormMessage />
@@ -132,6 +135,7 @@ export const LoginForm = () => {
                           disabled={isPending}
                           placeholder="******"
                           type="password"
+                            className="border-0 rounded-none border-b border-gray-500 outline-below focus:outline-none focus:border-blue-500 focus-visible:ring-0"
                         />
                       </FormControl>
                       <Button
@@ -140,7 +144,7 @@ export const LoginForm = () => {
                         asChild
                         className="px-0 font-normal"
                       >
-                        <Link href="/auth/reset">
+                        <Link href="/auth/reset" className="text-white/70 text-base md:text-md tracking-wide">
                           Forgot password?
                         </Link>
                       </Button>
@@ -156,7 +160,7 @@ export const LoginForm = () => {
           <Button
             disabled={isPending}
             type="submit"
-            className="w-full bg-blue-500"
+            className="w-full bg-cyan-700 hover:bg-blue-500"
           >
             {showTwoFactor ? "Confirm" : "Login"}
           </Button>

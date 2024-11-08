@@ -64,8 +64,8 @@ export const ChapterDescriptionForm = ({
   }
 
   return (
-    <div className="mt-6 border bg-slate-100 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between">
+    <div className="mt-6 border border-[#94a3b8] bg-gray-700  rounded-md p-4">
+      <div className="font-medium flex items-center justify-between text-white/90">
         Chapter description
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
@@ -80,8 +80,8 @@ export const ChapterDescriptionForm = ({
       </div>
       {!isEditing && (
         <div className={cn(
-          "text-sm mt-2",
-          !initialData.description && "text-slate-500 italic"
+          "text-sm mt-2 text-cyan-500 font-semibold",
+          !initialData.description && "text-cyan-400 italic font-semibold"
         )}>
           {!initialData.description && "No description"}
           {initialData.description && (

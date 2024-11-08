@@ -1,10 +1,14 @@
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { SectionSidebar } from "./section-sidebar";
+import { Header } from "@/app/(homepage)/header";
+import { HeaderAfterLogin } from "@/app/(homepage)/header-after-login";
+import { currentUser } from '@/lib/auth'
 
 
 const sectionIdPage = async ({params}: {params: { courseId: string; sectionId: string; }}) => {
   
+  const user =await currentUser();
   const section = await db.section.findUnique({
     where: {
       id: params.sectionId,
@@ -57,6 +61,18 @@ const course = await db.course.findUnique({
 
 
   return (
+    <>
+     {!user? (
+                 <>
+                    <div className="">
+                       <Header />
+                    </div>
+               </> ):
+               (
+                <>
+                <HeaderAfterLogin />
+                </>
+               )}  
     <div className="min-h-screen bg-slate-800">
       <div className=" ml-10">
         <h1 className="text-2xl text-white font-bold p-2 pl-10"> {section.title}</h1>
@@ -98,6 +114,7 @@ const course = await db.course.findUnique({
       </div>
     </div>
     </div>
+    </>
   )
 
  

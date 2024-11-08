@@ -19,21 +19,238 @@ datasource db {
 enum UserRole {
   ADMIN
   USER
+  TEACHER
+  PARENTS
 }
 
+// model User {
+//   id            String    @id @default(cuid())
+//   name          String?
+//   email         String?   @unique
+//   emailVerified DateTime?
+//   image         String?
+//   password      String?
+//   role          UserRole @default(USER)
+//   accounts      Account[]
+//   courses       Course[]
+//   isTwoFactorEnabled Boolean @default(false)
+//   twoFactorConfirmation TwoFactorConfirmation?
+// }
+
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  role          UserRole @default(USER)
-  accounts      Account[]
-  courses       Course[]
-  isTwoFactorEnabled Boolean @default(false)
+  id                    String                 @id @default(cuid())
+  name                  String?
+  email                 String?                @unique
+  emailVerified         DateTime?
+  image                 String?
+  password              String?
+  confirmPassword       String?
+  role                  UserRole               @default(USER)
+  accounts              Account[]
+  courses               Course[]
+  isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
+
+  phone                 String?                // Optional field for phone number
+  profileLinks          ProfileLink[]          // One-to-many relation with ProfileLink
+
+  posts                 Post[]                 // One-to-many relation with Post
+  comments              Comment[]              // One-to-many relation with Comment
+  reply                 Reply[]
+  postReactions         PostReaction[]         // One-to-many relation with PostReaction
+  commentReactions      CommentReaction[]      // One-to-many relation with CommentReaction
+  replyReactions        ReplyReaction[]        // One-to-many relation with ReplyReaction
+
+  // Relations to learning resources created by the user
+  videos                Video[]                @relation("UserVideos")
+  blogs                 Blog[]                 @relation("UserBlogs")
+  articles              Article[]              @relation("UserArticles")
+  notes                 Note[]                 @relation("UserNotes")
+
+  // Relations to favorite content
+  favoriteVideos        FavoriteVideo[]        // One-to-many relation with FavoriteVideo
+  favoriteAudios        FavoriteAudio[]        // One-to-many relation with FavoriteAudio
+  favoriteArticles      FavoriteArticle[]      // One-to-many relation with FavoriteArticle
+  favoriteBlogs         FavoriteBlog[]         // One-to-many relation with FavoriteBlog
+  favoriteImages        FavoriteImage[]        // One-to-many relation with FavoriteImage
 }
+
+
+
+
+model Course {
+  id                    String                 @id @default(uuid())
+  title                 String                 @db.Text
+  description           String?                @db.Text
+  imageUrl              String?                @db.Text
+  price                 Float?
+  isPublished           Boolean               @default(false)
+  
+  categoryId            String?
+  category              Category?              @relation(fields: [categoryId], references: [id])
+  
+  userId                String
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  chapters              Chapter[]
+  attachments           Attachment[]
+  purchases             Purchase[]
+
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+
+  @@index([categoryId])
+}
+
+model Chapter {
+  id                    String                 @id @default(uuid())
+  title                 String
+  description           String?                @db.Text
+  learningOutcomes      String?                @db.Text
+  position              Int
+  isPublished           Boolean               @default(false)
+  isFree                Boolean               @default(false)
+
+  courseId              String
+  course                Course                 @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  userProgress          UserProgress[]
+  sections              Section[]
+
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+
+  @@index([courseId])
+}
+
+model Section {
+  id                    String                 @id @default(uuid())
+  title                 String
+  videoUrl              String?                @db.Text
+  position              Int
+  isPublished           Boolean               @default(false)
+  isFree                Boolean               @default(false)
+
+  chapterId             String
+  chapter               Chapter                @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  userProgress          UserProgress[]
+  questions             Question[]
+
+  // Relations to various resources within this section
+  videos                Video[]                // One-to-many relation with Video
+  blogs                 Blog[]                 // One-to-many relation with Blog
+  articles              Article[]              // One-to-many relation with Article
+  notes                 Note[]                 // One-to-many relation with Note
+
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+
+  @@index([chapterId])
+} 
+
+model Video {
+  id             String    @id @default(uuid())
+  title          String
+  description    String?   @db.Text
+  url            String    @db.VarChar(255)
+  duration       Int?      // Duration in seconds
+  clarityRating  Int?      // Rating for concept clarity, e.g., 1-5 scale
+  position       Int       // Position/order within the section
+
+  sectionId      String?
+  section        Section?  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  userId         String
+  user           User      @relation("UserVideos", fields: [userId], references: [id], onDelete: Cascade)
+
+  category     String?
+  
+
+  isPublished    Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Blog {
+  id             String    @id @default(uuid())
+  title          String
+  url            String    @db.VarChar(255)
+  author         String?
+  description    String?   @db.Text
+  publishedAt    DateTime?
+
+  sectionId      String?
+  section        Section?  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  userId         String
+  user           User      @relation("UserBlogs", fields: [userId], references: [id], onDelete: Cascade)
+
+  category     String?
+
+
+  isPublished    Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Article {
+  id             String    @id @default(uuid())
+  title          String
+  url            String    @db.VarChar(255)
+  source         String?   // Source of the article (e.g., Medium, New York Times)
+  summary        String?   @db.Text
+  publishedAt    DateTime?
+
+  sectionId      String?
+  section        Section?  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  userId         String
+  user           User      @relation("UserArticles", fields: [userId], references: [id], onDelete: Cascade)
+
+  category     String?
+
+
+  isPublished    Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Note {
+  id             String    @id @default(uuid())
+  title          String
+  content        String    @db.Text
+  isImportant    Boolean   @default(false) // Flag to mark important notes
+  position       Int       // Position within a section if ordered
+
+  sectionId      String?
+  section        Section?  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  userId         String
+  user           User      @relation("UserNotes", fields: [userId], references: [id], onDelete: Cascade)
+
+  category     String?
+  
+
+  isPublished    Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+
+
+model ProfileLink {
+  id        String @id @default(cuid())
+  user      User   @relation(fields: [userId], references: [id])
+  userId    String
+  platform  String // Name of the social media platform (e.g., "Twitter", "Facebook")
+  url       String // URL of the social media profile
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
 
 model Account {
   id                 String  @id @default(cuid())
@@ -92,29 +309,7 @@ model TwoFactorConfirmation {
 
 
 
-model Course {
-  id String @id @default(uuid())
-  userId String
-  title String @db.Text
-  description String? @db.Text
-  imageUrl String? @db.Text
-  price Float?
-  isPublished Boolean @default(false)
 
-  categoryId String?
-  category Category? @relation(fields: [categoryId], references: [id])
-
-  chapters Chapter[]
-  attachments Attachment[]
-  purchases Purchase[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([categoryId])
-}
 
 model Category {
   id String @id @default(uuid())
@@ -136,50 +331,8 @@ model Attachment {
   @@index([courseId])
 }
 
-model Chapter {
-  id String @id @default(uuid())
-  title String
-  description String? @db.Text
-  learningOutcomes String? @db.Text
-  position Int
-  isPublished Boolean @default(false)
-  isFree Boolean @default(false)
 
 
-  courseId String
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-  userProgress UserProgress[]
-  sections Section[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([courseId])
-}
-
-
-model Section {
-  id String @id @default(uuid())
-  title String
-  videoUrl String? @db.Text
-  position Int
-  isPublished Boolean @default(false)
-  isFree Boolean @default(false)
-
-
-  chapterId String
-  chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-  userProgress UserProgress[]
-
-  // Add this line: A list of questions associated with this section
-  questions Question[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([chapterId])
-}
 
 
 
@@ -250,3 +403,197 @@ model StripeCustomer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+
+model Post {
+  id                    String                 @id @default(cuid())
+  userId                String
+  title                 String
+  description           String?                @db.Text
+  imageUrl              String?
+  published             Boolean                @default(false)
+  user                  User                   @relation(fields: [userId ], references: [id], onDelete: Cascade)
+  category              String?
+
+
+  tags                  Tag[]                  @relation("PostTags")
+  comments              Comment[]              // One-to-many relation with Comment
+  reply                 Reply[]
+  reactions             PostReaction[]         // One-to-many relation with PostReaction
+  postchapter           PostChapterSection[]       // One-to-many relation with ContentSection
+  imageSections         PostImageSection[]         // One-to-many relation with ImageSection
+
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+
+
+}
+
+model PostChapterSection {
+  id                    String                 @id @default(cuid())
+  title                 String
+  postId                String
+  description           String?                 @db.Text
+  
+  imageUrl              String?
+  isPublished           Boolean                @default(false)
+  isFree                Boolean                @default(false)
+  position              Int                    // Position of the section within the post
+  post                  Post                   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+}
+
+
+
+
+model Comment {
+  id                    String                 @id @default(cuid())
+  userId                String
+  comments               String?
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post                  Post                   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId                String
+  reactions             CommentReaction[]      // One-to-many relation with CommentReaction
+  reply                 Reply[]
+  createdAt             DateTime               @default(now())
+}
+
+model Reply {
+  id                    String                 @id @default(cuid())
+  userId                String
+  replyContent          String?
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment               Comment                @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId             String
+  post                  Post                   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId                String
+  reactions             ReplyReaction[]        // One-to-many relation with ReplyReaction
+  createdAt             DateTime               @default(now())
+}
+
+model ReplyReaction {
+  id                    String                 @id @default(cuid())
+  userId                String                 // The user who reacted
+  replyId               String                 // The reply being reacted to
+  type                  ReactionType           // The type of reaction: like, dislike, love, etc.
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reply                 Reply                  @relation(fields: [replyId], references: [id], onDelete: Cascade)
+  createdAt             DateTime               @default(now())
+}
+
+
+
+
+model PostImageSection {
+  id                    String                 @id @default(cuid())
+  postId                String
+  imageUrl              String                 // URL of the image
+  caption               String?                // Optional caption for the image
+  position              Int                    // Position of the image within the post
+  post                  Post                   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt             DateTime               @default(now())
+}
+
+
+
+model Tag {
+  id                    String                 @id @default(cuid())
+  name                  String                 @unique
+  posts                 Post[]                 @relation("PostTags")
+}
+
+model PostReaction {
+  id                    String                 @id @default(cuid())
+  userId                String
+  type                  ReactionType
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post                  Post                   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId                String
+  createdAt             DateTime               @default(now())
+}
+
+model CommentReaction {
+  id                    String                 @id @default(cuid())
+  userId                String
+  type                  ReactionType
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment               Comment                @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId             String
+  createdAt             DateTime               @default(now())
+}
+
+
+
+enum ReactionType {
+  LIKE
+  DISLIKE
+  LOVE
+  LAUGH
+  ANGRY
+}
+
+model FavoriteVideo {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  title     String   // Title of the favorite video
+  platform  String   // Platform name (e.g., "YouTube", "Vimeo")
+  url       String   // URL of the video
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FavoriteAudio {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  title     String   // Title of the favorite audio
+  platform  String   // Platform name (e.g., "Spotify", "SoundCloud")
+  url       String   // URL of the audio
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FavoriteArticle {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  title     String   // Title of the favorite article
+  platform  String   // Platform name (e.g., "Medium", "NYTimes")
+  url       String   // URL of the article
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FavoriteBlog {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  title     String   // Title of the favorite blog
+  platform  String   // Platform name (e.g., "WordPress", "Blogger")
+  url       String   // URL of the blog
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FavoriteImage {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  title     String   // Title or description of the favorite image
+  platform  String   // Platform name (e.g., "Instagram", "Pinterest")
+  url       String   // URL of the image
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+
+

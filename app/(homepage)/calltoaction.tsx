@@ -20,11 +20,11 @@ export const CallToAction = () => {
   
   const translateY = useTransform(scrollYProgress, [0, 1], [150, -150]);
   return (
-    <section ref={heroRef} className="bg-gradient-to-b from-white to-[#D2DCFF] py-24 overflow-x-clip">
+    <section ref={heroRef} className="bg-gray-900 py-24 overflow-x-clip mt-10">
       <div className="container">
         <div className="section-heading relative">
-              <h2 className="section-title">Sign up for free today</h2>
-              <p className="section-description mt-5">
+              <h2 className="text-white text-4xl font-bold text-center">Sign up for free today</h2>
+              <p className="text-white/80 mt-5 text-center">
                 Celebrate the joy of accomplishment with an app designed to track your
                 progress and motivate your efforts.
               </p>
@@ -63,7 +63,7 @@ export const CallToAction = () => {
         </div>
         <div className="flex gap-2 mt-10 justify-center">
           <button className="btn btn-primary">Get for free</button>
-          <button className="btn btn-text gap-1">
+          <button className="btn btn-text gap-1 text-cyan-500">
             <span>Learn more</span> 
             <ArrowRight className="h-5 w-5"/>
             </button>

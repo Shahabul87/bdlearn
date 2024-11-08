@@ -46,7 +46,8 @@ export const Combobox = ({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
+      <PopoverContent className="w-full p-0 h-[30rem] overflow-y-auto">
+        <div className="">
         <Command>
           <CommandInput placeholder="Search option..." />
           <CommandEmpty>No option found.</CommandEmpty>
@@ -70,6 +71,7 @@ export const Combobox = ({
             ))}
           </CommandGroup>
         </Command>
+        </div>
       </PopoverContent>
     </Popover>
   )

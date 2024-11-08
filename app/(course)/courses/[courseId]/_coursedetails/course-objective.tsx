@@ -14,7 +14,7 @@ const pricingTiers = [
     monthlyPrice: 0,
     buttonText: "Get started for free",
     popular: false,
-    inverse: false,
+    inverse: true,
     features: [
       "Up to 5 project members",
       "Unlimited tasks and projects",
@@ -44,7 +44,7 @@ const pricingTiers = [
     monthlyPrice: 19,
     buttonText: "Sign up now",
     popular: false,
-    inverse: false,
+    inverse: true,
     features: [
       "Up to 5 project members",
       "Unlimited tasks and projects",
@@ -62,15 +62,8 @@ const pricingTiers = [
 
 export const CourseObjectives = () => {
   return (
-    <section className="py-24 bg-white">
+    <section className="py-20">
       <div className="container">
-        <div className='section-heading'>
-            <h2 className="section-title">What you will learn?</h2>
-            <p className="section-description mt-5">
-              Free forever. Upgrade for unlimited tasks, better security, and
-              exclusive features.
-            </p>
-        </div>
         <div className='flex flex-col gap-6 items-center mt-10 lg:flex-row lg:items-end lg:justify-center lg:gap-10' >
         {pricingTiers.map(
             ({ title, monthlyPrice, buttonText, popular, inverse, features }, index) => (

@@ -15,8 +15,8 @@ export const HeaderAfterLogin = () => {
   };
 
   return (
-    <header className="sticky top-0 backdrop-blur-sm z-20">
-      <div className="flex justify-center items-center py-3 bg-gray-900 text-white text-sm gap-3">
+    <header className="sticky top-0 backdrop-blur-md z-20 bg-gray-700 border-b border-white/10 ">
+      {/* <div className="flex justify-center items-center py-3 bg-gray-900 text-white text-sm gap-3">
         <p className="text-white/60 hidden md:block">
           Streamline your workflow and boost your productivity
         </p>
@@ -24,9 +24,9 @@ export const HeaderAfterLogin = () => {
           <p>Get started for free</p>
           <ArrowRight className="h-4 w-4 inline-flex justify-center items-center" />
         </div>
-      </div>
+      </div> */}
 
-      <div className="py-5">
+      <div className="py-3">
         <div className="container">
           <div className="flex items-center justify-between">
           
@@ -38,13 +38,14 @@ export const HeaderAfterLogin = () => {
             <MenuIcon className="h-5 w-5 md:hidden cursor-pointer" onClick={toggleMenu} />
             
             {/* Desktop Nav */}
-            <nav className="hidden md:flex gap-6 text-black items-center">
-              <a href="/about">About</a>
-              <a href="/features">Features</a>
-              <a href="#">Customers</a>
-              <a href="/teacher/courses">Dashboard</a>
+            <nav className="hidden md:flex gap-6 text-white/80 items-center font-semibold">
+              <a href="/about" className='hover:text-cyan-500'>About</a>
+              <a href="/features" className='hover:text-cyan-500'>Features</a>
+              <a href="/courses" className='hover:text-cyan-500'>Courses</a>
+              <a href="/blog" className='hover:text-cyan-500'>Blogs</a>
+              <a href="/teacher/courses" className='hover:text-cyan-500'>Dashboard</a>
               <LogoutButton>Logout</LogoutButton>
-              <button className="bg-gray-900 text-white px-4 py-2 rounded-lg font-medium inline-flex align-items justify-center tracking-tight">
+              <button className="bg-gray-900 text-white px-4 py-2 rounded-lg font-medium inline-flex align-items justify-center tracking-tight hover:text-cyan-500">
                 Get for free
               </button>
             </nav>
@@ -52,11 +53,11 @@ export const HeaderAfterLogin = () => {
             {/* Mobile Nav - Conditionally rendered */}
             {isMenuOpen && (
               <nav className="flex flex-col items-center justify-center gap-4 bg-gray-900 text-white p-5 absolute top-16 left-0 w-full md:hidden z-30">
-                <a href="#">About</a>
-                <a href="#">Features</a>
-                <a href="#">Customers</a>
-                <a href="#">Updates</a>
-                <a href="#">Help</a>
+                <a href="/about" className='hover:text-cyan-500'>About</a>
+                <a href="/features" className='hover:text-cyan-500'>Features</a>
+                <a href="/courses" className='hover:text-cyan-500'>Courses</a>
+                <a href="/blog" className='hover:text-cyan-500'>Blogs</a>
+                <a href="/teacher/courses" className='hover:text-cyan-500'>Dashboard</a>
                 <button className="bg-gray-900 text-white px-4 py-2 rounded-lg font-medium inline-flex align-items justify-center tracking-tight" onClick={toggleMenu}>
                 <LogoutButton>Logout</LogoutButton>
                 </button>

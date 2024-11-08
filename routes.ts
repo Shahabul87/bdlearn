@@ -46,4 +46,4 @@ export const publicRoutes: string[] = [
    * The default redirect path after logging in
    * @type {string}
    */
-  export const DEFAULT_LOGIN_REDIRECT: string = "/user";
+  export const DEFAULT_LOGIN_REDIRECT: string = "/dashboard";

@@ -1,5 +1,4 @@
 import { Poppins } from "next/font/google";
-
 import { cn } from "@/lib/utils";
 
 const font = Poppins({
@@ -9,20 +8,22 @@ const font = Poppins({
 
 interface HeaderProps {
   label: string;
+  className?: string; // Optional className prop
 };
 
 export const Header = ({
   label,
+  className, // Accept className as a prop
 }: HeaderProps) => {
   return (
-    <div className="w-full flex flex-col gap-y-4 items-center justify-center">
+    <div className={cn("w-full flex flex-col gap-y-4 items-center justify-center", className)}>
       <h1 className={cn(
-        "text-3xl font-semibold text-blue-500",
+        "text-3xl md:text-4xl font-semibold text-white/70",
         font.className,
       )}>
         iSham 
       </h1>
-      <p className="text-muted-foreground text-md font-semibold">
+      <p className="text-muted-foreground text-md font-semibold ">
         {label}
       </p>
     </div>

@@ -75,7 +75,7 @@ export function DataTable<TData, TValue>({columns,data,}: DataTableProps<TData, 
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="text-white/90">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -96,7 +96,7 @@ export function DataTable<TData, TValue>({columns,data,}: DataTableProps<TData, 
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="text-white/70">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -112,10 +112,10 @@ export function DataTable<TData, TValue>({columns,data,}: DataTableProps<TData, 
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4 text-black">
+      <div className="flex items-center justify-end space-x-2 py-4">
         <Button
-          variant="outline"
-          size="sm"
+          variant="prevbutton"
+          size="md"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
@@ -123,7 +123,7 @@ export function DataTable<TData, TValue>({columns,data,}: DataTableProps<TData, 
         </Button>
         <Button
           variant="outline"
-          size="sm"
+          size="md"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >

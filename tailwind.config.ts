@@ -58,6 +58,7 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+       
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -86,7 +87,7 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), addVariablesForColors],
+  plugins: [require("tailwindcss-animate"), addVariablesForColors,],
 } satisfies Config
 
 function addVariablesForColors({ addBase, theme }: any) {

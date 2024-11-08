@@ -61,8 +61,8 @@ export const TitleForm = ({
   }
 
   return (
-    <div className="mt-6 border bg-slate-100 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between">
+    <div className="mt-6 border border-[#94a3b8] bg-gray-700 rounded-md p-4">
+      <div className="font-medium flex items-center justify-between text-white/90">
         Course title
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
@@ -76,7 +76,7 @@ export const TitleForm = ({
         </Button>
       </div>
       {!isEditing && (
-        <p className="text-sm mt-2">
+        <p className="text-sm mt-2 text-cyan-400 font-semibold">
           {initialData.title}
         </p>
       )}
@@ -95,6 +95,7 @@ export const TitleForm = ({
                     <Input
                       disabled={isSubmitting}
                       placeholder="e.g. 'Advanced web development'"
+                      className="text-cyan-400 font-semibold bg-gray-600"
                       {...field}
                     />
                   </FormControl>

@@ -17,13 +17,17 @@ const buttonVariants = cva(
           "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        ghost: "hover:bg-accent hover:text-accent-foreground font-semibold",
         link: "text-primary underline-offset-4 hover:underline",
-        success: "bg-emerald-600 text-white hover:bg-emerald-600/80"
+        success: "bg-emerald-600 text-white hover:bg-emerald-600/80",
+        creategroup:"border border-[#94a3b8] text-[#94a3b8] px-6 py-3 rounded-lg hover:bg-[#1e293b] transition duration-200",
+        createcourse:"bg-gray-800 hove:bg-gray-700",
+        prevbutton:"bg-blue-600 text-white hover:bg-blue-700 font-semibold"
       },
       size: {
         default: "h-9 px-4 py-2",
         sm: "h-8 rounded-md px-3 text-xs",
+        md: "h-10 rounded-md px-4",
         lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9",
       },

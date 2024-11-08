@@ -8,7 +8,7 @@ type Props = {
     children,
   }: Props) => {
     return (
-      <div className="p-6">
+      <div className="px-6">
         {children}
       </div>
     );

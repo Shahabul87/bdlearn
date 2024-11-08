@@ -95,13 +95,13 @@ export const ChaptersSectionForm = ({
   }
 
   return (
-    <div className="relative mt-6 border bg-slate-100 rounded-md p-4">
+    <div className="relative mt-6 border border-[#94a3b8] bg-gray-700 rounded-md p-4">
       {isUpdating && (
         <div className="absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-m flex items-center justify-center">
           <Loader2 className="animate-spin h-6 w-6 text-sky-700" />
         </div>
       )}
-      <div className="font-medium flex items-center justify-between">
+      <div className="font-medium flex items-center justify-between text-white/90">
         Chapter section
         <Button onClick={toggleCreating} variant="ghost">
           {isCreating ? (
@@ -109,7 +109,7 @@ export const ChaptersSectionForm = ({
           ) : (
             <>
               <PlusCircle className="h-4 w-4 mr-2" />
-              Add a chapter section
+              Add chapter section
             </>
           )}
         </Button>
@@ -118,7 +118,7 @@ export const ChaptersSectionForm = ({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 mt-4"
+            className="space-y-4 mt-4 "
           >
             <FormField
               control={form.control}
@@ -129,6 +129,7 @@ export const ChaptersSectionForm = ({
                     <Input
                       disabled={isSubmitting}
                       placeholder="e.g. 'Introduction to the course section'"
+                      className="text-cyan-400 font-semibold bg-gray-600"
                       {...field}
                     />
                   </FormControl>
@@ -148,7 +149,7 @@ export const ChaptersSectionForm = ({
       {!isCreating && (
         <div className={cn(
           "text-sm mt-2",
-          !chapter.sections.length && "text-slate-500 italic"
+          !chapter.sections.length && "text-cyan-500 italic font-semibold"
         )}>
           {!chapter.sections.length && "No chapters"}
           <ChapterSectionList
@@ -159,7 +160,7 @@ export const ChaptersSectionForm = ({
         </div>
       )}
       {!isCreating && (
-        <p className="text-xs text-muted-foreground mt-4">
+        <p className="text-xs text-white/90 mt-4">
           Drag and drop to reorder the chapters
         </p>
       )}

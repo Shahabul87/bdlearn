@@ -64,8 +64,8 @@ export const ChapterLearningOutcomeForm = ({
   }
 
   return (
-    <div className="mt-6 border bg-slate-100 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between">
+    <div className="mt-6 border border-[#94a3b8] bg-gray-700 rounded-md p-4">
+      <div className="font-medium flex items-center justify-between text-white/90">
         Chapter Learning Outcomes
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
@@ -80,8 +80,8 @@ export const ChapterLearningOutcomeForm = ({
       </div>
       {!isEditing && (
         <div className={cn(
-          "text-sm mt-2",
-          !initialData.learningOutcomes && "text-slate-500 italic"
+          "text-sm mt-2 text-cyan-500 font-semibold",
+          !initialData.learningOutcomes && "text-cyan-400 italic font-semibold"
         )}>
           {!initialData.learningOutcomes && "No chapter outcomes"}
           {initialData.learningOutcomes && (

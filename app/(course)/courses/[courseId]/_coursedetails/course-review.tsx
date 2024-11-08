@@ -12,6 +12,8 @@ import avatar9 from "@/assets/avatar-9.png";
 import Image from 'next/image';
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Fragment } from "react";
+import { Heading } from "@/components/heading";
+import { GradientDivider } from "@/components/border";
 const testimonials = [
   {
     text: "As a seasoned designer always on the lookout for innovative tools, Framer.com instantly grabbed my attention.",
@@ -97,7 +99,7 @@ export const TestimonialsColumn = (props: {
             <Fragment key={outerIndex}>
               {props.testimonials.map(({ text, imageSrc, name, username }, index) => (
                 <div className="card" key={index}>
-                  <div>{text}</div>
+                  <div className="text-white/80">{text}</div>
                   <div className="flex items-center gap-2 mt-5">
                     <Image
                       src={imageSrc}
@@ -107,8 +109,8 @@ export const TestimonialsColumn = (props: {
                       className="h-10 w-10 rounded-full"
                     />
                     <div className="flex flex-col">
-                      <div className="font-medium tracking-tight leading-5">{name}</div>
-                      <div className="font-medium tracking-tight">{username}</div>
+                      <div className="font-medium tracking-tight leading-5 text-cyan-500">{name}</div>
+                      <div className="font-medium tracking-tight text-fuchsia-600">{username}</div>
                     </div>
                   </div>
                 </div>
@@ -122,16 +124,10 @@ export const TestimonialsColumn = (props: {
 
 export const CourseReviewPage = () => {
   return (
-    <section className="bg-white">
+    <section className="bg-gray-800">
       <div className="container">
-         <div className="section-heading mt-5">
-            
-            <h2 className="section-title mt-5">What our student say</h2>
-            <p className="section-description mt-5">
-              From intuitive design to powerful features, our app has become an
-              essential tool for users around the world.
-            </p>
-          </div>
+       <Heading tag="h1" text="Student Reviews"/>
+       <GradientDivider />
         <div className="flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[738px] overflow-hidden">
           <TestimonialsColumn testimonials={firstColumn} duration={15}/>
           <TestimonialsColumn testimonials={secondColumn}  className="hidden md:block" duration={19}/>
