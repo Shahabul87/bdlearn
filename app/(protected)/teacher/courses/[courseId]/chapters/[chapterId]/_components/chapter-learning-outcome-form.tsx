@@ -4,11 +4,12 @@ import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Pencil } from "lucide-react";
-import { useState } from "react";
-import {toast} from "sonner";
+import { Pencil, BookOpen, GraduationCap } from "lucide-react";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { Chapter } from "@prisma/client";
+import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css";
 
 import {
   Form,
@@ -19,34 +20,73 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Editor } from "@/components/editor";
-import { Preview } from "@/components/preview";
 
-interface ChapterLearningFormProps {
-  initialData: Chapter;
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+
+interface ChapterLearningOutcomeFormProps {
+  initialData: {
+    learningOutcomes: string | null;
+  };
   courseId: string;
   chapterId: string;
-};
+}
 
 const formSchema = z.object({
-  learningOutcomes: z.string().min(1),
+  learningOutcomes: z.string().min(1, {
+    message: "Learning outcomes are required",
+  }),
 });
+
+const modules = {
+  toolbar: [
+    [{ 'header': [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    [{ 'color': [] }, { 'background': [] }],
+    ['clean'],
+    ['link']
+  ],
+};
+
+const formats = [
+  'header',
+  'bold', 'italic', 'underline', 'strike',
+  'list', 'bullet',
+  'color', 'background',
+  'link'
+];
 
 export const ChapterLearningOutcomeForm = ({
   initialData,
   courseId,
-  chapterId
-}: ChapterLearningFormProps) => {
+  chapterId,
+}: ChapterLearningOutcomeFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
-
-  const toggleEdit = () => setIsEditing((current) => !current);
-
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [truncatedContent, setTruncatedContent] = useState(initialData.learningOutcomes || "");
   const router = useRouter();
+
+  useEffect(() => {
+    const truncateHtml = (html: string, maxLength: number) => {
+      const div = document.createElement('div');
+      div.innerHTML = html || '';
+      const text = div.textContent || div.innerText;
+      if (text.length <= maxLength) return html;
+      return text.substring(0, maxLength).trim() + '...';
+    };
+
+    if (initialData.learningOutcomes) {
+      setTruncatedContent(isExpanded 
+        ? initialData.learningOutcomes 
+        : truncateHtml(initialData.learningOutcomes, 150)
+      );
+    }
+  }, [isExpanded, initialData.learningOutcomes]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-        learningOutcomes: initialData?.learningOutcomes || ""
+      learningOutcomes: initialData.learningOutcomes || "",
     },
   });
 
@@ -56,41 +96,92 @@ export const ChapterLearningOutcomeForm = ({
     try {
       await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}`, values);
       toast.success("Chapter updated");
-      toggleEdit();
+      setIsEditing(false);
       router.refresh();
     } catch {
       toast.error("Something went wrong");
     }
-  }
+  };
 
   return (
-    <div className="mt-6 border border-[#94a3b8] bg-gray-700 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between text-white/90">
-        Chapter Learning Outcomes
-        <Button onClick={toggleEdit} variant="ghost">
+    <div className={cn(
+      "p-4 mt-6 rounded-xl",
+      "border border-gray-200 dark:border-gray-700/50",
+      "bg-white/50 dark:bg-gray-800/40",
+      "hover:bg-gray-50 dark:hover:bg-gray-800/60",
+      "transition-all duration-200",
+      "backdrop-blur-sm"
+    )}>
+      <div className="font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-2">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-x-2">
+            <GraduationCap className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+            <p className="text-base sm:text-lg font-semibold bg-gradient-to-r from-purple-600 to-cyan-600 dark:from-purple-400 dark:to-cyan-400 bg-clip-text text-transparent">
+              Learning Outcomes
+            </p>
+          </div>
+          {!isEditing && (
+            <div className="mt-2">
+              {!initialData.learningOutcomes ? (
+                <p className="text-sm italic text-gray-600 dark:text-gray-400">
+                  No learning outcomes defined yet
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  <div 
+                    className={cn(
+                      "text-gray-700 dark:text-gray-300 font-medium",
+                      "prose prose-sm max-w-none",
+                      "prose-headings:text-gray-900 dark:prose-headings:text-gray-100",
+                      "prose-p:text-gray-700 dark:prose-p:text-gray-300",
+                      "prose-strong:text-gray-900 dark:prose-strong:text-gray-100",
+                      "prose-ul:text-gray-700 dark:prose-ul:text-gray-300"
+                    )}
+                    dangerouslySetInnerHTML={{ __html: truncatedContent }}
+                  />
+                  {initialData.learningOutcomes.length > 150 && (
+                    <Button
+                      onClick={() => setIsExpanded(!isExpanded)}
+                      variant="ghost"
+                      size="sm"
+                      className={cn(
+                        "text-purple-700 dark:text-purple-300",
+                        "hover:text-purple-800 dark:hover:text-purple-200",
+                        "p-0 h-auto",
+                        "text-sm font-medium"
+                      )}
+                    >
+                      {isExpanded ? "Show Less" : "Show More"}
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        <Button
+          onClick={() => setIsEditing(!isEditing)}
+          variant="ghost"
+          size="sm"
+          className={cn(
+            "text-purple-700 dark:text-purple-300",
+            "hover:text-purple-800 dark:hover:text-purple-200",
+            "hover:bg-purple-50 dark:hover:bg-purple-500/10",
+            "w-full sm:w-auto",
+            "justify-center",
+            "transition-all duration-200"
+          )}
+        >
           {isEditing ? (
-            <>Cancel</>
+            <span className="text-rose-700 dark:text-rose-300">Cancel</span>
           ) : (
-            <>
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit outcomes
-            </>
+            <div className="flex items-center gap-2">
+              <Pencil className="h-4 w-4" />
+              <span>Edit</span>
+            </div>
           )}
         </Button>
       </div>
-      {!isEditing && (
-        <div className={cn(
-          "text-sm mt-2 text-cyan-500 font-semibold",
-          !initialData.learningOutcomes && "text-cyan-400 italic font-semibold"
-        )}>
-          {!initialData.learningOutcomes && "No chapter outcomes"}
-          {initialData.learningOutcomes && (
-            <Preview
-              value={initialData.learningOutcomes}
-            />
-          )}
-        </div>
-      )}
       {isEditing && (
         <Form {...form}>
           <form
@@ -103,11 +194,38 @@ export const ChapterLearningOutcomeForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Editor
-                      {...field}
-                    />
+                    <div className={cn(
+                      "rounded-lg",
+                      "border border-gray-200 dark:border-gray-700/50",
+                      "bg-white dark:bg-gray-900/50"
+                    )}>
+                      <ReactQuill
+                        {...field}
+                        modules={modules}
+                        formats={formats}
+                        theme="snow"
+                        readOnly={isSubmitting}
+                        placeholder="List the learning outcomes for this chapter..."
+                        className={cn(
+                          "text-gray-900 dark:text-gray-200",
+                          "[&_.ql-editor]:min-h-[200px]",
+                          "[&_.ql-editor]:text-sm sm:[&_.ql-editor]:text-base",
+                          "[&_.ql-toolbar]:!border-gray-200 dark:[&_.ql-toolbar]:!border-gray-700/50",
+                          "[&_.ql-toolbar]:!bg-gray-50 dark:[&_.ql-toolbar]:!bg-gray-800/50",
+                          "[&_.ql-container]:!border-gray-200 dark:[&_.ql-container]:!border-gray-700/50",
+                          "[&_.ql-editor.ql-blank::before]:!text-gray-500 dark:[&_.ql-editor.ql-blank::before]:!text-gray-400",
+                          "[&_.ql-picker-label]:!text-gray-700 dark:[&_.ql-picker-label]:!text-gray-300",
+                          "[&_.ql-stroke]:!stroke-gray-700 dark:[&_.ql-stroke]:!stroke-gray-300",
+                          "[&_.ql-fill]:!fill-gray-700 dark:[&_.ql-fill]:!fill-gray-300",
+                          "[&_.ql-picker-item]:!text-gray-700 dark:[&_.ql-picker-item]:!text-gray-300",
+                          "[&_.ql-picker-options]:!bg-white dark:[&_.ql-picker-options]:!bg-gray-800",
+                          "[&_.ql-snow.ql-toolbar]:!rounded-t-lg",
+                          "[&_.ql-toolbar.ql-snow_.ql-formats]:!mr-2"
+                        )}
+                      />
+                    </div>
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-rose-500 dark:text-rose-400 text-sm" />
                 </FormItem>
               )}
             />
@@ -115,13 +233,32 @@ export const ChapterLearningOutcomeForm = ({
               <Button
                 disabled={!isValid || isSubmitting}
                 type="submit"
+                variant="ghost"
+                size="sm"
+                className={cn(
+                  "bg-purple-50 dark:bg-purple-500/10",
+                  "text-purple-700 dark:text-purple-300",
+                  "hover:bg-purple-100 dark:hover:bg-purple-500/20",
+                  "hover:text-purple-800 dark:hover:text-purple-200",
+                  "border border-purple-200/20 dark:border-purple-500/20",
+                  "w-full sm:w-auto",
+                  "justify-center",
+                  "transition-all duration-200"
+                )}
               >
-                Save
+                {isSubmitting ? (
+                  <div className="flex items-center gap-x-2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-purple-600 dark:border-purple-400 border-t-transparent" />
+                    <span>Saving...</span>
+                  </div>
+                ) : (
+                  "Save"
+                )}
               </Button>
             </div>
           </form>
         </Form>
       )}
     </div>
-  )
-}
+  );
+};

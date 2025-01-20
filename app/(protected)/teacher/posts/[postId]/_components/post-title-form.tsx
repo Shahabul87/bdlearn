@@ -38,10 +38,6 @@ export const PostTitleForm = ({
 }: TitleFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
-  const toggleEdit = () => setIsEditing((current) => !current);
-
-  const router = useRouter();
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
@@ -56,7 +52,7 @@ export const PostTitleForm = ({
     try {
       await axios.patch(`/api/posts/${postId}`, values);
       toast.success("Post updated");
-      toggleEdit();
+      setIsEditing(false);
       router.refresh();
     } catch (error) {
       console.error("Error updating post:", error);
@@ -65,30 +61,34 @@ export const PostTitleForm = ({
   };
 
   return (
-    <div className="mt-6 border border-[#94a3b8] bg-gray-700 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between text-white/90">
-        Post Title
-        <Button onClick={toggleEdit} variant="ghost">
-          {isEditing ? (
-            <>Cancel</>
-          ) : (
-            <>
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit
-            </>
-          )}
-        </Button>
-      </div>
-      {!isEditing && (
-        <p className="text-sm mt-2 text-cyan-400 font-semibold">
-          {initialData.title}
-        </p>
-      )}
-      {isEditing && (
+    <div className="p-4 bg-gray-800/40 rounded-xl border border-gray-700/50 hover:bg-gray-800/50 transition-all duration-200">
+      {!isEditing ? (
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <div className="font-medium text-gray-200 flex items-center gap-x-2">
+              <span>Post Title</span>
+              {!initialData.title && (
+                <span className="text-xs text-rose-500">(required)</span>
+              )}
+            </div>
+            <p className="text-sm text-gray-400">
+              {initialData.title || "No title set"}
+            </p>
+          </div>
+          <Button
+            onClick={() => setIsEditing(true)}
+            variant="ghost"
+            className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10"
+          >
+            <Pencil className="h-4 w-4 mr-2" />
+            Edit
+          </Button>
+        </div>
+      ) : (
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 mt-4"
+            className="space-y-4"
           >
             <FormField
               control={form.control}
@@ -97,13 +97,13 @@ export const PostTitleForm = ({
                 <FormItem>
                   <FormControl>
                     <Input
-                      disabled={isSubmitting}
-                      placeholder="e.g. 'Post Title'"
-                      className="text-cyan-400 font-semibold bg-gray-600"
                       {...field}
+                      disabled={isSubmitting}
+                      placeholder="e.g. 'Introduction to Programming'"
+                      className="bg-gray-900/50 border-gray-700/50 text-gray-200 focus:ring-purple-500/50 focus:border-purple-500/50"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-rose-500" />
                 </FormItem>
               )}
             />
@@ -111,13 +111,23 @@ export const PostTitleForm = ({
               <Button
                 disabled={!isValid || isSubmitting}
                 type="submit"
+                variant="ghost"
+                className="bg-purple-500/10 text-purple-300 hover:bg-purple-500/20"
               >
                 Save
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setIsEditing(false)}
+                className="text-gray-400 hover:text-gray-300"
+              >
+                Cancel
               </Button>
             </div>
           </form>
         </Form>
       )}
     </div>
-  )
+  );
 }

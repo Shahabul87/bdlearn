@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 import Link, { LinkProps } from "next/link";
-import React, { useState, createContext, useContext } from "react";
+import React, { useState, createContext, useContext, ReactNode, Dispatch, SetStateAction } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import { usePathname } from 'next/navigation'
@@ -53,25 +53,31 @@ export const SidebarProvider = ({
   );
 };
 
+interface SidebarProps {
+  children: ReactNode;
+  open?: boolean;
+  setOpen?: Dispatch<SetStateAction<boolean>>;
+  animate?: boolean;
+  className?: string;
+}
+
 export const Sidebar = ({
   children,
   open,
   setOpen,
-  animate,
-}: {
-  children: React.ReactNode;
-  open?: boolean;
-  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-  animate?: boolean;
-}) => {
+  animate = true,
+  className
+}: SidebarProps) => {
   return (
-    <SidebarProvider open={open} setOpen={setOpen} animate={animate}>
-      {children}
-    </SidebarProvider>
+    <aside className={cn("relative h-screen", className)}>
+      <SidebarProvider open={open} setOpen={setOpen} animate={animate}>
+        {children}
+      </SidebarProvider>
+    </aside>
   );
 };
 
-export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
+export const   SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
   return (
     <>
       <DesktopSidebar {...props} />
@@ -94,7 +100,7 @@ export const DesktopSidebar = ({
           className
         )}
         animate={{
-          width: animate ? (open ? "280px" : "80px") : "280px",
+          width: animate ? (open ? "280px" : "100px") : "280px",
         }}
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}

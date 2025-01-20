@@ -15,67 +15,67 @@ body,
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
- 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
- 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
- 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
- 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
- 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
- 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
- 
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 215 20.2% 65.1%;
+
     --radius: 0.5rem;
   }
- 
 
- 
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
- 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
- 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
- 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
- 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
- 
+
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
- 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
- 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
- 
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+
+    --ring: 217.2 32.6% 17.5%;
   }
 }
- 
+
 @layer base {
   * {
     @apply border-border;
@@ -148,4 +148,111 @@ body,
 
 .no-visible-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* React Quill Editor Styles */
+.ql-toolbar {
+  @apply !bg-gray-800 !border-gray-700 !text-gray-200;
+}
+
+.ql-container {
+  @apply !border-gray-700;
+}
+
+.ql-editor {
+  @apply !text-gray-200 !min-h-[200px];
+}
+
+.ql-picker {
+  @apply !text-gray-200;
+}
+
+.ql-picker-options {
+  @apply !bg-gray-800 !border-gray-700;
+}
+
+.ql-picker-label {
+  @apply !text-gray-200;
+}
+
+.ql-snow.ql-toolbar button,
+.ql-snow .ql-toolbar button {
+  @apply !text-gray-200;
+}
+
+.ql-snow .ql-stroke {
+  @apply !stroke-gray-200;
+}
+
+.ql-snow .ql-fill {
+  @apply !fill-gray-200;
+}
+
+.ql-snow .ql-picker-label::before {
+  @apply !border-gray-200;
+}
+
+.ql-snow .ql-picker.ql-expanded .ql-picker-label {
+  @apply !border-gray-700;
+}
+
+.ql-snow .ql-picker-options {
+  @apply !bg-gray-800 !border-gray-700;
+}
+
+.ql-snow .ql-tooltip {
+  @apply !bg-gray-800 !border-gray-700 !text-gray-200 !shadow-lg;
+}
+
+.ql-snow .ql-tooltip input[type=text] {
+  @apply !bg-gray-900 !border-gray-700 !text-gray-200;
+}
+
+.rdp {
+  --rdp-cell-size: 40px;
+  --rdp-accent-color: rgb(139 92 246);
+  --rdp-background-color: rgb(139 92 246 / 0.3);
+  --rdp-accent-color-dark: rgb(139 92 246);
+  --rdp-background-color-dark: rgb(139 92 246 / 0.2);
+  --rdp-outline: 2px solid var(--rdp-accent-color);
+  --rdp-outline-selected: 3px solid var(--rdp-accent-color);
+  margin: 1em;
+}
+
+.rdp-months {
+  display: flex;
+  justify-content: center;
+}
+
+.rdp-month {
+  background-color: rgb(17 24 39 / 0.7);
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.rdp-day_selected, 
+.rdp-day_selected:focus-visible, 
+.rdp-day_selected:hover {
+  background-color: var(--rdp-accent-color);
+  color: white;
+}
+
+.rdp-day:hover:not(.rdp-day_selected) {
+  background-color: rgb(55 65 81 / 0.5);
+}
+
+.rdp-day_today {
+  font-weight: bold;
+  color: var(--rdp-accent-color);
+}
+
+@layer utilities {
+  /* Hide scrollbar but keep functionality */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
 }

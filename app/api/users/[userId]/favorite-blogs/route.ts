@@ -5,36 +5,26 @@ import { currentUser } from "@/lib/auth";
 export async function POST(req: Request, { params }: { params: { userId: string } }) {
   try {
     const user = await currentUser();
-    const { title, platform, url } = await req.json();
+    const { title, platform, url, category } = await req.json();
 
-    // Check if the user is authenticated
     if (!user?.id || user.id !== params.userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Validate required fields for favorite blog creation
-    if (!title || !platform || !url) {
-      return new NextResponse("Missing required fields", { status: 400 });
-    }
-
-    // Create a new favorite blog in the database
     const newFavoriteBlog = await db.favoriteBlog.create({
       data: {
         title,
         platform,
         url,
-        userId: user.id, // Associate favorite blog with the current user
+        category,
+        userId: user.id,
       },
     });
 
-    // Return the newly created favorite blog information
-    return new NextResponse(JSON.stringify(newFavoriteBlog), { 
-      status: 201, 
-      headers: { 'Content-Type': 'application/json' } 
-    });
+    return NextResponse.json(newFavoriteBlog);
   } catch (error) {
-    console.error("[POST ERROR] Favorite Blog Creation:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    console.error("[FAVORITE BLOG POST]", error);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }
 

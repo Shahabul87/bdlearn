@@ -4,7 +4,14 @@ import { HeaderAfterLogin } from './header-after-login';
 import { User } from '@prisma/client';
 
 interface ConditionalHeaderProps {
-  user: User | null;
+  user: {
+    id?: string;
+    name?: string | null;
+    email?: string | null;
+    role?: any;
+    isTwoFactorEnabled?: boolean;
+    isOAuth?: boolean;
+  } | null | undefined;
 }
 
 const ConditionalHeader: React.FC<ConditionalHeaderProps> = ({ user }) => {
@@ -16,7 +23,7 @@ const ConditionalHeader: React.FC<ConditionalHeaderProps> = ({ user }) => {
         </div>
       ) : (
         <div>
-          <HeaderAfterLogin />
+          <HeaderAfterLogin user={user} />
         </div>
       )}
     </>

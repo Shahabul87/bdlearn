@@ -1,173 +1,353 @@
 "use client";
-import React, { useState, ComponentType } from "react";
+import React, { useState, useEffect } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "../ui/sidebar";
-import { BarChart, Compass, Layout, List, HomeIcon } from "lucide-react";
 import {
-  IconArrowLeft,
-  IconBrandTabler,
+  IconDashboard,
+  IconUser,
   IconSettings,
-  IconUserBolt,
-  IconSearch,
-  IconList,
-  IconArticle,
-  IconChartHistogram,
-  IconUsersGroup,
-  IconFilePencil,
+  IconBook,
+  IconChartBar,
+  IconUsers,
+  IconCalendar,
+  IconMessageCircle,
+  IconBrain,
+  IconLibrary,
+  IconHelpCircle,
+  IconMenu2,
+  IconX,
+  IconSchool,
+  IconPencil,
+  IconNews,
+  IconAnalyze,
+  IconRobot,
+  IconBrandTabler,
 } from "@tabler/icons-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { LogoutButton } from "@/components/auth/logout-button";
-
-import { Dashboard } from "@/app/(protected)/teacher/courses/dashboard";
+import { cn } from "@/lib/utils";
+import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 interface SidebarDemoProps {
   children: React.ReactNode;
 }
 
+interface MenuItem {
+  title: string;
+  icon: React.ReactNode;
+  href?: string;
+  submenu?: { label: string; href: string }[];
+}
 
 export function SidebarDemo({ children }: SidebarDemoProps) {
-    const user = useCurrentUser();
-    
-  const links = [
-    {
-      label: "Dashboard",
-      href: "/user",
-      icon: (
-        <IconBrandTabler className="text-white  dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Profile",
-      href: "/profile",
-      icon: (
-        <IconUserBolt className="text-white dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Settings",
-      href: "/settings",
-      icon: (
-        <IconSettings className="text-white dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-        label: "Browse Course",
-        href: "/searchbar",
-        icon: (
-          <IconSearch className="text-white dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-        ),
-      },
-      {
-        label: "Courses",
-        href: "/teacher/courses",
-        icon: (
-          <IconList className="text-white dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-        ),
-      },
-      {
-        label: "Create Groups",
-        href: "/student/groups",
-        icon: (
-          <IconUsersGroup className="text-white dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-        ),
-      },
-      {
-        label: " Create Posts",
-        href: "/teacher/createblog",
-        icon: (
-          <IconFilePencil className="text-white dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-        ),
-      },
-      {
-        label: "All Posts",
-        href: "/teacher/allposts",
-        icon: (
-          <IconArticle className="text-white dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-        ),
-      },
-      {
-        label: "Analytics",
-        href: "/teacher/analytics",
-        icon: (
-          <IconChartHistogram className="text-white dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-        ),
-      },
-  ];
+  const user = useCurrentUser();
   const [open, setOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  // Update mobile detection to consider larger screens
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Handle hover effects only on desktop
+  const handleMouseEnter = () => {
+    if (!isMobile) setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (!isMobile) {
+      setIsHovered(false);
+      setActiveSubmenu(null);
+    }
+  };
+
+  const menuItems: MenuItem[] = [
+    {
+      title: "Dashboard",
+      icon: <IconDashboard className="w-5 h-5" />,
+      submenu: [
+        { label: "Student Dashboard", href: "/dashboard/student" },
+        { label: "Teacher Dashboard", href: "/dashboard/teacher" },
+        { label: "Admin Dashboard", href: "/dashboard/admin" },
+      ],
+    },
+    {
+      title: "Profile Manager",
+      icon: <IconUser className="w-5 h-5" />,
+      href: "/profile",
+    },
+    {
+      title: "Settings",
+      icon: <IconSettings className="w-5 h-5" />,
+      href: "/settings",
+    },
+    {
+      title: "Courses",
+      icon: <IconBook className="w-5 h-5" />,
+      submenu: [
+        { label: "My Courses", href: "/teacher/courses/mycourses" },
+        { label: "All Courses", href: "/teacher/courses" },
+        { label: "Browse Courses", href: "/teacher/courses" },
+        { label: "Create Course", href: "/teacher/create" },
+      ],
+    },
+    {
+      title: "Posts",
+      icon: <IconNews className="w-5 h-5" />,
+      submenu: [
+        { label: "My Posts", href: "/teacher/posts" },
+        { label: "All Posts", href: "/teacher/allposts" },
+        { label: "Browse Posts", href: "/posts/browse" },
+        { label: "Create Post", href: "/teacher/createblog" },
+      ],
+    },
+    {
+      title: "Analytics",
+      icon: <IconChartBar className="w-5 h-5" />,
+      submenu: [
+        { label: "Student Analytics", href: "/analytics/student" },
+        { label: "Teacher Analytics", href: "/analytics/teacher" },
+        { label: "Admin Analytics", href: "/analytics/admin" },
+      ],
+    },
+    {
+      title: "Groups",
+      icon: <IconUsers className="w-5 h-5" />,
+      submenu: [
+        { label: "My Groups", href: "/groups/my-groups" },
+        { label: "All Groups", href: "/groups" },
+        { label: "Create Group", href: "/groups/create" },
+      ],
+    },
+    {
+      title: "Calendar",
+      icon: <IconCalendar className="w-5 h-5" />,
+      href: "/calendar",
+    },
+    {
+      title: "Support",
+      icon: <IconHelpCircle className="w-5 h-5" />,
+      href: "/support",
+    },
+    {
+      title: "Message Center",
+      icon: <IconMessageCircle className="w-5 h-5" />,
+      href: "/messages",
+    },
+    {
+      title: "Resource Center",
+      icon: <IconLibrary className="w-5 h-5" />,
+      href: "/resources",
+    },
+    {
+      title: "AI Tutor",
+      icon: <IconRobot className="w-5 h-5" />,
+      href: "/ai-tutor",
+    },
+  ];
+
+  const toggleSubmenu = (title: string) => {
+    setActiveSubmenu(activeSubmenu === title ? null : title);
+  };
+
   return (
-    <div
-      className={cn(
-        " flex flex-col md:flex-row bg-gray-700 dark:bg-neutral-800 w-full flex-1 max-w-full mx-auto border border-white/10 dark:border-neutral-700",
-        "min-h-screen" // for your use case, use `h-screen` instead of `h-[60vh]`
+    <div className="flex min-h-screen relative">
+      {/* Mobile Menu Button */}
+      {isMobile && (
+        <button
+          onClick={() => setOpen(!open)}
+          className="fixed top-4 left-4 z-50 p-2 rounded-lg 
+            dark:bg-gray-800 dark:text-gray-200 dark:hover:text-white dark:hover:bg-gray-700
+            bg-white text-gray-700 hover:text-gray-900 hover:bg-gray-100
+            transition-colors md:hidden shadow-lg border dark:border-gray-700 border-gray-200"
+        >
+          {open ? <IconX className="w-6 h-6" /> : <IconMenu2 className="w-6 h-6" />}
+        </button>
       )}
-    >
-      <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-col flex-1 overflow-x-hidden min-h-screen">
-            {open ? <Logo /> : <LogoIcon />}
-            <div className="mt-8 flex flex-col gap-2">
-              {links.map((link, idx) => (
-                <SidebarLink key={idx} link={link} />
-              ))}
-            </div>
+
+      {/* Backdrop */}
+      {isMobile && open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 bg-black/60 dark:bg-black/70 z-40 backdrop-blur-md md:hidden"
+        />
+      )}
+
+      {/* Sidebar */}
+      <motion.div
+        initial={false}
+        animate={{ 
+          width: (open || (!isMobile && isHovered)) ? "280px" : "80px",
+          x: isMobile && !open ? "-100%" : 0 
+        }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className={cn(
+          "h-screen border-r",
+          "flex flex-col sticky top-0 z-50 transition-all duration-300",
+          "dark:bg-gray-900 dark:border-gray-700",
+          "bg-white border-gray-200",
+          isMobile ? "fixed md:relative" : "relative"
+        )}
+      >
+        {/* Logo Section */}
+        <div className={cn(
+          "p-4 border-b",
+          "dark:border-gray-700/50",
+          "border-gray-200/50"
+        )}>
+          <div className="flex items-center justify-between">
+            <AnimatePresence initial={false}>
+              {(open || (!isMobile && isHovered)) ? <Logo /> : <LogoIcon />}
+            </AnimatePresence>
+            {isMobile && (
+              <button
+                onClick={() => setOpen(!open)}
+                className={cn(
+                  "p-2 rounded-lg transition-colors lg:hidden",
+                  "dark:hover:bg-gray-800/50",
+                  "hover:bg-gray-100/50"
+                )}
+              >
+                {open ? (
+                  <IconX className="w-5 h-5 dark:text-gray-400 text-gray-600" />
+                ) : (
+                  <IconMenu2 className="w-5 h-5 dark:text-gray-400 text-gray-600" />
+                )}
+              </button>
+            )}
           </div>
-          <div>
-            <SidebarLink
-              link={{
-                label: user?.name || "User",
-                href: "#",
-                icon: (
-                  <Image
-                    src={user?.image || ""}
-                    className="h-7 w-7 flex-shrink-0 rounded-full"
-                    width={50}
-                    height={50}
-                    alt="Avatar"
-                  />
-                ),
-              }}
-            />
-          </div>
-        </SidebarBody>
-      </Sidebar>
-       <div className="flex flex-1 overflow-auto">
-        <div className="p-2 md:p-10  bg-gray-800 dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full min-h-screen">
-        {children}
         </div>
+
+        {/* Navigation Items */}
+        <div className="flex-1 overflow-y-auto py-4 space-y-1">
+          {menuItems.map((item, index) => (
+            <div key={index}>
+              <motion.div
+                initial={false}
+                onClick={() => {
+                  if (item.submenu) {
+                    toggleSubmenu(item.title);
+                  } else if (item.href) {
+                    router.push(item.href);
+                    if (isMobile) setOpen(false);
+                  }
+                }}
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 mx-2 rounded-lg cursor-pointer",
+                  "transition-all duration-300",
+                  (pathname === item.href || activeSubmenu === item.title)
+                    ? "dark:bg-purple-500/10 dark:text-purple-400 bg-purple-50 text-purple-600"
+                    : "dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-200 text-gray-600 hover:bg-gray-100/50 hover:text-gray-900"
+                )}
+              >
+                {item.icon}
+                {(open || (!isMobile && isHovered)) && (
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex-1 text-sm font-medium"
+                  >
+                    {item.title}
+                  </motion.span>
+                )}
+                {(open || (!isMobile && isHovered)) && item.submenu && (
+                  <motion.svg
+                    animate={{ rotate: activeSubmenu === item.title ? 180 : 0 }}
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </motion.svg>
+                )}
+              </motion.div>
+
+              {/* Submenu */}
+              {(open || (!isMobile && isHovered)) && item.submenu && (
+                <AnimatePresence initial={false}>
+                  {activeSubmenu === item.title && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      {item.submenu.map((subItem, subIndex) => (
+                        <Link
+                          key={subIndex}
+                          href={subItem.href}
+                          className={cn(
+                            "flex items-center gap-3 px-4 py-2 mx-6 rounded-lg text-sm",
+                            "transition-all duration-300",
+                            pathname === subItem.href
+                              ? "dark:text-purple-400 dark:bg-purple-500/10 text-purple-600 bg-purple-50"
+                              : "dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800/50 text-gray-600 hover:text-gray-900 hover:bg-gray-100/50"
+                          )}
+                        >
+                          <div className="w-1.5 h-1.5 rounded-full bg-current" />
+                          {subItem.label}
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              )}
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Main Content */}
+      <div className={cn(
+        "flex-1 overflow-x-hidden",
+        isMobile && "w-full md:w-auto"
+      )}>
+        {children}
       </div>
     </div>
   );
 }
+
+// Logo components
 export const Logo = () => {
   return (
-    <Link
-      href="/"
-      className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
-    >
-      <div className="h-5 w-6 bg-black dark:bg-white/70 rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="font-medium text-black dark:text-white whitespace-pre"
-      >
-        Home
-      </motion.span>
-    </Link>
-  );
-};
-export const LogoIcon = () => {
-  return (
-    <Link
-      href="#"
-      className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
-    >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+    <Link href="/" className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors">
+      <div className="h-8 w-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+        <IconBrandTabler className="h-5 w-5" />
+      </div>
+      <span className="font-medium">iSham</span>
     </Link>
   );
 };
 
-// Dummy dashboard component with content
+export const LogoIcon = () => {
+  return (
+    <Link href="/" className="block">
+      <div className="h-8 w-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+        <IconBrandTabler className="h-5 w-5 text-purple-400" />
+      </div>
+    </Link>
+  );
+};
 

@@ -5,7 +5,7 @@ import { currentUser } from "@/lib/auth";
 export async function POST(req: Request, { params }: { params: { userId: string } }) {
   try {
     const user = await currentUser();
-    const { title, platform, url } = await req.json();
+    const { title, platform, url, category } = await req.json();
 
     // Check if the user is authenticated
     if (!user?.id || user.id !== params.userId) {
@@ -23,6 +23,7 @@ export async function POST(req: Request, { params }: { params: { userId: string 
         title,
         platform,
         url,
+        category,
         userId: user.id, // Associate favorite article with the current user
       },
     });

@@ -16,7 +16,6 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
   const ref = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
-  
 
   useEffect(() => {
     if (ref.current) {
@@ -32,30 +31,18 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
 
   const heightTransform = useTransform(scrollYProgress, [0, 1], [0, height]);
   const opacityTransform = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 2,
-        ease: "easeInOut",
-      },
-    },
-  };
 
   return (
     <div
-      className="w-full dark:bg-neutral-950 font-sans md:px-10"
+      className="w-full dark:bg-neutral-950/50 backdrop-blur-sm font-sans md:px-10"
       ref={containerRef}
     >
       <div className="max-w-7xl mx-auto py-20 px-4 md:px-8 lg:px-10">
-        <h2 className="text-lg md:text-4xl mb-4 text-cyan-500 dark:text-white max-w-4xl font-semibold">
-          Changelog from my journey
+        <h2 className="text-2xl md:text-5xl mb-6 bg-gradient-to-r from-purple-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent font-bold tracking-tight">
+          Journey Through Time
         </h2>
-        <p className="text-[#94a3b8] dark:text-neutral-300 text-base md:text-base max-w-sm font-semibold">
-          I&apos;ve been working on Aceternity for the past 2 years. Here&apos;s
-          a timeline of my journey.
+        <p className="text-gray-300/90 text-base md:text-lg max-w-2xl font-medium leading-relaxed">
+          A chronicle of milestones, achievements, and continuous growth in my professional journey.
         </p>
       </div>
 
@@ -63,37 +50,35 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
         {data.map((item, index) => (
           <div
             key={index}
-            className="flex justify-start pt-10 md:pt-40 md:gap-10 "
+            className="flex justify-start pt-10 md:pt-40 md:gap-10"
           >
             <div className="sticky flex flex-col md:flex-row z-40 items-center top-40 self-start max-w-xs lg:max-w-sm md:w-full">
-              <div className="h-10 absolute left-3 md:left-3 w-10 rounded-full dark:bg-black flex items-center justify-center">
-                <div className="h-4 w-4 rounded-full bg-fuchsia-600 dark:bg-neutral-800 border border-cyan-400 dark:border-neutral-700 p-2" />
+              <div className="h-12 absolute left-3 md:left-3 w-12 rounded-full bg-gray-900/80 backdrop-blur-sm flex items-center justify-center border border-gray-800">
+                <div className="h-5 w-5 rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 shadow-lg shadow-purple-500/20" />
               </div>
-              <h3 className="hidden md:block text-xl md:pl-20 md:text-5xl font-bold text-cyan-500 dark:text-neutral-500 ">
+              <h3 className="hidden md:block text-xl md:pl-20 md:text-6xl font-bold bg-gradient-to-br from-purple-400 to-cyan-400 bg-clip-text text-transparent tracking-tight">
                 {item.title}
               </h3>
             </div>
 
             <div className="relative pl-20 pr-4 md:pl-4 w-full">
-              <h3 className="text-fuchsia-500 text-2xl mb-4 text-left font-bold  dark:text-neutral-500">
+              <h3 className="text-3xl mb-6 text-left font-bold bg-gradient-to-br from-purple-400 to-cyan-400 bg-clip-text text-transparent tracking-tight md:hidden">
                 {item.title}
               </h3>
-              {item.content}{" "}
+              {item.content}
             </div>
           </div>
         ))}
         <div
-          style={{
-            height: height + "px",
-          }}
-          className="absolute md:left-8 left-8 top-0 overflow-hidden w-[2px] bg-[linear-gradient(to_bottom,var(--tw-gradient-stops))] from-transparent from-[0%] via-neutral-200 dark:via-neutral-700 to-transparent to-[99%]  [mask-image:linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)] "
+          style={{ height: height + "px" }}
+          className="absolute md:left-8 left-8 top-0 overflow-hidden w-[2px] bg-gradient-to-b from-transparent via-gray-700/50 to-transparent [mask-image:linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)]"
         >
           <motion.div
             style={{
               height: heightTransform,
               opacity: opacityTransform,
             }}
-            className="absolute inset-x-0 top-0  w-[2px] bg-gradient-to-t from-purple-500 via-blue-500 to-transparent from-[0%] via-[10%] rounded-full"
+            className="absolute inset-x-0 top-0 w-[2px] bg-gradient-to-t from-purple-500 via-cyan-500 to-transparent rounded-full"
           />
         </div>
       </div>

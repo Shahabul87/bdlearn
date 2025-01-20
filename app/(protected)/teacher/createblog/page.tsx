@@ -1,42 +1,17 @@
-import { SidebarDemo } from "@/components/ui/sidebar-demo"
-import { Header } from "@/app/(homepage)/header"
-import { HeaderAfterLogin } from "@/app/(homepage)/header-after-login"
-import { currentUser } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import { CreateNewBlogPage } from "./create-blog";
+import { cn } from "@/lib/utils";
 
+const BlogCreationPage = () => {
+  return (
+    <div className={cn(
+      "rounded-xl p-6",
+      "bg-white/50 dark:bg-gray-800/50",
+      "border border-gray-200 dark:border-gray-700",
+      "backdrop-blur-sm"
+    )}>
+      <CreateNewBlogPage />
+    </div>
+  );
+};
 
-
-const BlogCreationPage = async() => {
-
-    const user = await currentUser();
-
-    if(!user?.id){
-        return redirect("/");
-    }
-    
-    const userId = user?.id;
-
-    return (
-        <>
-        {!user? (
-                 <>
-                    <div className="">
-                       <Header />
-                    </div>
-               </> ):
-               (
-                <>
-                <HeaderAfterLogin />
-                </>
-               )}  
-        <SidebarDemo>
-            <div>
-               <CreateNewBlogPage />
-            </div>
-         </SidebarDemo>
-        </>
-    )
-}
-
-export default BlogCreationPage
+export default BlogCreationPage;

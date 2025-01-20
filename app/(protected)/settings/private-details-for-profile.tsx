@@ -1,254 +1,306 @@
 "use client";
 
+import React, { useState } from 'react';
+import { motion } from "framer-motion";
+import { 
+  Lock, Mail, Phone, Key, Shield, 
+  Smartphone, AlertTriangle, Loader2 
+} from "lucide-react";
 import * as z from "zod";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTransition, useState } from "react";
-import { useSession } from "next-auth/react";
-
-
-import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { SettingsSchema } from "@/schemas";
-import {
-  Card,
-  CardHeader,
-  CardContent,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { settings } from "@/actions/settings";
-import {
-  Form,
-  FormField,
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormDescription,
-  FormMessage,
-} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { FormError } from "@/components/form-error";
-import { FormSuccess } from "@/components/form-success";
-import { UserRole } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { cn } from "@/lib/utils";
 
-
-
+const formSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  phone: z.string().optional(),
+  currentPassword: z.string().min(6, "Password must be at least 6 characters"),
+  newPassword: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string(),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
 
 export const PrivateSettingsPage = () => {
-  const user:any = useCurrentUser();
+  const router = useRouter();
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
 
-  const [error, setError] = useState<string | undefined>();
-  const [success, setSuccess] = useState<string | undefined>();
-  const { update } = useSession();
-  const [isPending, startTransition] = useTransition();
-
-  const form = useForm<z.infer<typeof SettingsSchema>>({
-    resolver: zodResolver(SettingsSchema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      password: undefined,
-      newPassword: undefined,
-      name: user?.name || undefined,
-      email: user?.email || undefined,
-      role: user?.role || undefined,
-      isTwoFactorEnabled: user?.isTwoFactorEnabled || undefined,
-    }
+      email: "",
+      phone: "",
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
   });
 
-  const onSubmit = (values: z.infer<typeof SettingsSchema>) => {
-    startTransition(() => {
-      settings(values)
-        .then((data) => {
-          if (data.error) {
-            setError(data.error);
-          }
+  const { isSubmitting, isValid } = form.formState;
 
-          if (data.success) {
-            update();
-            setSuccess(data.success);
-          }
-        })
-        .catch(() => setError("Something went wrong!"));
-    });
-  }
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      setIsUpdating(true);
+      await axios.patch('/api/user/security', values);
+      toast.success("Security settings updated successfully");
+      router.refresh();
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
-    <>
-  
+    <div className={cn(
+      "relative mt-6 rounded-xl p-6 backdrop-blur-sm",
+      "bg-white/30 dark:bg-gray-800/50",
+      "border border-gray-200/50 dark:border-gray-700/50"
+    )}>
+      {isUpdating && (
+        <div className="absolute inset-0 bg-black/10 dark:bg-gray-900/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          >
+            <Loader2 className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+          </motion.div>
+        </div>
+      )}
 
-    <Card className="w-3/4 h-full mx-auto bg-gray-700 rounded-md border-gray-500">
-      <CardHeader>
-        <p className="text-2xl md:text-4xl font-bold text-gray-300 text-center mb-8">
-          ⚙️ Settings Page
-        </p>
-        <div className="px-12">
-          <h2 className="text-xl font-semibold mb-4 text-white/80">PRIVATE DETAILS</h2>
-          <p className="text-gray-400 mb-4">
-            This information will not be publicly displayed.
+      <div className="flex items-center gap-4 mb-8">
+        <div className="p-3 bg-gray-100/50 dark:bg-gray-900/50 rounded-full">
+          <Lock className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+        </div>
+        <div>
+          <h2 className="text-xl font-semibold bg-gradient-to-r from-purple-600 to-cyan-600 dark:from-purple-400 dark:to-cyan-400 bg-clip-text text-transparent">
+            Private Details & Security
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Manage your private information and security settings
           </p>
         </div>
-      </CardHeader>
-      <CardContent className="md:w-[900px] md:pl-20 text-gray-100">
-        <Form {...form}>
-          <form 
-            className="space-y-6" 
-            onSubmit={form.handleSubmit(onSubmit)}
-          >
+      </div>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Contact Information */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-200">Contact Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Input
+                          {...field}
+                          type="email"
+                          disabled={isSubmitting || isUpdating}
+                          placeholder="Email Address"
+                          className={cn(
+                            "pl-10 bg-white/50 dark:bg-gray-900/50",
+                            "border-gray-200 dark:border-gray-700",
+                            "text-gray-900 dark:text-gray-200",
+                            "placeholder:text-gray-500 dark:placeholder:text-gray-400",
+                            "focus:border-purple-500/50 transition-all"
+                          )}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage className="text-red-500 dark:text-rose-400" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Input
+                          {...field}
+                          disabled={isSubmitting || isUpdating}
+                          placeholder="Phone Number"
+                          className={cn(
+                            "pl-10 bg-white/50 dark:bg-gray-900/50",
+                            "border-gray-200 dark:border-gray-700",
+                            "text-gray-900 dark:text-gray-200",
+                            "placeholder:text-gray-500 dark:placeholder:text-gray-400",
+                            "focus:border-purple-500/50 transition-all"
+                          )}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage className="text-red-500 dark:text-rose-400" />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Password Change */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-200">Change Password</h3>
             <div className="space-y-4">
               <FormField
                 control={form.control}
-                name="name"
+                name="currentPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="John Doe"
-                        disabled={isPending}
-                      />
+                      <div className="relative">
+                        <Key className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Input
+                          {...field}
+                          type="password"
+                          disabled={isSubmitting || isUpdating}
+                          placeholder="Current Password"
+                          className={cn(
+                            "pl-10 bg-white/50 dark:bg-gray-900/50",
+                            "border-gray-200 dark:border-gray-700",
+                            "text-gray-900 dark:text-gray-200",
+                            "placeholder:text-gray-500 dark:placeholder:text-gray-400",
+                            "focus:border-purple-500/50 transition-all"
+                          )}
+                        />
+                      </div>
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-500 dark:text-rose-400" />
                   </FormItem>
                 )}
               />
-              {user?.isOAuth === false && (
-                <>
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="john.doe@example.com"
-                            type="email"
-                            disabled={isPending}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="******"
-                            type="password"
-                            disabled={isPending}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="newPassword"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>New Password</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="******"
-                            type="password"
-                            disabled={isPending}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </>
-              )}
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Role</FormLabel>
-                    <Select
-                      disabled={isPending}
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a role" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={UserRole.ADMIN}>
-                          Admin
-                        </SelectItem>
-                        <SelectItem value={UserRole.USER}>
-                          User
-                        </SelectItem>
-                        <SelectItem value={UserRole.TEACHER}>
-                          Teacher
-                        </SelectItem>
-                        <SelectItem value={UserRole.PARENTS}>
-                          Parent
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {user?.isOAuth === false && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="isTwoFactorEnabled"
+                  name="newPassword"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                      <div className="space-y-0.5">
-                        <FormLabel>Two Factor Authentication</FormLabel>
-                        <FormDescription>
-                          Enable two factor authentication for your account
-                        </FormDescription>
-                      </div>
+                    <FormItem>
                       <FormControl>
-                        <Switch
-                          disabled={isPending}
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
+                        <div className="relative">
+                          <Shield className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                          <Input
+                            {...field}
+                            type="password"
+                            disabled={isSubmitting || isUpdating}
+                            placeholder="New Password"
+                            className={cn(
+                              "pl-10 bg-white/50 dark:bg-gray-900/50",
+                              "border-gray-200 dark:border-gray-700",
+                              "text-gray-900 dark:text-gray-200",
+                              "placeholder:text-gray-500 dark:placeholder:text-gray-400",
+                              "focus:border-purple-500/50 transition-all"
+                            )}
+                          />
+                        </div>
                       </FormControl>
+                      <FormMessage className="text-red-500 dark:text-rose-400" />
                     </FormItem>
                   )}
                 />
-              )}
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <div className="relative">
+                          <Shield className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                          <Input
+                            {...field}
+                            type="password"
+                            disabled={isSubmitting || isUpdating}
+                            placeholder="Confirm New Password"
+                            className={cn(
+                              "pl-10 bg-white/50 dark:bg-gray-900/50",
+                              "border-gray-200 dark:border-gray-700",
+                              "text-gray-900 dark:text-gray-200",
+                              "placeholder:text-gray-500 dark:placeholder:text-gray-400",
+                              "focus:border-purple-500/50 transition-all"
+                            )}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-red-500 dark:text-rose-400" />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
-            <FormError message={error} />
-            <FormSuccess message={success} />
+          </div>
+
+          {/* Security Settings */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-200">Additional Security</h3>
+            <div className="space-y-6">
+              <div className={cn(
+                "flex items-center justify-between p-4 rounded-lg",
+                "bg-white/50 dark:bg-gray-900/50",
+                "border border-gray-200 dark:border-gray-700"
+              )}>
+                <div className="flex items-center gap-3">
+                  <Smartphone className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  <div>
+                    <p className="text-gray-900 dark:text-gray-200">Two-Factor Authentication</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Add an extra layer of security</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={twoFactorEnabled}
+                  onCheckedChange={setTwoFactorEnabled}
+                />
+              </div>
+
+              <div className={cn(
+                "flex items-center justify-between p-4 rounded-lg",
+                "bg-white/50 dark:bg-gray-900/50",
+                "border border-gray-200 dark:border-gray-700"
+              )}>
+                <div className="flex items-center gap-3">
+                  <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                  <div>
+                    <p className="text-gray-900 dark:text-gray-200">Login Alerts</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Get notified of new sign-ins</p>
+                  </div>
+                </div>
+                <Switch defaultChecked />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-4">
             <Button
-              disabled={isPending}
+              disabled={!isValid || isSubmitting || isUpdating}
               type="submit"
+              className={cn(
+                "bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600",
+                "text-white font-medium transition-colors",
+                "disabled:bg-gray-200 dark:disabled:bg-gray-700",
+                "disabled:text-gray-500 dark:disabled:text-gray-400"
+              )}
             >
-              Save
+              Save Changes
             </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
-   
-    </>
-   );
-}
+          </div>
+        </form>
+      </Form>
+    </div>
+  );
+};
+
+export default PrivateSettingsPage;
  

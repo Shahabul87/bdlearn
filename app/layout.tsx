@@ -6,16 +6,18 @@ import { SessionProvider } from 'next-auth/react'
 import { auth } from '@/auth'
 import { Toaster } from "@/components/ui/sonner";
 import { ConfettiProvider } from '@/components/providers/confetti-provider';
+import { Providers } from "@/components/providers";
 
+const inter = Inter({ subsets: ['latin'] })
 
-//bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-200 to-zinc-300
-
-//const inter = Inter({ subsets: ['latin'] })
-const dmSans = DM_Sans({ subsets: ["latin"] });
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+});
 
 export const metadata: Metadata = {
-  title: 'iSham',
-  description: 'Created by S Alam',
+  title: 'Alam Academy',
+  description: 'Learn with Alam',
 }
 
 export default async function RootLayout({
@@ -23,24 +25,24 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  
   const session = await auth();
- 
 
   return (
-   <SessionProvider session={session}>
-      <html lang="en" className="relative">
-        <body className={clsx(dmSans.className, "antialiased bg-gray-800")}>
-          <ConfettiProvider />
-          <Toaster />
-         
-          <main className ="">             
-              {children}
-          </main> 
-        </body>
-      </html>
-   </SessionProvider>
-
- 
+    <html lang="en" suppressHydrationWarning>
+      <body className={clsx(
+        dmSans.className,
+        "min-h-screen bg-white/30 dark:bg-gray-900 transition-colors duration-300"
+      )}>
+        <SessionProvider session={session}>
+          <Providers>
+            <ConfettiProvider />
+            <Toaster />
+            <main className="min-h-screen">
+                {children}
+            </main> 
+          </Providers>
+        </SessionProvider>
+      </body>
+    </html>
   )
 }

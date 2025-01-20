@@ -20,6 +20,18 @@ export const Dashboard = async() => {
         where: {
         userId,
         },
+        select: {
+        id: true,
+        title: true,
+        category: {
+            select: {
+            name: true
+            }
+        },
+        price: true,
+        isPublished: true,
+        createdAt: true,
+        },
         orderBy: {
         createdAt: "desc",
         },
@@ -27,7 +39,7 @@ export const Dashboard = async() => {
    
     return (
       
-        <div>
+        <div className="mt-20 p-6 px-10">
            <DataTable columns={columns} data={courses} />
         </div>
     );

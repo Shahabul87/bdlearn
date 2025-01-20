@@ -28,7 +28,7 @@ export default async function BlogLayout({
           <ConfettiProvider />
           <Toaster />
          
-          <main className ="w-full min-h-screen p-6">             
+          <main className ="w-full min-h-screen p-6 px-10">             
               {children}
           </main> 
         </div>

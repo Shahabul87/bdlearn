@@ -15,42 +15,26 @@ type GetPosts = {
   category?: string;
 };
 
-export const getPostsForHomepage = async (
-  { title, category }: GetPosts
-): Promise<PostForHomepage[]> => {
+export const getPostsForHomepage = async () => {
   try {
     const posts = await db.post.findMany({
       where: {
         published: true,
-        ...(title && {
-          title: {
-            contains: title,
-            mode: "insensitive", // Case-insensitive search
-          },
-        }),
-        ...(category && {
-          category: {
-            equals: category,
-            mode: "insensitive",
-          },
-        }), // Filter by category if provided
       },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        imageUrl: true,
-        published: true, // Should be true, as you’re only selecting published posts
-        category: true, // Now a string field
+      include: {
+        comments: true,
       },
       orderBy: {
-        createdAt: "desc",
+        createdAt: 'desc',
       },
     });
 
-    return posts as PostForHomepage[]; // Ensure type correctness
+    return posts.map(post => ({
+      ...post,
+      createdAt: post.createdAt.toISOString(),
+    }));
   } catch (error) {
-    console.log("[GET_POSTS_FOR_HOMEPAGE]", error);
+    console.error("[GET_POSTS]", error);
     return [];
   }
 };

@@ -8,6 +8,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Post } from "@prisma/client";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 import {
   Form,
@@ -78,24 +80,35 @@ export const PostComment = ({
   };
 
   return (
-    <div className="mt-4 border-t border-gray-700 pt-4">
-      <div className="flex items-center space-x-3">
-        <img
-          src="/path/to/avatar.jpg" // Placeholder for user's avatar image
-          alt="User Avatar"
-          className="h-8 w-8 rounded-full"
-        />
-        <Button onClick={toggleComment} variant="ghost" className="text-gray-400">
+    <div className="mt-6 border-t border-gray-800/50 pt-6 mb-5">
+      <div className="flex items-center gap-4 mb-5">
+        <div className="relative group">
+          <Image
+            src="/default-avatar.png"
+            alt="User Avatar"
+            width={40}
+            height={40}
+            className="rounded-full ring-2 ring-purple-500/20 transition-all duration-300 group-hover:ring-purple-500/50"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-blue-500/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </div>
+        <Button 
+          onClick={toggleComment} 
+          variant="ghost" 
+          className={cn(
+            "text-gray-400/90 lg:text-lg",
+            "font-light tracking-wide",
+            "hover:text-gray-300 hover:bg-gray-800/50",
+            "transition-all duration-300"
+          )}
+        >
           Add a comment...
         </Button>
       </div>
 
       {isCommenting && (
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="mt-2"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 space-y-4">
             <FormField
               control={form.control}
               name="comment"
@@ -105,31 +118,54 @@ export const PostComment = ({
                     <Input
                       disabled={isSubmitting}
                       placeholder="Write your comment here..."
-                      className="text-white bg-gray-800 rounded-full px-4 py-2 w-full"
+                      className={cn(
+                        "text-gray-200 bg-gray-800/50",
+                        "border border-gray-700/50",
+                        "rounded-xl px-4 py-3",
+                        "text-base placeholder:text-gray-500",
+                        "focus:ring-2 focus:ring-purple-500/20",
+                        "transition-all duration-300",
+                        "hover:bg-gray-800/70"
+                      )}
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-400/90" />
                 </FormItem>
               )}
             />
-            <div className="flex justify-end gap-x-2 mt-2 relative">
+            <div className="flex justify-end items-center gap-3 relative">
               <Button
                 type="button"
                 onClick={toggleEmojiPicker}
                 variant="ghost"
-                className="text-gray-400"
+                className={cn(
+                  "text-gray-400 hover:text-gray-300",
+                  "hover:bg-gray-800/50",
+                  "transition-all duration-300"
+                )}
               >
                 😊 Reaction
               </Button>
               
               {showEmojiPicker && (
-                <div className="absolute bottom-full mb-2 bg-gray-700 rounded-md shadow-lg p-2 flex gap-2 flex-wrap max-w-xs">
+                <div className={cn(
+                  "absolute bottom-full mb-2",
+                  "bg-gray-800/95 backdrop-blur-sm",
+                  "rounded-xl shadow-xl",
+                  "p-3 border border-gray-700/50",
+                  "flex gap-2 flex-wrap max-w-xs",
+                  "animate-in fade-in-50 slide-in-from-bottom-2"
+                )}>
                   {emojiOptions.map((emoji) => (
                     <button
                       key={emoji}
                       onClick={() => handleReactionSelect(emoji)}
-                      className="text-lg"
+                      className={cn(
+                        "text-lg hover:scale-110",
+                        "transition-transform duration-200",
+                        "p-1 rounded-lg hover:bg-gray-700/50"
+                      )}
                     >
                       {emoji}
                     </button>
@@ -141,14 +177,27 @@ export const PostComment = ({
                 type="button"
                 onClick={toggleComment}
                 variant="ghost"
-                className="text-gray-400"
+                className={cn(
+                  "text-gray-400 hover:text-gray-300",
+                  "hover:bg-gray-800/50",
+                  "transition-all duration-300"
+                )}
               >
                 Cancel
               </Button>
               <Button
                 disabled={!isValid || isSubmitting}
                 type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded-full"
+                className={cn(
+                  "bg-gradient-to-r from-purple-500 to-blue-500",
+                  "text-white font-medium",
+                  "px-6 py-2.5 rounded-xl",
+                  "shadow-lg shadow-purple-500/10",
+                  "hover:shadow-purple-500/20",
+                  "transition-all duration-300",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
+                  "disabled:hover:shadow-none"
+                )}
               >
                 Comment
               </Button>

@@ -7,239 +7,176 @@ import Image from "next/image";
 import { SocialMediaShare } from "./_components/social-media-sharing";
 import { PostComment } from "./_components/add-comments";
 import CommentDisplay from "./_components/comment-display";
-import { ReplyComment } from "./_components/reply-comments";
-import ReplyDisplay from "./_components/reply-display";
-
-
-
+import { transformPostChapters } from "./_components/transform-post-chapter";
+import ReadingModes from "./_components/reading-mode";
+import { Heading } from "@/components/heading";
+import { Clock, Calendar, User as UserIcon, Tag, Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { FeaturedImage } from "./_components/featured-image";
 
 const PostIdPage = async ({params}: {params: { postId: string; }}) => {
-  
-    const post = await db.post.findUnique({
-        where: {
-          id: params.postId, // Assuming `params.postId` contains the ID of the post you're looking for
-        },
+  const post = await db.post.findUnique({
+    where: {
+      id: params.postId,
+    },
+    include: {
+      user: true,
+      tags: true,
+      comments: {
         include: {
-          user: true, // Includes the related `User` object based on `userId`
-          tags: true, // Includes the related `Tag` objects associated with this post
-          comments: {
-            include: {
-              user: true, // Includes the `User` who made the comment
-              reactions: { // Includes all reactions on each comment
-                include: {
-                  user: true, // Includes the `User` who reacted to the comment
-                },
-              },
-            },
-          },
-          reply: { // Fetch replies directly associated with the post
-            include: {
-              user: true, // Includes the `User` who made the reply
-              reactions: { // Includes all reactions on each reply
-                include: {
-                  user: true, // Includes the `User` who reacted to the reply
-                },
-              },
-            },
-          },
+          user: true,
           reactions: {
             include: {
-              user: true, // Includes the `User` who reacted to the post
+              user: true,
             },
           },
-          postchapter: {
-            where: {
-              isPublished: true, // Only fetch published chapters
-            },
-            orderBy: {
-              position: "asc", // Order chapters by position
-            },
-          },
-          imageSections: {
-            orderBy: {
-              position: "asc", // Orders images within the post by their position
+          replies: {
+            include: {
+              user: true,
+              reactions: {
+                include: {
+                  user: true,
+                },
+              },
             },
           },
         },
-      });
-      
-      
-      
-  //console.log(post)
-    
+      },
+      replies: {
+        include: {
+          user: true,
+          reactions: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      },
+      reactions: {
+        include: {
+          user: true,
+        },
+      },
+      postchapter: {
+        where: {
+          isPublished: true,
+        },
+        orderBy: {
+          position: "asc",
+        },
+      },
+      imageSections: {
+        orderBy: {
+          position: "asc",
+        },
+      },
+    },
+  });
 
-
-
-
- const user:any =await currentUser();
+  const user:any = await currentUser();
 
   if (!post) {
     return redirect("/");
-    
   }
 
+  const content = transformPostChapters(post.postchapter);
+  const formattedDate = (date: Date) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
   return (
     <>
-    <div className="container mx-auto p-4">
-      {/* Post Title and User Information */}
-      {post.category && (
-        <p className="text-sm font-medium text-gray-500 mb-1">
-          {post.category}
-        </p>
-        )}
-      <h1 className="text-3xl font-bold text-sky-500 mb-2">{post.title || "Untitled Post"}</h1>
-      <p className="text-gray-400 mb-4">Posted by {post.user?.name || "Unknown Author"}</p>
-      <GradientDivider  />
-      {/* Created and Updated Dates */}
-      <div className="flex justify-between">
-        <div className="text-sm text-gray-500 mb-4">
-            {post.createdAt && (
-                <p>Created on: {new Date(post.createdAt).toLocaleDateString()}</p>
-            )}
-            {post.updatedAt && (
-                <p>Last updated: {new Date(post.updatedAt).toLocaleDateString()}</p>
-            )}
-        </div>
-        <SocialMediaShare postTitle={post.title} />
-      </div>
-
-
-      {/* Post Image */}
-      {post.imageUrl && (
-        <div className="relative w-full h-70 md:h-96 mb-4 rounded-lg overflow-hidden">
-          <Image
-            src={post.imageUrl}
-            alt={post.title}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
-        </div>
-      )}
-
-      {/* Post Description */}
-      <p className="text-lg text-gray-300 mb-6">{post.description || "No description available."}</p>
-
-          {/* Tags */}
-          {post.tags && post.tags.length > 0 && (
-            <div className="flex gap-2 mb-6">
-              {post.tags.map((tag) => (
-                <span
-                  key={tag.id}
-                  className="text-sm bg-gray-600 text-white py-1 px-3 rounded-lg"
-                >
-                  {tag.name}
-                </span>
-              ))}
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
+        <div className="container mx-auto px-4 py-8 w-[90%] pt-20">
+          {/* Category Badge */}
+          {post.category && (
+            <div className="mb-4">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                <Tag className="w-4 h-4 mr-2" />
+                {post.category}
+              </span>
             </div>
           )}
 
-          {/* Post Reactions */}
-          {post.reactions && post.reactions.length > 0 && (
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-sky-500 mb-2">Reactions</h3>
-              <ul className="list-disc list-inside text-gray-300">
-                {post.reactions.map((reaction) => (
-                  <li key={reaction.id}>
-                    {reaction.user?.name || "Anonymous"} reacted with {reaction.type}
-                  </li>
-                ))}
-              </ul>
+          {/* Post Title - Made responsive for wider layouts */}
+          <h1 className="text-4xl lg:text-6xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-4 leading-tight max-w-[80%]">
+            {post.title || "Untitled Post"}
+          </h1>
+
+          {/* Author Info - Improved spacing for wider layouts */}
+          <div className="flex items-center gap-6 mb-6 text-gray-400">
+            <div className="flex items-center">
+              <UserIcon className="w-4 h-4 mr-2 text-blue-400" />
+              <span className="text-sm">{post.user?.name || "Unknown Author"}</span>
             </div>
-          )}
-
-            {post.postchapter && post.postchapter.length > 0 && (
-            <div className="mb-6">
-                <h3 className="text-lg font-semibold text-sky-500 mb-2">Chapters</h3>
-                {post.postchapter.map((chapter) => {
-                // Clean the description by removing <p> tags
-                const cleanedDescription = chapter.description
-                    ? chapter.description.replace(/<\/?p>/g, "")
-                    : null;
-
-                return (
-                    <div key={chapter.id} className="mb-4">
-                    <h4 className="text-md font-bold text-gray-200">{chapter.title}</h4>
-                    
-                    {/* Render each line of cleaned description as a separate <p> */}
-                    <div className="text-gray-300">
-                        {cleanedDescription
-                        ? cleanedDescription.split("\n").map((line, index) => (
-                            <p key={index} className="mb-2">
-                                {line}
-                            </p>
-                            ))
-                        : <p>No description for this chapter.</p>}
-                    </div>
-
-                    {chapter.imageUrl && (
-                        // <div className="relative w-full h-48 md:h-64 mt-2 rounded-lg overflow-hidden mb-5">
-                        // <Image
-                        //     src={chapter.imageUrl}
-                        //     alt={chapter.title}
-                        //     fill
-                        //     className="object-cover"
-                        // />
-                        // </div>
-                        <div className="h-[30rem] w-[60rem]  flex items-center justify-center text-white">
-                        <Image
-                            src={chapter.imageUrl}
-                            width={300}
-                            height={300}
-                            className="h-full w-full object-cover"
-                            alt={chapter.title}
-                          />
-                        </div>
-                    )}
-                    </div>
-                );
-                })}
+            <div className="h-4 w-px bg-gradient-to-b from-blue-500/50 to-purple-500/50" />
+            <div className="flex items-center">
+              <Calendar className="w-4 h-4 mr-2 text-purple-400" />
+              <span className="text-sm">{formattedDate(post.createdAt)}</span>
             </div>
-            )}
+          </div>
 
+          <div className="h-px w-full bg-gradient-to-r from-blue-500/50 via-purple-500/50 to-blue-500/50 mb-8" />
 
-
-
-
-      {/* Image Sections */}
-      {post.imageSections && post.imageSections.length > 0 && (
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold text-sky-500 mb-2">Image Sections</h3>
-          {post.imageSections.map((imageSection) => (
-            <div key={imageSection.id} className="mb-4">
-              <div className="relative w-full h-48 md:h-64 rounded-lg overflow-hidden">
-                <Image
-                  src={imageSection.imageUrl}
-                  alt={imageSection.caption || "Image"}
-                  layout="fill"
-                  className="object-cover"
-                />
+          {/* Metadata and Share Section - Adjusted for wider layouts */}
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm">
+            <div className="space-y-2 lg:space-y-4">
+              <div className="flex items-center text-sm text-gray-400">
+                <Clock className="w-4 h-4 mr-2 text-blue-400" />
+                <span>Created: {formattedDate(post.createdAt)}</span>
               </div>
-              {imageSection.caption && (
-                <p className="text-sm text-gray-400 mt-2">{imageSection.caption}</p>
+              {post.updatedAt && (
+                <div className="flex items-center text-sm text-gray-400">
+                  <Clock className="w-4 h-4 mr-2 text-purple-400" />
+                  <span>Updated: {formattedDate(post.updatedAt)}</span>
+                </div>
               )}
             </div>
-          ))}
+            <SocialMediaShare postTitle={post.title} />
+          </div>
+
+          {/* Featured Image with Toggle */}
+          {post.imageUrl && (
+            <div className="mb-8">
+              <FeaturedImage imageUrl={post.imageUrl} title={post.title} />
+            </div>
+          )}
+
+          {/* Reading Modes - Added container for better content organization */}
+          <div className="mb-12 bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm">
+            <ReadingModes post={post} />
+          </div>
+
+          {/* Comments Section */}
+          <div className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Comments
+              </h2>
+              <div className="h-px w-full max-w-[200px] mx-auto bg-gradient-to-r from-transparent via-purple-500/50 to-transparent mt-4" />
+            </div>
+
+            {/* Comment Form */}
+            <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm">
+              <PostComment initialData={post} postId={params.postId} />
+            </div>
+
+            {/* Comments Display */}
+            <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 backdrop-blur-sm">
+              <CommentDisplay initialData={post} postId={params.postId} />
+            </div>
+          </div>
         </div>
-      )}
 
-     <PostComment initialData={post} postId={params.postId}  />
-
-      {/* Comments */}
-        <CommentDisplay initialData={post} postId={params.postId}/>
-       
-  
-      
-    </div>
-       
-    
-    <Footer />
+        <Footer />
+      </div>
     </>
-  )
+  );
+};
 
- 
-}
- 
 export default PostIdPage;
-

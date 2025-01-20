@@ -2,24 +2,21 @@
 
 import * as z from "zod";
 import axios from "axios";
-import { Pencil, PlusCircle, ImageIcon } from "lucide-react";
-import React, { useState, useEffect } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
+import { ImageIcon, Pencil, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Course } from "@prisma/client";
+import { toast } from "sonner";
 import Image from "next/image";
-import { FileUpload } from "@/fileupload/file-upload";
-import { Button } from "@/components/ui/button";
-import FirstImageComponent from "./image-url";
+import { motion, AnimatePresence } from "framer-motion";
 
-// Define the type for each uploaded file
-interface UploadedFile {
-  publicId: string;
-  url: string;
-}
+import { Button } from "@/components/ui/button";
+import { FileUpload } from "@/fileupload/file-upload";
+import { cn } from "@/lib/utils";
 
 interface ImageFormProps {
-  initialData: Course;
+  initialData: {
+    imageUrl: string | null;
+  };
   courseId: string;
 }
 
@@ -29,152 +26,158 @@ const formSchema = z.object({
   }),
 });
 
-export const ImageFormCombined = ({ initialData, courseId }: ImageFormProps) => {
+export const ImageFormCombined = ({
+  initialData,
+  courseId,
+}: ImageFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const toggleEdit = () => setIsEditing((current) => !current);
-  const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [uploadResponse, setUploadResponse] = useState<UploadedFile[] | null>(null);
   const router = useRouter();
-  const [urlsArray, setUrlsArray] = useState<string[]>([]);
 
-  // State to manage form values based on Zod schema
-  const [formValues, setFormValues] = useState<z.infer<typeof formSchema>>({
-    imageUrl: initialData.imageUrl || "", // Initial value from props or empty
-  });
-
-  // useEffect to update urlsArray when uploadResponse changes
-  useEffect(() => {
-    if (uploadResponse) {
-      const urls = uploadResponse.map((file) => file.url);
-      setUrlsArray(urls);
-    }
-  }, [uploadResponse]);
-
-  // Handle file selection
-  const handleFileUpload = (uploadedFiles: File[]) => {
-    setFiles(uploadedFiles);
-    console.log(uploadedFiles);
-  };
-
-  const handleCombinedSubmit = async () => {
-    if (files.length === 0) {
-      toast.error("No files selected!");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    const formData = new FormData();
-    files.forEach((file) => {
-      formData.append("file", file);
-    });
-
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      // First execute handleSubmit to upload files
-      const response = await axios.post("/api/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      if (response.status === 200) {
-        const result = response.data;
-        setUploadResponse(result.uploadedFiles);
-
-        // Now proceed to execute onSubmit logic
-        const firstImageUrl = result.uploadedFiles.length > 0 ? result.uploadedFiles[0].url : null;
-
-        if (!firstImageUrl) {
-          toast.error("Image upload failed. Please try again.");
-          return;
-        }
-
-        // Update formValues with the first image URL
-        const updatedValues = {
-          ...formValues,
-          imageUrl: firstImageUrl, // Assign first image URL to form data
-        };
-
-        // Submit the updated values to the API
-        await axios.patch(`/api/courses/${courseId}`, updatedValues);
-
-        toast.success("Course updated successfully");
-
-        // Clear files and toggle edit state after successful operations
-        setFiles([]);
-        toggleEdit();
-        router.refresh();
-      } else {
-        toast.error("Failed to upload files.");
-      }
-    } catch (error) {
-      console.error("Error during submission:", error);
-      toast.error("Something went wrong during the submission process.");
+      setIsSubmitting(true);
+      await axios.patch(`/api/courses/${courseId}`, values);
+      toast.success("Course image updated");
+      setIsEditing(false);
+      router.refresh();
+    } catch {
+      toast.error("Something went wrong");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="mt-6 border border-[#94a3b8] bg-gray-700 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between text-white/90 p-2">
-        Course image
-        <Button onClick={toggleEdit} variant="ghost">
-          {/* {isEditing && <>Cancel</>}
-          {!isEditing && initialData.imageUrl && (
-            <>
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit image
-            </>
-          )} */}
-             {isEditing ? (
-            <>Cancel</>
+    <div className={cn(
+      "p-4 mt-6 rounded-xl",
+      "border border-gray-200 dark:border-gray-700/50",
+      "bg-white/50 dark:bg-gray-800/50",
+      "hover:bg-gray-50 dark:hover:bg-gray-800/70",
+      "backdrop-blur-sm",
+      "transition-all duration-200"
+    )}>
+      <div className="font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-2">
+        <div className="space-y-1">
+          <div className="flex items-center gap-x-2">
+            <ImageIcon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+            <p className="text-base sm:text-lg font-semibold bg-gradient-to-r from-purple-600 to-cyan-600 dark:from-purple-400 dark:to-cyan-400 bg-clip-text text-transparent">
+              Course Image
+            </p>
+            {!initialData.imageUrl && (
+              <span className={cn(
+                "text-xs px-2 py-0.5 rounded-full font-medium",
+                "text-rose-700 dark:text-rose-400",
+                "bg-rose-100 dark:bg-rose-500/10"
+              )}>
+                Required
+              </span>
+            )}
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            This image will be displayed in the course card
+          </p>
+        </div>
+        <Button
+          onClick={() => setIsEditing(!isEditing)}
+          variant="ghost"
+          size="sm"
+          className={cn(
+            "text-purple-700 dark:text-purple-300",
+            "hover:text-purple-800 dark:hover:text-purple-200",
+            "hover:bg-purple-50 dark:hover:bg-purple-500/10",
+            "w-full sm:w-auto",
+            "justify-center"
+          )}
+        >
+          {isEditing ? (
+            "Cancel"
           ) : (
             <>
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit image
+              {initialData.imageUrl ? (
+                <>
+                  <Pencil className="h-4 w-4 mr-2" />
+                  Change
+                </>
+              ) : (
+                <>
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  Add
+                </>
+              )}
             </>
           )}
         </Button>
       </div>
-      {!isEditing && (
-        !initialData.imageUrl ? (
-          <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md">
-            <ImageIcon className="h-10 w-10 text-slate-500" />
-          </div>
-        ) : (
-     
-          <div className="relative aspect-video mt-2">
-            <Image
-                alt="Uploaded Image"
-                fill
-                className="object-cover rounded-md"
-                src={initialData.imageUrl}
-            />
-            </div>
-        )
-      )}
-      {isEditing && (
-        <div>
-          <div className="p-2">
-            <div className="w-full max-w-4xl mx-auto min-h-96 border border-dashed bg-white dark:bg-black border-neutral-200 dark:border-neutral-800 rounded-lg">
-              {/* FileUpload Component */}
-              <FileUpload onChange={handleFileUpload} />
-            </div>
 
-            {/* Submit Button */}
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={handleCombinedSubmit} // No need to pass formValues explicitly
-                className={`px-6 py-2 bg-blue-600 text-white rounded-lg ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Submitting..." : "Submit"}
-              </button>
-            </div>
+      {!isEditing && initialData.imageUrl && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-6"
+        >
+          <div className="relative aspect-video rounded-xl overflow-hidden group">
+            <Image
+              alt="Upload"
+              fill
+              className="object-cover"
+              src={initialData.imageUrl}
+            />
+            <div className="absolute inset-0 bg-black/30 transition-opacity opacity-0 group-hover:opacity-100" />
           </div>
-        </div>
+        </motion.div>
+      )}
+
+      <AnimatePresence>
+        {isEditing && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="mt-6 space-y-4"
+          >
+            <div className={cn(
+              "p-6 rounded-xl",
+              "bg-white dark:bg-gray-900/50",
+              "border border-gray-200 dark:border-gray-700/50"
+            )}>
+              <FileUpload
+                onChange={(files: File[]) => {
+                  if (files?.[0]) {
+                    const fileUrl = URL.createObjectURL(files[0]);
+                    onSubmit({ imageUrl: fileUrl });
+                  }
+                }}
+              />
+              <div className="text-xs text-gray-600 dark:text-gray-400 mt-4">
+                16:9 aspect ratio recommended. Max file size: 5MB
+              </div>
+            </div>
+            {isSubmitting && (
+              <div className="flex items-center justify-center p-4">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-purple-600 dark:border-purple-400 border-t-transparent" />
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {!isEditing && !initialData.imageUrl && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className={cn(
+            "flex flex-col items-center justify-center p-8 mt-6 rounded-xl",
+            "border-2 border-dashed",
+            "border-gray-200 dark:border-gray-700/50",
+            "bg-gray-50 dark:bg-gray-900/30"
+          )}
+        >
+          <ImageIcon className="h-10 w-10 text-gray-500 dark:text-gray-400 mb-2" />
+          <p className="text-gray-600 dark:text-gray-400 text-sm text-center">
+            No image has been uploaded yet
+          </p>
+        </motion.div>
       )}
     </div>
   );

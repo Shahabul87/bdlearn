@@ -1,77 +1,148 @@
 "use client";
 
-import Image from "next/image";
 import { CourseTabs } from "./course-tab";
+import { Chapter } from "@prisma/client";
+import { motion } from "framer-motion";
+import { BookOpen, CheckCircle2 } from "lucide-react";
 
-export function CourseTabsDemo() {
-  const tabs = [
-    {
-      title: "Chapter 1",
-      value: "Course Objectives",
+// Define color schemes for different cards
+const cardThemes = [
+  {
+    gradient: "from-purple-950 to-purple-900",
+    iconBg: "bg-purple-500/10",
+    iconBorder: "border-purple-500/20",
+    iconColor: "text-purple-400",
+    titleGradient: "from-purple-400 via-fuchsia-400 to-pink-400",
+  },
+  {
+    gradient: "from-blue-950 to-blue-900",
+    iconBg: "bg-blue-500/10",
+    iconBorder: "border-blue-500/20",
+    iconColor: "text-blue-400",
+    titleGradient: "from-blue-400 via-cyan-400 to-teal-400",
+  },
+  {
+    gradient: "from-emerald-950 to-emerald-900",
+    iconBg: "bg-emerald-500/10",
+    iconBorder: "border-emerald-500/20",
+    iconColor: "text-emerald-400",
+    titleGradient: "from-emerald-400 via-teal-400 to-cyan-400",
+  },
+  {
+    gradient: "from-rose-950 to-rose-900",
+    iconBg: "bg-rose-500/10",
+    iconBorder: "border-rose-500/20",
+    iconColor: "text-rose-400",
+    titleGradient: "from-rose-400 via-pink-400 to-purple-400",
+  },
+];
+
+interface CourseTabsDemoProps {
+  chapters: Chapter[];
+}
+
+export function CourseTabsDemo({ chapters }: CourseTabsDemoProps) {
+  const tabs = chapters.map((chapter, index) => {
+    const theme = cardThemes[index % cardThemes.length];
+    
+    return {
+      title: `Chapter ${index + 1}`,
+      value: chapter.title,
       content: (
-        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white  bg-gray-700 border border-[#94a3b8]">
-          <p> What you will lean in chapter 1</p>
-          <DummyContent />
+        <div className={`w-full overflow-hidden relative h-full rounded-2xl p-8 bg-gradient-to-br ${theme.gradient} border border-gray-800/50 shadow-[inset_0_0_80px_rgba(0,0,0,0.6)] backdrop-blur-xl`}>
+          {/* Darker overlay */}
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-xl" />
+          
+          {/* Content wrapper */}
+          <div className="relative z-10">
+            {/* Chapter Title */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className={`h-12 w-12 rounded-full ${theme.iconBg} flex items-center justify-center border ${theme.iconBorder}`}>
+                <BookOpen className={`h-6 w-6 ${theme.iconColor}`} />
+              </div>
+              <h2 className={`text-3xl font-bold bg-gradient-to-r ${theme.titleGradient} text-transparent bg-clip-text`}>
+                {chapter.title}
+              </h2>
+            </div>
+
+            {/* Learning Outcomes */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold text-white/90 mb-4 flex items-center gap-2">
+                <CheckCircle2 className={`h-5 w-5 ${theme.iconColor}`} />
+                Learning Outcomes
+              </h3>
+              <LearningOutcomes 
+                outcomes={chapter.learningOutcomes} 
+                accentColor={theme.iconColor}
+                borderColor={theme.iconBorder}
+                bgColor={theme.iconBg}
+              />
+            </div>
+          </div>
+
+          {/* Decorative Elements */}
+          <div className={`absolute top-0 right-0 w-1/3 h-1/3 bg-gradient-to-br opacity-5 blur-3xl rounded-full ${theme.gradient}`} />
+          <div className={`absolute bottom-0 left-0 w-1/3 h-1/3 bg-gradient-to-tr opacity-5 blur-3xl rounded-full ${theme.gradient}`} />
         </div>
       ),
-    },
-    {
-      title: "Chapter 2",
-      value: "Learning Outcomes",
-      content: (
-        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white  bg-gray-700 border border-[#94a3b8]">
-          <p>Chapter 1</p>
-          <DummyContent />
-        </div>
-      ),
-    },
-    {
-      title: "Chapter 3",
-      value: "Description",
-      content: (
-        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white  bg-gray-700 border border-[#94a3b8]">
-          <p>Description tab</p>
-          <DummyContent />
-        </div>
-      ),
-    },
-    {
-      title: "Chapter 4",
-      value: "content",
-      content: (
-        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white  bg-gray-700 border border-[#94a3b8]">
-          <p>Content tab</p>
-          <DummyContent />
-        </div>
-      ),
-    },
-    {
-      title: "Reviews",
-      value: "Reviews",
-      content: (
-        <div className="w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gray-700 border border-[#94a3b8]">
-          <p>Reviews tab</p>
-          <DummyContent />
-        </div>
-      ),
-    },
-  ];
+    };
+  });
 
   return (
-    <div className="h-[20rem] md:h-[40rem] [perspective:1000px] relative b flex flex-col p-3 md:p-2 lg:p-0 max-w-5xl mx-auto w-full  items-start justify-start mt-20 mb-40">
+    <div className="h-[20rem] md:h-[35rem] [perspective:1000px] relative flex flex-col max-w-5xl mx-auto w-full items-start justify-start">
       <CourseTabs tabs={tabs} />
     </div>
   );
 }
 
-const DummyContent = () => {
+// Update LearningOutcomes component to accept theme colors
+const LearningOutcomes = ({ 
+  outcomes,
+  accentColor,
+  borderColor,
+  bgColor
+}: { 
+  outcomes?: string | null;
+  accentColor: string;
+  borderColor: string;
+  bgColor: string;
+}) => {
+  if (!outcomes) return (
+    <p className="text-white/60 italic">No specific learning outcomes provided.</p>
+  );
+
+  const points = outcomes.includes("<p>")
+    ? outcomes.match(/<p>(.*?)<\/p>/g)?.map((item) => item.replace(/<\/?p>/g, "").trim())
+    : outcomes.split(".").map((item) => item.trim()).filter(Boolean);
+
   return (
-    <Image
-      src="/image1.webp"
-      alt="dummy image"
-      width="1000"
-      height="1000"
-      className="object-cover object-left-top h-[60%]  md:h-[90%] absolute -bottom-10 inset-x-0 w-[90%] rounded-xl mx-auto"
-    />
+    <motion.ul 
+      className="grid gap-3"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ staggerChildren: 0.1 }}
+    >
+      {points?.map((point, index) => (
+        <motion.li 
+          key={index}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: index * 0.1 }}
+          className="flex items-start gap-3 group"
+        >
+          <span className={`w-6 h-6 rounded-full ${bgColor} border ${borderColor} flex items-center justify-center flex-shrink-0 mt-1`}>
+            <span className={`text-sm font-medium ${accentColor}`}>{index + 1}</span>
+          </span>
+          <p className="text-lg text-white/80 leading-relaxed font-medium tracking-wide group-hover:text-white/90 transition-colors duration-300">
+            {point}
+          </p>
+        </motion.li>
+      )) || (
+        <li className="text-white/60 italic">
+          No specific learning outcomes available.
+        </li>
+      )}
+    </motion.ul>
   );
 };
+

@@ -2,21 +2,26 @@
 
 import * as z from "zod";
 import axios from "axios";
-import { Pencil, PlusCircle, ImageIcon, File, Loader2, X } from "lucide-react";
 import { useState } from "react";
-import {toast} from "sonner";
+import { File, Loader2, PlusCircle, X, FileIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Attachment, Course } from "@prisma/client";
-import Image from "next/image";
-import { UploadButton } from "@/utils/uploadthing";
+import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
-
+import { FileUpload } from "@/fileupload/file-upload";
+import { cn } from "@/lib/utils";
 
 interface AttachmentFormProps {
-  initialData: Course & { attachments: Attachment[] };
+  initialData: {
+    attachments: {
+      id: string;
+      name: string;
+      url: string;
+    }[];
+  };
   courseId: string;
-};
+}
 
 const formSchema = z.object({
   url: z.string().min(1),
@@ -24,20 +29,17 @@ const formSchema = z.object({
 
 export const AttachmentForm = ({
   initialData,
-  courseId
+  courseId,
 }: AttachmentFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  const toggleEdit = () => setIsEditing((current) => !current);
-
   const router = useRouter();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axios.post(`/api/courses/${courseId}/attachments`, values);
-      toast.success("Course updated");
-      toggleEdit();
+      toast.success("Course attachment added");
+      setIsEditing(false);
       router.refresh();
     } catch {
       toast.error("Something went wrong");
@@ -55,81 +57,139 @@ export const AttachmentForm = ({
     } finally {
       setDeletingId(null);
     }
-  }
+  };
 
   return (
-    <div className="mt-6 border border-[#94a3b8] bg-gray-700 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between text-white/90">
-        Course attachments
-        <Button onClick={toggleEdit} variant="ghost">
-          {isEditing && (
-            <>Cancel</>
+    <div className={cn(
+      "p-4 mt-6 rounded-xl",
+      "border border-gray-200 dark:border-gray-700/50",
+      "bg-white/50 dark:bg-gray-800/50",
+      "hover:bg-gray-50 dark:hover:bg-gray-800/70",
+      "backdrop-blur-sm",
+      "transition-all duration-200"
+    )}>
+      <div className="font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-2">
+        <div className="space-y-1">
+          <div className="flex items-center gap-x-2">
+            <div className="p-2 w-fit rounded-md bg-blue-50 dark:bg-blue-500/10">
+              <File className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div>
+              <p className="text-base sm:text-lg font-semibold bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
+                Course Attachments
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Add resources for your students
+              </p>
+            </div>
+          </div>
+        </div>
+        <Button
+          onClick={() => setIsEditing(!isEditing)}
+          variant="ghost"
+          size="sm"
+          className={cn(
+            "text-blue-700 dark:text-blue-300",
+            "hover:text-blue-800 dark:hover:text-blue-200",
+            "hover:bg-blue-50 dark:hover:bg-blue-500/10",
+            "w-full sm:w-auto",
+            "justify-center"
           )}
-          {!isEditing && (
+        >
+          {isEditing ? (
+            "Cancel"
+          ) : (
             <>
               <PlusCircle className="h-4 w-4 mr-2" />
-              Add a file
+              Add file
             </>
           )}
         </Button>
       </div>
+
+      <AnimatePresence>
+        {isEditing && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="mt-4"
+          >
+            <div className={cn(
+              "p-4 rounded-lg",
+              "bg-white dark:bg-gray-900/50",
+              "border border-gray-200 dark:border-gray-700/50"
+            )}>
+              <FileUpload
+                onChange={(files) => {
+                  if (files?.[0]) {
+                    onSubmit({ url: URL.createObjectURL(files[0]) });
+                  }
+                }}
+              />
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-4">
+                Add PDF files, documents, or other resources for your students.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {!isEditing && (
-        <>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="space-y-2 mt-4"
+        >
           {initialData.attachments.length === 0 && (
-            <p className="text-sm mt-2 text-cyan-500 italic font-semibold">
+            <p className="text-sm text-gray-600 dark:text-gray-400 italic text-center">
               No attachments yet
             </p>
           )}
-          {initialData.attachments.length > 0 && (
-            <div className="space-y-2">
-              {initialData.attachments.map((attachment) => (
-                <div
-                  key={attachment.id}
-                  className="flex items-center p-3 w-full bg-sky-100 border-sky-200 border text-sky-700 rounded-md"
-                >
-                  <File className="h-4 w-4 mr-2 flex-shrink-0" />
-                  <p className="text-xs line-clamp-1">
-                    {attachment.name}
-                  </p>
-                  {deletingId === attachment.id && (
-                    <div>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    </div>
-                  )}
-                  {deletingId !== attachment.id && (
-                    <button
-                      onClick={() => onDelete(attachment.id)}
-                      className="ml-auto hover:opacity-75 transition"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
+          {initialData.attachments.map((attachment) => (
+            <motion.div
+              key={attachment.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className={cn(
+                "flex items-center p-3 w-full",
+                "bg-white/50 dark:bg-gray-900/50",
+                "border border-gray-200 dark:border-gray-700/50",
+                "rounded-lg",
+                "hover:bg-gray-50 dark:hover:bg-gray-800/50",
+                "group transition-all",
+                deletingId === attachment.id && "opacity-50"
+              )}
+            >
+              <div className="flex items-center gap-x-2 flex-1">
+                <div className="p-2 rounded-md bg-blue-50 dark:bg-blue-500/10">
+                  <FileIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 </div>
-              ))}
-            </div>
-          )}
-        </>
-      )}
-      {isEditing && (
-        <div>
-         
-          <UploadButton
-              endpoint="imageUploader"
-              onClientUploadComplete={(res) => {
-                onSubmit({url:res?.[0].url });
-                console.log("Files: ", res);
-                alert("Upload Completed");
-              }}
-              onUploadError={(error: Error) => {
-                // Do something with the error.
-                alert(`ERROR! ${error.message}`);
-              }}
-            />
-          <div className="text-xs text-white/70 mt-4">
-            Add anything your students might need to complete the course.
-          </div>
-        </div>
+                <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                  {attachment.name}
+                </p>
+              </div>
+              <Button
+                onClick={() => onDelete(attachment.id)}
+                disabled={deletingId === attachment.id}
+                variant="ghost"
+                size="sm"
+                className={cn(
+                  "opacity-0 group-hover:opacity-100 transition-opacity",
+                  "text-gray-700 dark:text-gray-300",
+                  "hover:text-red-700 dark:hover:text-red-400"
+                )}
+              >
+                {deletingId === attachment.id ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <X className="h-4 w-4" />
+                )}
+              </Button>
+            </motion.div>
+          ))}
+        </motion.div>
       )}
     </div>
-  )
-}
+  );
+};

@@ -1,33 +1,23 @@
-import { currentUser } from "@/lib/auth";
-import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
-import Mux from "@mux/mux-node";
-
-const mux = new Mux({
-  tokenId: process.env['MUX_TOKEN_ID'], // This is the default and can be omitted
-  tokenSecret: process.env['MUX_TOKEN_SECRET'], // This is the default and can be omitted
-});
+import { auth } from "@/auth";
+import { db } from "@/lib/db";
 
 export async function DELETE(
   req: Request,
   { params }: { params: { courseId: string } }
 ) {
   try {
-    const user = await currentUser();
+    const session = await auth();
 
-    if (!user?.id) {
+    if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-  const userId = user?.id;
-
+    // First verify the course belongs to the user
     const course = await db.course.findUnique({
       where: {
         id: params.courseId,
-        userId: userId,
-      },
-      include: {
-        chapters: true
+        userId: session.user.id,
       }
     });
 
@@ -35,15 +25,16 @@ export async function DELETE(
       return new NextResponse("Not found", { status: 404 });
     }
 
-    const deletedCourse = await db.course.delete({
+    // Delete the course
+    await db.course.delete({
       where: {
         id: params.courseId,
-      },
+      }
     });
 
-    return NextResponse.json(deletedCourse);
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.log("[COURSE_ID_DELETE]", error);
+    console.error("[COURSE_DELETE]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

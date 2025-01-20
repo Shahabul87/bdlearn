@@ -4,57 +4,63 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'ui-avatars.com',
+        pathname: '/api/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'utfs.io',
-        // Optionally, you can specify a port and pathname prefix
-        // port: '',
-        // pathname: '/path/to/images/*',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.youtube.com',
+        pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'assets.aceternity.com',
-        
+        pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
-      
+        pathname: '/**',
       },
-      {
-        protocol: 'https',
-        hostname: "your-cdn.com",
-      
-      },
-      {
-        protocol: 'https',
-        hostname: "res.cloudinary.com",
-      
-      },
+    ],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    domains: [
+      'your-image-domain.com',
+      // Add other domains where your images are hosted
     ],
   },
 
   webpack(config) {
-    // Grab the existing rule that handles SVG imports
+    // Keep existing webpack configuration
     const fileLoaderRule = config.module.rules.find((rule) =>
       rule.test?.test?.(".svg")
     );
 
     config.module.rules.push(
-      // Reapply the existing rule, but only for svg imports ending in ?url
       {
         ...fileLoaderRule,
         test: /\.svg$/i,
-        resourceQuery: /url/, // *.svg?url
+        resourceQuery: /url/,
       },
-      // Convert all other *.svg imports to React components
       {
         test: /\.svg$/i,
         issuer: fileLoaderRule.issuer,
-        resourceQuery: { not: [...fileLoaderRule.resourceQuery.not, /url/] }, // exclude if *.svg?url
+        resourceQuery: { not: [...fileLoaderRule.resourceQuery.not, /url/] },
         use: ["@svgr/webpack"],
       }
     );
 
-    // Modify the file loader rule to ignore *.svg, since we have it handled now.
     fileLoaderRule.exclude = /\.svg$/i;
 
     return config;

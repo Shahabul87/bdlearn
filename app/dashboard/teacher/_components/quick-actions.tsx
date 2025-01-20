@@ -1,0 +1,101 @@
+"use client";
+
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { 
+  PlusCircle, 
+  BookOpen, 
+  BarChart2, 
+  MessageSquare,
+  Users,
+  Settings
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const actions = [
+  {
+    label: "Create Course",
+    href: "/teacher/create",
+    icon: PlusCircle,
+    color: "text-emerald-500",
+    bgColor: "bg-emerald-50 dark:bg-emerald-500/10",
+    borderColor: "border-emerald-200 dark:border-emerald-500/20"
+  },
+  {
+    label: "My Courses",
+    href: "/teacher/courses",
+    icon: BookOpen,
+    color: "text-blue-500",
+    bgColor: "bg-blue-50 dark:bg-blue-500/10",
+    borderColor: "border-blue-200 dark:border-blue-500/20"
+  },
+  {
+    label: "Analytics",
+    href: "/teacher/analytics",
+    icon: BarChart2,
+    color: "text-violet-500",
+    bgColor: "bg-violet-50 dark:bg-violet-500/10",
+    borderColor: "border-violet-200 dark:border-violet-500/20"
+  },
+  {
+    label: "Messages",
+    href: "/teacher/messages",
+    icon: MessageSquare,
+    color: "text-pink-500",
+    bgColor: "bg-pink-50 dark:bg-pink-500/10",
+    borderColor: "border-pink-200 dark:border-pink-500/20"
+  },
+  {
+    label: "Students",
+    href: "/teacher/students",
+    icon: Users,
+    color: "text-orange-500",
+    bgColor: "bg-orange-50 dark:bg-orange-500/10",
+    borderColor: "border-orange-200 dark:border-orange-500/20"
+  },
+  {
+    label: "Settings",
+    href: "/teacher/settings",
+    icon: Settings,
+    color: "text-gray-500",
+    bgColor: "bg-gray-50 dark:bg-gray-500/10",
+    borderColor: "border-gray-200 dark:border-gray-500/20"
+  }
+];
+
+export const QuickActions = () => {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      {actions.map((action, index) => (
+        <motion.div
+          key={action.label}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1 }}
+        >
+          <Link
+            href={action.href}
+            className={cn(
+              "group relative p-4 h-full",
+              "flex flex-col items-center justify-center gap-2",
+              "rounded-xl border",
+              action.bgColor,
+              action.borderColor,
+              "hover:shadow-lg",
+              "transition-all duration-300"
+            )}
+          >
+            <action.icon className={cn("w-8 h-8", action.color)} />
+            <span className={cn(
+              "text-sm font-medium text-gray-600 dark:text-gray-300",
+              "group-hover:text-gray-900 dark:group-hover:text-white",
+              "transition-colors"
+            )}>
+              {action.label}
+            </span>
+          </Link>
+        </motion.div>
+      ))}
+    </div>
+  );
+}; 

@@ -13,35 +13,17 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const userId = user.id;
-
-    const post = await db.post.findUnique({
+    // Find and delete the post
+    const post = await db.post.delete({
       where: {
         id: params.postId,
-        userId: userId,
-      },
-      include: {
-        comments: true,
-        reactions: true,
-        tags: true,
-        postchapter: true,
-        imageSections: true,
+        userId: user.id, // Ensure the post belongs to the user
       },
     });
 
-    if (!post) {
-      return new NextResponse("Not found", { status: 404 });
-    }
-
-    const deletedPost = await db.post.delete({
-      where: {
-        id: params.postId,
-      },
-    });
-
-    return NextResponse.json(deletedPost);
+    return NextResponse.json(post);
   } catch (error) {
-    console.log("[POST_ID_DELETE]", error);
+    console.error("[POST_DELETE]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

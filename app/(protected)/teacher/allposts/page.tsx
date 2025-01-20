@@ -19,7 +19,7 @@ const AllPostsPage = async () => {
           <Header />
         </div>
       ) : (
-        <HeaderAfterLogin />
+        <HeaderAfterLogin user={user} />
       )}
 
       <SidebarDemo>

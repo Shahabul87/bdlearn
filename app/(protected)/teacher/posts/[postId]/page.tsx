@@ -7,35 +7,26 @@ import { PostTitleForm } from "./_components/post-title-form";
 import { PostImageUpload } from "./_components/post-image-upload";
 import { Heading } from "@/components/heading";
 import { PostChaptersForm } from "./_components/post-section-creation";
-import { GradientDivider } from "@/components/border";
 import { Footer } from "@/app/(homepage)/footer";
 import { Banner } from "@/components/banner";
 import { PostActions } from "./_components/post-actions";
 import { PostCategory } from "./_components/post-category";
 import { PostDescription } from "./_components/post-description";
-
-
-
+import { Layout, BookOpen, FileText, ImageIcon } from "lucide-react";
 
 const PostEditPage = async ({params}: {params: { postId: string; }}) => {
-
-
   const post = await db.post.findUnique({
     where: {
       id: params.postId,
     },
     include: {
       comments: {
-        // Only include published comments if applicable
-        where: {
-          // isPublished: true, // Uncomment if you have an `isPublished` field
-        },
         orderBy: {
           createdAt: "asc",
         },
       },
-      reactions: true, // Include all reactions
-      tags: true, // Include all tags associated with the post
+      reactions: true,
+      tags: true,
       user: {
         select: {
           id: true,
@@ -56,184 +47,127 @@ const PostEditPage = async ({params}: {params: { postId: string; }}) => {
     },
   });
 
-
-  //console.log(post)
+  const user = await currentUser();
   
-    const user:any =await currentUser();
-    
-    
-    if(!user?.id){
-        return redirect("/");
-    }
-    
-    const userId = user?.id;
+  if(!user?.id) return redirect("/");
+  if (!post) return redirect("/");
 
-    if (!post) {
-        return redirect("/");
-        
-    }
+  const requiredFields = [
+    post.title,
+    post.description,
+    post.imageUrl,
+    post.category,
+    post.postchapter.some(chapter => chapter.isPublished),
+  ];
+  
+  const totalFields = requiredFields.length;
+  const completedFields = requiredFields.filter(Boolean).length;
+  const completionText = `(${completedFields}/${totalFields})`;
+  const isComplete = requiredFields.every(Boolean);
 
-    const requiredFields = [
-      post.title,
-      post.description,
-      post.imageUrl,
-      post.category,
-      post.postchapter.some(chapter => chapter.isPublished),
-    ];
-    
-    // Console log for debugging purposes
-   // console.log(requiredFields);
-    
-    const totalFields = requiredFields.length;
-    const completedFields = requiredFields.filter(Boolean).length;
-    
-    const completionText = `(${completedFields}/${totalFields})`;
-    
-    const isComplete = requiredFields.every(Boolean);
-    
+  const sections = [
+    {
+      title: "Post Title & Category",
+      icon: FileText,
+      content: (
+        <div className="space-y-6">
+          <PostTitleForm initialData={post} postId={post.id} />
+          <PostCategory initialData={post} postId={post.id} />
+        </div>
+      ),
+    },
+    {
+      title: "Post Description",
+      icon: Layout,
+      content: <PostDescription initialData={post} postId={post.id} />,
+    },
+    {
+      title: "Post Content",
+      icon: BookOpen,
+      content: <PostChaptersForm initialData={post} postId={post.id} />,
+    },
+    {
+      title: "Post Image",
+      icon: ImageIcon,
+      content: <PostImageUpload initialData={post} postId={post.id} />,
+    },
+  ];
 
-    return (
-        <>
-        
-         <div>
-            <ConditionalHeader user={user} />
-         </div> 
-         <SidebarDemo>
-         <Heading tag="h1" text="Post Edit Page" className="mt-10 p-2 text-center"/>
-         {!post.published && (
-            <Banner
-              label="This course is unpublished. It will not be visible to the students."
-                />
-              )}
-        <div className="p-1 mt-5">
-          <div className="">
-            <div className="flex items-center justify-between bg-gray-700 p-2 px-8 border border-[#94a3b8] rounded-md">
-              <div className="flex flex-col gap-y-2">
-                <h1 className="text-2xl font-medium text-white">
-                  Post Creation
-                </h1>
-                <span className="text-sm text-cyan-500">
-                  Complete all fields {completionText}
-                </span>
-              </div>
-              <PostActions
-                disabled={!isComplete}
-                postId={params.postId}
-                isPublished={post.published}
+  return (
+    <>
+      <div className="bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950">
+      <ConditionalHeader user={user} />
+      </div>
+      <SidebarDemo>
+        <div className="min-h-screen pt-20 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {/* Header Section */}
+            <div className="mb-8">
+              <Heading 
+                tag="h1" 
+                text="Edit Your Post" 
+                className="text-2xl sm:text-3xl md:text-4xl font-bold text-center bg-gradient-to-r from-purple-300 via-cyan-300 to-purple-300 bg-clip-text text-transparent"
               />
+            </div>
+
+            {/* Banner & Actions */}
+            <div className="space-y-4 mb-8">
+              {!post.published && (
+                <Banner label="This post is unpublished. It will not be visible to readers." />
+              )}
+              <div className="bg-gray-800/50 rounded-xl border border-gray-700/50 p-4 sm:p-6 backdrop-blur-sm hover:bg-gray-800/60 transition-colors duration-200">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <h2 className="text-xl font-semibold bg-gradient-to-r from-purple-200 to-cyan-200 bg-clip-text text-transparent">
+                      Post Setup
+                    </h2>
+                    <p className="text-sm text-gray-400/90">
+                      Complete all sections <span className="text-cyan-400/90">{completionText}</span>
+                    </p>
+                  </div>
+                  <PostActions
+                    disabled={!isComplete}
+                    postId={params.postId}
+                    isPublished={post.published}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="space-y-6">
+              {sections.map((section, index) => (
+                <div 
+                  key={section.title}
+                  className="bg-gray-800/30 rounded-xl border border-gray-700/50 overflow-hidden hover:bg-gray-800/40 transition-colors duration-200"
+                >
+                  <div className="bg-gradient-to-r from-gray-800/80 to-gray-800/60 px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-700/50">
+                    <div className="flex items-center gap-3">
+                      <section.icon className="w-5 h-5 text-purple-400/90" />
+                      <h3 className="text-lg font-medium bg-gradient-to-r from-purple-200 to-cyan-200 bg-clip-text text-transparent">
+                        {section.title}
+                      </h3>
+                    </div>
+                  </div>
+                  <div className="p-4 sm:p-6 text-gray-300/90 hover:text-gray-200/90 transition-colors duration-200">
+                    {section.content}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer Note */}
+            <div className="mt-10 text-center">
+              <p className="text-sm text-gray-500/80 italic">
+                All changes are automatically saved
+              </p>
             </div>
           </div>
         </div>
-        
-       
-         <PostTitleForm 
-           initialData={post}
-           postId={post.id}
-         />
-         <PostCategory
-            initialData={post}
-            postId={post.id}
-       
-          />  
-          
-          <PostDescription 
-            initialData={post}
-            postId={post.id}
-           />
-
-          <PostChaptersForm 
-           initialData={post}
-           postId={post.id}
-         />
-        
-          <PostImageUpload 
-           initialData={post}
-           postId={post.id}
-         />
-         </SidebarDemo>
-         {/* <section className="px-6 bg-gray-900 border border-[#94a3b8]/30 mt-10">
-          <div>
-            <Heading tag="h3" text={post.title} className="mt-10 p-2 text-center"/>
-            <GradientDivider />
-          </div>
-          <div className="relative w-full aspect-video rounded-md overflow-hidden p-6">
-            <div className="p-10 rounded-md">
-            <Image
-              fill
-              className="object-cover"
-              alt={post.title}
-              src={post.imageUrl || "/placeholder-image.jpg"} // Fallback if imageUrl is null or undefined
-              sizes="(max-width: 640px) 100vw, 
-                    (max-width: 768px) 75vw, 
-                    (max-width: 1024px) 50vw, 
-                    33vw" // Responsive sizes for better loading performance
-            />
-            </div>
-          </div>
-            <div className=" py-10">
-            <div className=" grid grid-cols-1 md:grid-cols-2 mb-8">
-              <div className="p-6 text-[#94a3b8]/80 md:text-lg font-sans tracking-wide">
-                <p className="text-justify">
-                    {post.postchapter[0]?.description
-                      ? post.postchapter[0].description.replace(/<[^>]+>/g, "")
-                      : "No description available"}
-                </p>
-              </div>
-              <div>
-                  <div className="relative w-full aspect-video rounded-md overflow-hidden bg-gray-900">
-                      
-                  <div className="p-10">
-                    <Image
-                        fill
-                        className="object-cover "
-                        alt={post.title}
-                        src={post.postchapter[0].imageUrl || "/placeholder-image.jpg"} // Fallback if imageUrl is null or undefined
-                        sizes="(max-width: 640px) 100vw, 
-                              (max-width: 768px) 75vw, 
-                              (max-width: 1024px) 50vw, 
-                              33vw" // Responsive sizes for better loading performance
-                      />
-                  </div>
-                  </div>
-
-              </div>
-
-            </div>
-            <div className=" grid grid-cols-1 md:grid-cols-2 mb-8">
-              <div>
-              <div className="relative w-full aspect-video rounded-md overflow-hidden p-4 bg-gray-900">
-              <div className="p-10 ">
-                      <Image
-                        fill
-                        className="object-cover"
-                        alt={post.title}
-                        src={post.postchapter[1].imageUrl || "/placeholder-image.jpg"} // Fallback if imageUrl is null or undefined
-                        sizes="(max-width: 640px) 100vw, 
-                              (max-width: 768px) 75vw, 
-                              (max-width: 1024px) 50vw, 
-                              33vw" // Responsive sizes for better loading performance
-                      />
-                  </div>
-                  </div>
-              </div>
-              <div className="p-6 text-[#94a3b8]/80 bg-gray-900 font-sans tracking-wide md:text-lg">
-                <p className="text-justify">
-                    {post.postchapter[1]?.description
-                      ? post.postchapter[1].description.replace(/<[^>]+>/g, "")
-                      : "No description available"}
-                </p>
-              </div>
-
-            </div>
-         
-
-           </div>
-
-         </section> */}
-         <Footer />
-        </>
-    )
+      </SidebarDemo>
+      <Footer />
+    </>
+  );
 }
 
-
-export default PostEditPage
+export default PostEditPage;

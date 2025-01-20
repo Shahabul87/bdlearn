@@ -11,13 +11,11 @@ import { SidebarDemo } from "@/components/ui/sidebar-demo";
 import { ChapterTitleForm } from "./_components/chapter-title-form";
 import { ChapterDescriptionForm } from "./_components/chapter-description-form";
 import { ChapterAccessForm } from "./_components/chapter-access-form";
-
-
 import { ChapterActions } from "./_components/chapter-actions";
 import { ChapterLearningOutcomeForm } from "./_components/chapter-learning-outcome-form";
 import { ChaptersSectionForm } from "./_components/chapter-section-form";
-import { ListChecks } from "lucide-react";
-import { ChaptersForm } from "../../_components/chapters-form";
+import { cn } from "@/lib/utils";
+
 
 
 const ChapterIdPage = async ({
@@ -31,8 +29,8 @@ const ChapterIdPage = async ({
         return redirect("/");
       }
 
-  //const userId = user?.id;
   
+
 
 
   const chapter = await db.chapter.findUnique({
@@ -49,7 +47,6 @@ const ChapterIdPage = async ({
     }
   });
 
-  //console.log(chapter)
 
   if (!chapter) {
     return redirect("/")
@@ -75,114 +72,164 @@ const ChapterIdPage = async ({
 
   return (
     <>
-        {!user? (
-                            <>
-                                <div className="">
-                                <Header />
-                                </div>
-                        </> ):
-                        (
-                            <>
-                            <HeaderAfterLogin />
-                            </>
-               )}
-    <SidebarDemo>
-      {!chapter.isPublished && (
-        <Banner
-          variant="warning"
-          label="This chapter is unpublished. It will not be visible in the course"
-        />
-      )}
-      <div className="p-6">
-        <div className="px-2">
-          <div className="flex items-center justify-between">
-            <div className="w-full">
-              <Link
-                href={`/teacher/courses/${params.courseId}`}
-                className="flex items-center text-xl text-white/90 hover:opacity-75 transition mb-6 "
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to course setup
-              </Link>
-              <div className="flex items-center justify-between w-full bg-gray-700 p-2 px-10 border border-[#94a3b8] rounded-md">
-                  <div className="flex flex-col gap-y-2 ">
-                    <h1 className="text-2xl font-medium text-white">
-                      Chapter Creation
-                    </h1>
-                    <span className="text-sm text-cyan-500">
-                      Complete all fields {completionText}
-                    </span>
+        {!user ? (
+          <div className="fixed top-0 w-full z-50">
+            <Header />
+          </div>
+        ) : (
+          <div className="fixed top-0 w-full z-50">
+            <HeaderAfterLogin user={user} />
+          </div>
+        )}
+        <SidebarDemo>
+          <div className={cn(
+            "min-h-screen pt-24",
+            "bg-gray-50 dark:bg-gray-900",
+            "transition-colors duration-300"
+          )}>
+            {/* Warning Banner */}
+            {!chapter.isPublished && (
+              <div className="px-4 sm:px-6">
+                <Banner
+                  variant="warning"
+                  label="This chapter is unpublished. It will not be visible in the course"
+                />
+              </div>
+            )}
+
+            <div className="p-4 sm:p-6">
+              <div className="px-2">
+                {/* Header Section */}
+                <div className="flex items-center justify-between">
+                  <div className="w-full">
+                    <Link
+                      href={`/teacher/courses/${params.courseId}`}
+                      className={cn(
+                        "inline-flex items-center mb-6",
+                        "px-4 py-2 text-sm sm:text-base font-medium",
+                        "bg-white/40 dark:bg-gray-800/40",
+                        "hover:bg-purple-50 dark:hover:bg-purple-500/20",
+                        "text-gray-900 dark:text-gray-200",
+                        "rounded-lg",
+                        "border border-gray-200 dark:border-gray-700/50",
+                        "transition-all duration-200",
+                        "backdrop-blur-sm",
+                        "shadow-lg hover:shadow-purple-500/20"
+                      )}
+                    >
+                      <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-2 transition-transform group-hover:-translate-x-1" />
+                      Back to course setup
+                    </Link>
+
+                    {/* Status Card */}
+                    <div className={cn(
+                      "flex flex-col sm:flex-row items-start sm:items-center justify-between",
+                      "w-full p-4 sm:p-6",
+                      "bg-white/40 dark:bg-gray-800/60",
+                      "border border-gray-200 dark:border-gray-700/50",
+                      "rounded-xl backdrop-blur-sm"
+                    )}>
+                      <div className="space-y-2 mb-5">
+                        <h1 className="text-xl sm:text-2xl font-semibold bg-gradient-to-r from-purple-600 to-cyan-600 dark:from-purple-400 dark:to-cyan-400 bg-clip-text text-transparent">
+                          Chapter Creation
+                        </h1>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          Complete all fields{" "}
+                          <span className="text-purple-600 dark:text-purple-400 font-medium">
+                            {completionText}
+                          </span>
+                        </span>
+                      </div>
+                      <ChapterActions
+                        disabled={!isComplete}
+                        courseId={params.courseId}
+                        chapterId={params.chapterId}
+                        isPublished={chapter.isPublished}
+                      />
+                    </div>
                   </div>
-                  <ChapterActions
-                    disabled={!isComplete}
-                    courseId={params.courseId}
-                    chapterId={params.chapterId}
-                    isPublished={chapter.isPublished}
-                  />
+                </div>
+
+                {/* Main Content Grid */}
+                <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 sm:gap-8 mt-8">
+                  <div className="space-y-4 sm:space-y-6">
+                    {/* Customize Section */}
+                    <div className={cn(
+                      "p-4 sm:p-6 rounded-xl",
+                      "bg-white/40 dark:bg-gray-800/40",
+                      "border border-gray-200 dark:border-gray-700/50",
+                      "backdrop-blur-sm"
+                    )}>
+                      <div className="flex items-center gap-x-3 mb-6">
+                        <IconBadge icon={LayoutDashboard} />
+                        <h2 className="text-lg sm:text-xl font-semibold bg-gradient-to-r from-purple-600 to-cyan-600 dark:from-purple-400 dark:to-cyan-400 bg-clip-text text-transparent">
+                          Customize your chapter
+                        </h2>
+                      </div>
+                      <div className="space-y-6">
+                        <ChapterTitleForm
+                          initialData={chapter}
+                          courseId={params.courseId}
+                          chapterId={params.chapterId}
+                        />
+                        <ChapterLearningOutcomeForm
+                          initialData={chapter}
+                          courseId={params.courseId}
+                          chapterId={params.chapterId}
+                        />
+                        <ChapterDescriptionForm
+                          initialData={chapter}
+                          courseId={params.courseId}
+                          chapterId={params.chapterId}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Access Settings */}
+                    <div className={cn(
+                      "p-4 sm:p-6 rounded-xl",
+                      "bg-white/40 dark:bg-gray-800/40",
+                      "border border-gray-200 dark:border-gray-700/50",
+                      "backdrop-blur-sm"
+                    )}>
+                      <div className="flex items-center gap-x-3 mb-6">
+                        <IconBadge icon={Eye} />
+                        <h2 className="text-lg sm:text-xl font-semibold bg-gradient-to-r from-purple-600 to-cyan-600 dark:from-purple-400 dark:to-cyan-400 bg-clip-text text-transparent">
+                          Access Settings
+                        </h2>
+                      </div>
+                      <ChapterAccessForm
+                        initialData={chapter}
+                        courseId={params.courseId}
+                        chapterId={params.chapterId}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Sections */}
+                  <div className={cn(
+                    "p-4 sm:p-6 rounded-xl",
+                    "bg-white/40 dark:bg-gray-800/40",
+                    "border border-gray-200 dark:border-gray-700/50",
+                    "backdrop-blur-sm"
+                  )}>
+                    <div className="flex items-center gap-x-3 mb-6">
+                      <IconBadge icon={Video} />
+                      <h2 className="text-lg sm:text-xl font-semibold bg-gradient-to-r from-purple-600 to-cyan-600 dark:from-purple-400 dark:to-cyan-400 bg-clip-text text-transparent">
+                        Chapter Sections
+                      </h2>
+                    </div>
+                    <ChaptersSectionForm
+                      chapter={chapter}
+                      courseId={params.courseId}
+                      chapterId={params.chapterId}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6 mt-16 bg-gray-800 p-4 rounded-md">
-          <div className="space-y-4">
-            <div>
-              <div className="flex items-center gap-x-2">
-                <IconBadge icon={LayoutDashboard} />
-                <h2 className="text-xl text-white/90 font-semibold">
-                  Customize your chapter
-                </h2>
-              </div>
-              <ChapterTitleForm
-                initialData={chapter}
-                courseId={params.courseId}
-                chapterId={params.chapterId}
-              />
-              <ChapterLearningOutcomeForm
-                initialData={chapter}
-                courseId={params.courseId}
-                chapterId={params.chapterId}
-              />
-              <ChapterDescriptionForm
-                initialData={chapter}
-                courseId={params.courseId}
-                chapterId={params.chapterId}
-              />
-            </div>
-            <div>
-              <div className="flex items-center gap-x-2">
-                <IconBadge icon={Eye} />
-                <h2 className="text-xl text-white/90 font-semibold">
-                  Access Settings
-                </h2>
-              </div>
-              <ChapterAccessForm
-                initialData={chapter}
-                courseId={params.courseId}
-                chapterId={params.chapterId}
-              />
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-x-2">
-              <IconBadge icon={Video} />
-              <h2 className="text-xl text-white/90 font-semibold">
-                Add Sections
-              </h2>
-            </div>
-            {/* <ChapterYoutubeVideoForm
-              initialData={chapter}
-              chapterId={params.chapterId}
-              courseId={params.courseId}
-            /> */}
-            <ChaptersSectionForm 
-              chapter={chapter}
-              courseId={params.courseId}
-              chapterId={params.chapterId}
-            />
-          </div>
-        </div>
-      </div>
-      </SidebarDemo>
+        </SidebarDemo>
     </>
    );
 }

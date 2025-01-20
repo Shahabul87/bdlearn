@@ -1,65 +1,38 @@
 import { Course, Category } from "@prisma/client";
 import { db } from "@/lib/db";
+import { currentUser } from "@/lib/auth";
 
-type CourseForHomepage = {
-  id: string;
-  title: string;
-  description: string | null;
-  imageUrl: string | null;
-  price:number;
-  category: {
-    id: string;
-    name: string;
-  } | null;
+type CourseWithProgressWithCategory = Course & {
+  category: Category | null;
+  chapters: { id: string }[];
 };
 
-type GetCourses = {
-  title?: string;
-  categoryId?: string;
-};
+export const getCoursesForHomepage = async () => {
+  const user = await currentUser();
 
-export const getCoursesForHomepage = async (
-  {
-    title,
-    categoryId
-  }: GetCourses
-): Promise<CourseForHomepage[]> => {
-  
   try {
     const courses = await db.course.findMany({
       where: {
         isPublished: true,
-        ...(title && {
-          title: {
-            contains: title,
-            mode: 'insensitive', // Case-insensitive search
-          },
-        }),
-        ...(categoryId && { categoryId }), // Only add categoryId to the query if it's provided
       },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        imageUrl: true,
-        price:true,
-        category: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
+      include: {
+        chapters: true,
+        category: true,
+        purchases: {
+          where: {
+            userId: user?.id
+          }
+        }
       },
       orderBy: {
-        createdAt: "desc",
+        createdAt: 'desc',
       },
     });
 
-    // Cast the result to the CourseForHomepage type to ensure type correctness
-    return courses as CourseForHomepage[];
+    return courses;
   } catch (error) {
-    console.log("[GET_COURSES_FOR_HOMEPAGE]", error);
+    console.error("[GET_COURSES]", error);
     return [];
   }
-}
+};
 

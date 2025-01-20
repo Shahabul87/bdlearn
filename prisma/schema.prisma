@@ -2,19 +2,18 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
-  previewFeatures = ["fullTextSearch","fullTextIndex"]
-  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres"]
+  binaryTargets   = ["native", "rhel-openssl-3.0.x"]
 }
 
 // prisma/schema.prisma
 // prisma/schema.prisma
 datasource db {
   provider  = "postgresql"
-  url  	    = env("DATABASE_URL")
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
-
 
 enum UserRole {
   ADMIN
@@ -22,20 +21,6 @@ enum UserRole {
   TEACHER
   PARENTS
 }
-
-// model User {
-//   id            String    @id @default(cuid())
-//   name          String?
-//   email         String?   @unique
-//   emailVerified DateTime?
-//   image         String?
-//   password      String?
-//   role          UserRole @default(USER)
-//   accounts      Account[]
-//   courses       Course[]
-//   isTwoFactorEnabled Boolean @default(false)
-//   twoFactorConfirmation TwoFactorConfirmation?
-// }
 
 model User {
   id                    String                 @id @default(cuid())
@@ -51,220 +36,282 @@ model User {
   isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
 
-  phone                 String?                // Optional field for phone number
-  profileLinks          ProfileLink[]          // One-to-many relation with ProfileLink
+  phone        String? // Optional field for phone number
+  profileLinks ProfileLink[] // One-to-many relation with ProfileLink
 
-  posts                 Post[]                 // One-to-many relation with Post
-  comments              Comment[]              // One-to-many relation with Comment
-  reply                 Reply[]
-  postReactions         PostReaction[]         // One-to-many relation with PostReaction
-  commentReactions      CommentReaction[]      // One-to-many relation with CommentReaction
-  replyReactions        ReplyReaction[]        // One-to-many relation with ReplyReaction
+  posts            Post[] // One-to-many relation with Post
+  comments         Comment[] // One-to-many relation with Comment
+  reply            Reply[]
+  postReactions    PostReaction[] // One-to-many relation with PostReaction
+  commentReactions CommentReaction[] // One-to-many relation with CommentReaction
+  replyReactions   ReplyReaction[] // One-to-many relation with ReplyReaction
+  reactions        Reaction[]
 
   // Relations to learning resources created by the user
-  videos                Video[]                @relation("UserVideos")
-  blogs                 Blog[]                 @relation("UserBlogs")
-  articles              Article[]              @relation("UserArticles")
-  notes                 Note[]                 @relation("UserNotes")
+  videos   Video[]   @relation("UserVideos")
+  blogs    Blog[]    @relation("UserBlogs")
+  articles Article[] @relation("UserArticles")
+  notes    Note[]    @relation("UserNotes")
 
   // Relations to favorite content
-  favoriteVideos        FavoriteVideo[]        // One-to-many relation with FavoriteVideo
-  favoriteAudios        FavoriteAudio[]        // One-to-many relation with FavoriteAudio
-  favoriteArticles      FavoriteArticle[]      // One-to-many relation with FavoriteArticle
-  favoriteBlogs         FavoriteBlog[]         // One-to-many relation with FavoriteBlog
-  favoriteImages        FavoriteImage[]        // One-to-many relation with FavoriteImage
+  favoriteVideos   FavoriteVideo[] // One-to-many relation with FavoriteVideo
+  favoriteAudios   FavoriteAudio[] // One-to-many relation with FavoriteAudio
+  favoriteArticles FavoriteArticle[] // One-to-many relation with FavoriteArticle
+  favoriteBlogs    FavoriteBlog[] // One-to-many relation with FavoriteBlog
+  favoriteImages   FavoriteImage[] // One-to-many relation with FavoriteImage
+  subscriptions    Subscription[]
+  calendarEvents   CalendarEvent[]
+  supportTickets   SupportTicket[]
+
+  // Add these relations
+  ideas           Idea[]
+  ideaLikes       IdeaLike[]
+  ideaComments    IdeaComment[]
+  collaboratingOn Idea[]        @relation("IdeaCollaborators")
+
+  // Add these models to your schema
+  minds              Mind[]
+  mindLikes          MindLike[]
+  collaboratingMinds Mind[]     @relation("MindCollaborators")
+
+  bills         Bill[]
+  courseReviews CourseReview[]
+  enrollments   Enrollment[]
+
+  // Add calendar settings relation
+  calendarSettings UserCalendarSettings?
+
+  // Add these relation fields
+  createdGroups      Group[]                  @relation("GroupCreator")
+  groupMemberships   GroupMember[]
+  groupDiscussions   GroupDiscussion[]        @relation("AuthoredDiscussions")
+  discussionLikes    GroupDiscussionLike[]    @relation("UserLikes")
+  discussionComments GroupDiscussionComment[] @relation("AuthoredComments")
+  createdEvents      GroupEvent[]             @relation("EventCreator")
+  organizedEvents    GroupEvent[]             @relation("OrganizedEvents")
+  eventAttendees     GroupEventAttendee[]     @relation("EventAttendee")
+
+  // Add these models for notifications and search
+  groupNotifications GroupNotification[]
+  sharedResources    GroupResource[]     @relation("AuthoredResources")
 }
 
-
-
-
 model Course {
-  id                    String                 @id @default(uuid())
-  title                 String                 @db.Text
-  description           String?                @db.Text
-  imageUrl              String?                @db.Text
-  price                 Float?
-  isPublished           Boolean               @default(false)
-  
-  categoryId            String?
-  category              Category?              @relation(fields: [categoryId], references: [id])
-  
-  userId                String
-  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String    @id @default(uuid())
+  title       String    @db.Text
+  description String?   @db.Text
+  imageUrl    String?   @db.Text
+  price       Float?
+  isPublished Boolean   @default(false)
+  courseGoals String?
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
 
-  chapters              Chapter[]
-  attachments           Attachment[]
-  purchases             Purchase[]
+  courseRatings  String?
+  activeLearners Int?
 
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  chapters    Chapter[]
+  attachments Attachment[]
+  purchases   Purchase[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reviews     CourseReview[]
+  enrollments Enrollment[]
+
+  groups Group[]
 
   @@index([categoryId])
 }
 
 model Chapter {
-  id                    String                 @id @default(uuid())
-  title                 String
-  description           String?                @db.Text
-  learningOutcomes      String?                @db.Text
-  position              Int
-  isPublished           Boolean               @default(false)
-  isFree                Boolean               @default(false)
+  id               String  @id @default(uuid())
+  title            String
+  description      String? @db.Text
+  courseGoals      String? @db.Text
+  learningOutcomes String? @db.Text
+  position         Int
+  isPublished      Boolean @default(false)
+  isFree           Boolean @default(false)
+  sectionCount     Int?
+  totalDuration    Int?
+  courseId         String
+  course           Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
-  courseId              String
-  course                Course                 @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userProgress UserProgress[]
+  sections     Section[]
 
-  userProgress          UserProgress[]
-  sections              Section[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
+  estimatedTime String?
+  difficulty    String?
+  prerequisites String?
+  resources     String?
+  status        String?
 
   @@index([courseId])
 }
 
 model Section {
-  id                    String                 @id @default(uuid())
-  title                 String
-  videoUrl              String?                @db.Text
-  position              Int
-  isPublished           Boolean               @default(false)
-  isFree                Boolean               @default(false)
+  id          String  @id @default(uuid())
+  title       String
+  videoUrl    String? @db.Text
+  position    Int
+  isPublished Boolean @default(false)
+  isFree      Boolean @default(false)
+  duration    Int?
+  chapterId   String
+  chapter     Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
-  chapterId             String
-  chapter               Chapter                @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-
-  userProgress          UserProgress[]
-  questions             Question[]
+  userProgress UserProgress[]
+  questions    Question[]
 
   // Relations to various resources within this section
-  videos                Video[]                // One-to-many relation with Video
-  blogs                 Blog[]                 // One-to-many relation with Blog
-  articles              Article[]              // One-to-many relation with Article
-  notes                 Note[]                 // One-to-many relation with Note
+  videos           Video[] // One-to-many relation with Video
+  blogs            Blog[] // One-to-many relation with Blog
+  articles         Article[] // One-to-many relation with Article
+  notes            Note[] // One-to-many relation with Note
+  codeExplanations CodeExplanation[]
 
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  type             String?
+  isPreview        Boolean?
+  completionStatus String?
+  resourceUrls     String?
 
   @@index([chapterId])
-} 
+}
+
+// Add CodeExplanation model
+model CodeExplanation {
+  id          String   @id @default(cuid())
+  heading     String?
+  code        String?  @db.Text
+  explanation String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sectionId String?
+  section   Section? @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@index([sectionId])
+}
 
 model Video {
-  id             String    @id @default(uuid())
-  title          String
-  description    String?   @db.Text
-  url            String    @db.VarChar(255)
-  duration       Int?      // Duration in seconds
-  clarityRating  Int?      // Rating for concept clarity, e.g., 1-5 scale
-  position       Int       // Position/order within the section
+  id            String   @id @default(cuid())
+  title         String
+  description   String?  @db.Text
+  youtubeUrl    String?  @db.Text
+  url           String?  @db.Text
+  duration      Int?
+  clarityRating Int?
+  position      Int
+  isPublished   Boolean  @default(false)
+  sectionId     String
+  section       Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  sectionId      String?
-  section        Section?  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation("UserVideos", fields: [userId], references: [id], onDelete: Cascade)
 
-  userId         String
-  user           User      @relation("UserVideos", fields: [userId], references: [id], onDelete: Cascade)
-
-  category     String?
-  
-
-  isPublished    Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  @@index([sectionId])
+  @@index([userId])
 }
 
 model Blog {
-  id             String    @id @default(uuid())
-  title          String
-  url            String    @db.VarChar(255)
-  author         String?
-  description    String?   @db.Text
-  publishedAt    DateTime?
+  id          String    @id @default(uuid())
+  title       String
+  url         String    @db.VarChar(255)
+  author      String?
+  description String?   @db.Text
+  publishedAt DateTime?
+  position    Int?
+  sectionId   String?
+  section     Section?  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
-  sectionId      String?
-  section        Section?  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation("UserBlogs", fields: [userId], references: [id], onDelete: Cascade)
 
-  userId         String
-  user           User      @relation("UserBlogs", fields: [userId], references: [id], onDelete: Cascade)
+  category String?
 
-  category     String?
-
-
-  isPublished    Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Article {
-  id             String    @id @default(uuid())
-  title          String
-  url            String    @db.VarChar(255)
-  source         String?   // Source of the article (e.g., Medium, New York Times)
-  summary        String?   @db.Text
-  publishedAt    DateTime?
+  id          String    @id @default(uuid())
+  title       String
+  url         String    @db.VarChar(255)
+  source      String? // Source of the article (e.g., Medium, New York Times)
+  summary     String?   @db.Text
+  publishedAt DateTime?
 
-  sectionId      String?
-  section        Section?  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  sectionId String?
+  section   Section? @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
-  userId         String
-  user           User      @relation("UserArticles", fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation("UserArticles", fields: [userId], references: [id], onDelete: Cascade)
 
-  category     String?
+  category String?
 
-
-  isPublished    Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Note {
-  id             String    @id @default(uuid())
-  title          String
-  content        String    @db.Text
-  isImportant    Boolean   @default(false) // Flag to mark important notes
-  position       Int       // Position within a section if ordered
+  id          String  @id @default(uuid())
+  title       String
+  content     String  @db.Text
+  isImportant Boolean @default(false) // Flag to mark important notes
+  position    Int // Position within a section if ordered
 
-  sectionId      String?
-  section        Section?  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  sectionId String?
+  section   Section? @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
-  userId         String
-  user           User      @relation("UserNotes", fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation("UserNotes", fields: [userId], references: [id], onDelete: Cascade)
 
-  category     String?
-  
+  category String?
 
-  isPublished    Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
-
-
 model ProfileLink {
-  id        String @id @default(cuid())
-  user      User   @relation(fields: [userId], references: [id])
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
   userId    String
   platform  String // Name of the social media platform (e.g., "Twitter", "Facebook")
   url       String // URL of the social media profile
-  
+  position  Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-
-
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -272,27 +319,27 @@ model Account {
 }
 
 model VerificationToken {
-  id String @id @default(cuid())
-  email String
-  token String @unique
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
   expires DateTime
 
   @@unique([email, token])
 }
 
 model PasswordResetToken {
-  id String @id @default(cuid())
-  email String
-  token String @unique
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
   expires DateTime
 
   @@unique([email, token])
 }
 
 model TwoFactorToken {
-  id String @id @default(cuid())
-  email String
-  token String @unique
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
   expires DateTime
 
   @@unique([email, token])
@@ -302,28 +349,25 @@ model TwoFactorConfirmation {
   id String @id @default(cuid())
 
   userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId])
 }
 
-
-
-
-
 model Category {
-  id String @id @default(uuid())
-  name String @unique
+  id      String   @id @default(uuid())
+  name    String   @unique
   courses Course[]
+  groups  Group[]
 }
 
 model Attachment {
-  id String @id @default(uuid())
+  id   String @id @default(uuid())
   name String
-  url String @db.Text
+  url  String @db.Text
 
   courseId String
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -331,62 +375,54 @@ model Attachment {
   @@index([courseId])
 }
 
-
-
-
-
-
-
 model Question {
-  id            String   @id @default(uuid())
-  text          String   @db.Text
-  
-  answers       Answer[]
-  sectionId     String?
-  section       Section?  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id   String @id @default(uuid())
+  text String @db.Text
+
+  answers   Answer[]
+  sectionId String?
+  section   Section? @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Answer {
-  id          String   @id @default(uuid())
-  text        String   @db.Text
-  isCorrect   Boolean  @default(false)
-  questionId  String
-  question    Question @relation(fields: [questionId], references: [id],onDelete: Cascade)
+  id         String   @id @default(uuid())
+  text       String   @db.Text
+  isCorrect  Boolean  @default(false)
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-
-
 model UserProgress {
-  id String @id @default(uuid())
+  id     String @id @default(uuid())
   userId String
 
   chapterId String
-  chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
-  sectionId String @unique
-  section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  sectionId String  @unique
+  section   Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
   isCompleted Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([chapterId])
   @@unique([userId, chapterId])
+  @@index([chapterId])
 }
 
 model Purchase {
-  id String @id @default(uuid())
+  id     String @id @default(uuid())
   userId String
 
   courseId String
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
@@ -396,134 +432,131 @@ model Purchase {
 }
 
 model StripeCustomer {
-  id String @id @default(uuid())
-  userId String @unique
+  id               String @id @default(uuid())
+  userId           String @unique
   stripeCustomerId String @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-
 model Post {
-  id                    String                 @id @default(cuid())
-  userId                String
-  title                 String
-  description           String?                @db.Text
-  imageUrl              String?
-  published             Boolean                @default(false)
-  user                  User                   @relation(fields: [userId ], references: [id], onDelete: Cascade)
-  category              String?
+  id          String  @id @default(cuid())
+  userId      String
+  title       String
+  description String? @db.Text
+  imageUrl    String?
+  published   Boolean @default(false)
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category    String?
 
+  tags          Tag[]                @relation("PostTags")
+  comments      Comment[] // One-to-many relation with Comment
+  replies       Reply[]
+  reactions     PostReaction[] // One-to-many relation with PostReaction
+  postchapter   PostChapterSection[] // One-to-many relation with ContentSection
+  imageSections PostImageSection[] // One-to-many relation with ImageSection
 
-  tags                  Tag[]                  @relation("PostTags")
-  comments              Comment[]              // One-to-many relation with Comment
-  reply                 Reply[]
-  reactions             PostReaction[]         // One-to-many relation with PostReaction
-  postchapter           PostChapterSection[]       // One-to-many relation with ContentSection
-  imageSections         PostImageSection[]         // One-to-many relation with ImageSection
-
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
-
-
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model PostChapterSection {
-  id                    String                 @id @default(cuid())
-  title                 String
-  postId                String
-  description           String?                 @db.Text
-  
-  imageUrl              String?
-  isPublished           Boolean                @default(false)
-  isFree                Boolean                @default(false)
-  position              Int                    // Position of the section within the post
-  post                  Post                   @relation(fields: [postId], references: [id], onDelete: Cascade)
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
+  id          String  @id @default(cuid())
+  title       String
+  postId      String
+  description String? @db.Text
+
+  imageUrl    String?
+  isPublished Boolean  @default(false)
+  isFree      Boolean  @default(false)
+  position    Int // Position of the section within the post
+  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
-
-
-
 model Comment {
-  id                    String                 @id @default(cuid())
-  userId                String
-  comments               String?
-  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post                  Post                   @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId                String
-  reactions             CommentReaction[]      // One-to-many relation with CommentReaction
-  reply                 Reply[]
-  createdAt             DateTime               @default(now())
+  id               String            @id @default(cuid())
+  userId           String
+  comments         String?
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post             Post              @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId           String
+  reactions        Reaction[]
+  commentReactions CommentReaction[] // One-to-many relation with CommentReaction
+  replies          Reply[] // Keep only this one
+  createdAt        DateTime          @default(now())
 }
 
 model Reply {
-  id                    String                 @id @default(cuid())
-  userId                String
-  replyContent          String?
-  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  comment               Comment                @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  commentId             String
-  post                  Post                   @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId                String
-  reactions             ReplyReaction[]        // One-to-many relation with ReplyReaction
-  createdAt             DateTime               @default(now())
+  id            String          @id @default(cuid())
+  replyContent  String?
+  userId        String
+  postId        String
+  commentId     String
+  parentReplyId String?
+  createdAt     DateTime        @default(now())
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post          Post            @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment       Comment         @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  parentReply   Reply?          @relation("ReplyToReply", fields: [parentReplyId], references: [id], onDelete: SetNull)
+  replies       Reply[]         @relation("ReplyToReply")
+  reactions     ReplyReaction[] // One-to-many relation with ReplyReaction
+  reactionList  Reaction[] // Add this relation for the Reaction model
 }
 
-model ReplyReaction {
-  id                    String                 @id @default(cuid())
-  userId                String                 // The user who reacted
-  replyId               String                 // The reply being reacted to
-  type                  ReactionType           // The type of reaction: like, dislike, love, etc.
-  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  reply                 Reply                  @relation(fields: [replyId], references: [id], onDelete: Cascade)
-  createdAt             DateTime               @default(now())
+model Reaction {
+  id        String   @id @default(cuid())
+  type      String // like, love, haha, wow, sad, angry
+  userId    String
+  commentId String?
+  replyId   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  reply   Reply?   @relation(fields: [replyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, commentId, replyId])
 }
-
-
-
 
 model PostImageSection {
-  id                    String                 @id @default(cuid())
-  postId                String
-  imageUrl              String                 // URL of the image
-  caption               String?                // Optional caption for the image
-  position              Int                    // Position of the image within the post
-  post                  Post                   @relation(fields: [postId], references: [id], onDelete: Cascade)
-  createdAt             DateTime               @default(now())
+  id        String   @id @default(cuid())
+  postId    String
+  imageUrl  String // URL of the image
+  caption   String? // Optional caption for the image
+  position  Int // Position of the image within the post
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }
 
-
-
 model Tag {
-  id                    String                 @id @default(cuid())
-  name                  String                 @unique
-  posts                 Post[]                 @relation("PostTags")
+  id    String @id @default(cuid())
+  name  String @unique
+  posts Post[] @relation("PostTags")
 }
 
 model PostReaction {
-  id                    String                 @id @default(cuid())
-  userId                String
-  type                  ReactionType
-  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post                  Post                   @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId                String
-  createdAt             DateTime               @default(now())
+  id        String       @id @default(cuid())
+  userId    String
+  type      ReactionType
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  createdAt DateTime     @default(now())
 }
 
 model CommentReaction {
-  id                    String                 @id @default(cuid())
-  userId                String
-  type                  ReactionType
-  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  comment               Comment                @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  commentId             String
-  createdAt             DateTime               @default(now())
+  id        String       @id @default(cuid())
+  userId    String
+  type      ReactionType
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment   Comment      @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String
+  createdAt DateTime     @default(now())
 }
-
-
 
 enum ReactionType {
   LIKE
@@ -537,10 +570,11 @@ model FavoriteVideo {
   id        String   @id @default(cuid())
   user      User     @relation(fields: [userId], references: [id])
   userId    String
-  title     String   // Title of the favorite video
-  platform  String   // Platform name (e.g., "YouTube", "Vimeo")
-  url       String   // URL of the video
-  
+  title     String // Title of the favorite video
+  platform  String // Platform name (e.g., "YouTube", "Vimeo")
+  url       String // URL of the video
+  position  Int?
+  category  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -549,10 +583,11 @@ model FavoriteAudio {
   id        String   @id @default(cuid())
   user      User     @relation(fields: [userId], references: [id])
   userId    String
-  title     String   // Title of the favorite audio
-  platform  String   // Platform name (e.g., "Spotify", "SoundCloud")
-  url       String   // URL of the audio
-  
+  title     String // Title of the favorite audio
+  platform  String // Platform name (e.g., "Spotify", "SoundCloud")
+  url       String // URL of the audio
+  position  Int?
+  category  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -561,10 +596,11 @@ model FavoriteArticle {
   id        String   @id @default(cuid())
   user      User     @relation(fields: [userId], references: [id])
   userId    String
-  title     String   // Title of the favorite article
-  platform  String   // Platform name (e.g., "Medium", "NYTimes")
-  url       String   // URL of the article
-  
+  title     String // Title of the favorite article
+  platform  String // Platform name (e.g., "Medium", "NYTimes")
+  url       String // URL of the article
+  position  Int?
+  category  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -573,10 +609,11 @@ model FavoriteBlog {
   id        String   @id @default(cuid())
   user      User     @relation(fields: [userId], references: [id])
   userId    String
-  title     String   // Title of the favorite blog
-  platform  String   // Platform name (e.g., "WordPress", "Blogger")
-  url       String   // URL of the blog
-  
+  title     String // Title of the favorite blog
+  platform  String // Platform name (e.g., "WordPress", "Blogger")
+  url       String // URL of the blog
+  position  Int?
+  category  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -585,15 +622,529 @@ model FavoriteImage {
   id        String   @id @default(cuid())
   user      User     @relation(fields: [userId], references: [id])
   userId    String
-  title     String   // Title or description of the favorite image
-  platform  String   // Platform name (e.g., "Instagram", "Pinterest")
-  url       String   // URL of the image
-  
+  title     String // Title or description of the favorite image
+  platform  String // Platform name (e.g., "Instagram", "Pinterest")
+  url       String // URL of the image
+  position  Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+model Subscription {
+  id                 String   @id @default(cuid())
+  user               User     @relation(fields: [userId], references: [id]) // Relation to the User who subscribed
+  userId             String
+  name               String // Name of the subscription (e.g., "Channel Name" or "Creator Name")
+  platform           String // Platform name (e.g., "YouTube", "Vimeo", "Spotify")
+  url                String // URL of the subscription page or profile
+  category           String? // Category or type of subscription (e.g., "Educational", "Entertainment", "Music")
+  dateOfSubscription DateTime // Date when the subscription was created
+  endOfSubscription  DateTime // Date when the subscription ends or renews
+  cardUsed           String // Masked card information (e.g., "**** **** **** 1234")
+  amount             Float // Amount charged for the subscription
+  position           Int? // Position for sorting purposes, if needed
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
 
+model ReplyReaction {
+  id        String   @id @default(cuid())
+  type      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  reply     Reply    @relation(fields: [replyId], references: [id], onDelete: Cascade)
+  replyId   String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+}
 
+model CalendarEvent {
+  id               String   @id @default(cuid())
+  title            String
+  description      String?
+  startDate        DateTime
+  endDate          DateTime
+  isAllDay         Boolean  @default(false)
+  location         String?
+  notification     Boolean  @default(true)
+  notificationTime Int      @default(30) // minutes before event
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
+  // Recurring event fields
+  isRecurring       Boolean         @default(false)
+  recurringPattern  String? // daily, weekly, monthly, yearly
+  recurringInterval Int? // every X days/weeks/months/years
+  recurringDays     Int[] // for weekly recurrence (0-6, where 0 is Sunday)
+  recurringEndDate  DateTime? // when the recurrence ends
+  parentEventId     String? // for recurring event instances
+  parentEvent       CalendarEvent?  @relation("RecurringEvents", fields: [parentEventId], references: [id])
+  recurringEvents   CalendarEvent[] @relation("RecurringEvents")
 
+  // External calendar fields
+  externalId String?
+  source     String?
+  lastSync   DateTime?
+
+  @@unique([externalId, source])
+  @@index([userId])
+  @@index([startDate])
+  @@index([parentEventId])
+}
+
+model SupportTicket {
+  id        String   @id @default(cuid())
+  subject   String
+  category  String
+  message   String   @db.Text
+  status    String   @default("OPEN") // OPEN, IN_PROGRESS, CLOSED
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Idea {
+  id            String   @id @default(cuid())
+  title         String
+  description   String?  @db.Text
+  category      String
+  visibility    String // "public" | "private" | "collaborative"
+  status        String // "draft" | "published" | "archived"
+  tags          String[] // Array of tags
+  likes         Int      @default(0)
+  comments      Int      @default(0)
+  collaborators Int      @default(0)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relations
+  ideaLikes         IdeaLike[]
+  ideaComments      IdeaComment[]
+  collaboratorUsers User[]        @relation("IdeaCollaborators")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model IdeaLike {
+  id        String   @id @default(cuid())
+  ideaId    String
+  userId    String
+  idea      Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([ideaId, userId])
+  @@index([ideaId])
+  @@index([userId])
+}
+
+model IdeaComment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  ideaId    String
+  userId    String
+  idea      Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ideaId])
+  @@index([userId])
+}
+
+model Mind {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  content     Json // For storing mind map structure
+  category    String
+  visibility  String // "public" | "private" | "collaborative"
+  status      String // "draft" | "published" | "archived"
+  tags        String[]
+  likes       Int      @default(0)
+  views       Int      @default(0)
+  shares      Int      @default(0)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relations
+  mindLikes     MindLike[]
+  collaborators User[]     @relation("MindCollaborators")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model MindLike {
+  id        String   @id @default(cuid())
+  mindId    String
+  userId    String
+  mind      Mind     @relation(fields: [mindId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([mindId, userId])
+  @@index([mindId])
+  @@index([userId])
+}
+
+model Bill {
+  id              String         @id @default(cuid())
+  title           String
+  description     String?        @db.Text
+  category        BillCategory
+  amount          Float
+  currency        String         @default("USD")
+  startDate       DateTime
+  dueDate         DateTime
+  status          BillStatus     @default(UNPAID)
+  recurringType   RecurringType? // For recurring bills
+  recurringPeriod Int? // Period in days for recurring bills
+
+  // Notification settings
+  notifyBefore Int     @default(3) // Days before due date
+  notifyEmail  Boolean @default(true)
+  notifySMS    Boolean @default(false)
+
+  // Payment tracking
+  lastPaidAmount Float?
+  lastPaidDate   DateTime?
+  autoPayEnabled Boolean   @default(false)
+  paymentMethod  String? // e.g., "Credit Card", "Bank Transfer"
+  accountNumber  String? // Last 4 digits of payment account
+
+  // Bill provider details
+  provider       String?
+  accountId      String? // Account ID with provider
+  website        String? // Provider's website
+  supportContact String? // Provider's support contact
+
+  // Attachments and notes
+  attachments BillAttachment[]
+  notes       String?          @db.Text
+
+  // User relation
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // History and timestamps
+  paymentHistory BillPayment[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([dueDate]) // For efficient due date queries
+}
+
+model BillAttachment {
+  id        String   @id @default(cuid())
+  name      String
+  url       String
+  type      String // e.g., "invoice", "receipt", "statement"
+  size      Int // File size in bytes
+  billId    String
+  bill      Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([billId])
+}
+
+model BillPayment {
+  id          String   @id @default(cuid())
+  amount      Float
+  paymentDate DateTime
+  method      String // e.g., "Credit Card", "Bank Transfer"
+  status      String // e.g., "successful", "pending", "failed"
+  reference   String? // Payment reference number
+  billId      String
+  bill        Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@index([billId])
+}
+
+enum BillCategory {
+  UTILITY // Energy, Water, Gas
+  INTERNET // Internet, Phone, Cable
+  INSURANCE // Health, Car, Home, Life
+  RENT // Housing rent
+  MORTGAGE // Home loan
+  SUBSCRIPTION // Software, Streaming, etc.
+  TAX // Property tax, etc.
+  CREDIT_CARD // Credit card bills
+  OTHER // Miscellaneous
+}
+
+enum BillStatus {
+  PAID
+  UNPAID
+  OVERDUE
+  UPCOMING
+  CANCELLED
+}
+
+enum RecurringType {
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
+  CUSTOM
+}
+
+model CourseReview {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String   @db.Text
+  courseId  String
+  userId    String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([courseId])
+  @@index([userId])
+}
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  userId    String
+  courseId  String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  progress  Int?     @default(0)
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+  @@index([userId])
+}
+
+model UserCalendarSettings {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  defaultView         String   @default("month")
+  firstDayOfWeek      Int      @default(0)
+  showWeekNumbers     Boolean  @default(false)
+  enableNotifications Boolean  @default(true)
+  notificationTime    Int      @default(30)
+  timeZone            String   @default("UTC")
+  workingHoursStart   String   @default("09:00")
+  workingHoursEnd     String   @default("17:00")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Group {
+  id          String  @id @default(cuid())
+  name        String
+  description String? @db.Text
+  imageUrl    String?
+
+  // Keep existing fields as optional
+  privacy   String?
+  rules     String[] @default([])
+  tags      String[] @default([])
+  isPrivate Boolean  @default(false)
+
+  // Keep both old and new category fields as optional
+  category    String? // Keep the old field
+  categoryId  String? // Add new field for relation
+  categoryRef Category? @relation(fields: [categoryId], references: [id]) // Rename relation to avoid conflict
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  resources     GroupResource[]
+  creator       User                @relation("GroupCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId     String
+  members       GroupMember[]
+  course        Course?             @relation(fields: [courseId], references: [id])
+  courseId      String?
+  discussions   GroupDiscussion[]
+  events        GroupEvent[]
+  notifications GroupNotification[]
+
+  @@index([creatorId])
+  @@index([courseId])
+  @@index([categoryId])
+}
+
+model GroupMember {
+  id       String   @id @default(cuid())
+  role     String // "admin" | "moderator" | "member"
+  status   String // "active" | "pending" | "banned"
+  joinedAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
+  @@index([userId])
+  @@index([groupId])
+}
+
+// Add these models for notifications and search
+model GroupNotification {
+  id      String  @id @default(cuid())
+  type    String // "event", "discussion", "resource", "member"
+  title   String
+  content String
+  isRead  Boolean @default(false)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([groupId])
+}
+
+// Add this model to your schema
+model GroupDiscussion {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  authorId String
+  author   User   @relation("AuthoredDiscussions", fields: [authorId], references: [id], onDelete: Cascade)
+
+  commentsList GroupDiscussionComment[]
+  likedBy      GroupDiscussionLike[]
+
+  @@index([groupId])
+  @@index([authorId])
+}
+
+model GroupDiscussionLike {
+  id           String          @id @default(cuid())
+  discussionId String
+  discussion   GroupDiscussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation("UserLikes", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([discussionId, userId])
+  @@index([discussionId])
+  @@index([userId])
+}
+
+model GroupDiscussionComment {
+  id      String @id @default(cuid())
+  content String @db.Text
+
+  discussionId String
+  discussion   GroupDiscussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+
+  authorId String
+  author   User   @relation("AuthoredComments", fields: [authorId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([discussionId])
+  @@index([authorId])
+}
+
+// Add this model for group events
+model GroupEvent {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?  @db.Text
+  date         DateTime
+  startTime    String? // Made optional
+  endTime      String? // Made optional
+  location     String?
+  isOnline     Boolean  @default(false)
+  meetingUrl   String?
+  maxAttendees Int?
+  status       String   @default("upcoming") // upcoming, ongoing, completed, cancelled
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Make both creator and organizer optional to avoid data loss
+  creatorId String?
+  creator   User?   @relation("EventCreator", fields: [creatorId], references: [id], onDelete: SetNull)
+
+  organizerId String?
+  organizer   User?   @relation("OrganizedEvents", fields: [organizerId], references: [id], onDelete: SetNull)
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  attendees GroupEventAttendee[]
+
+  @@index([creatorId])
+  @@index([organizerId])
+  @@index([groupId])
+}
+
+model GroupEventAttendee {
+  id     String @id @default(cuid())
+  status String @default("attending") // attending, maybe, declined
+
+  eventId String
+  event   GroupEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation("EventAttendee", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+}
+
+model GroupResource {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  type        String // "document", "video", "link", "image", "book", "pdf"
+  url         String
+  fileSize    Int? // For documents and files
+  mimeType    String? // For proper file handling
+  thumbnail   String? // For videos and images
+  createdAt   DateTime @default(now())
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  authorId String
+  author   User   @relation("AuthoredResources", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([groupId])
+  @@index([authorId])
+}

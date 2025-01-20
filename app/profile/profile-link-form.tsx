@@ -21,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { motion } from "framer-motion";
 
 interface ProfileLinkFormProps {
   userId: string;
@@ -38,9 +39,20 @@ export const ProfileLinkForm = ({
 }: ProfileLinkFormProps) => {
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editingLinkId, setEditingLinkId] = useState<string | null>(null);
 
   const toggleCreating = () => {
     setIsCreating((current) => !current);
+    setEditMode(false);
+    form.reset();
+  };
+
+  const cancelEditMode = () => {
+    setEditMode(false);
+    setEditingLinkId(null);
+    form.reset();
   };
 
   const router = useRouter();
@@ -55,9 +67,7 @@ export const ProfileLinkForm = ({
   });
 
   const { isSubmitting, isValid } = form.formState;
-
   const watchedValues = form.watch();
-
   const isFormComplete = !!watchedValues.platform && !!watchedValues.url;
 
   useEffect(() => {
@@ -67,7 +77,6 @@ export const ProfileLinkForm = ({
   }, [isFormComplete, isValid, watchedValues]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
     try {
       await axios.post(`/api/users/${userId}/profile-links`, values);
       toast.success("Profile link created");
@@ -75,6 +84,24 @@ export const ProfileLinkForm = ({
       router.refresh();
     } catch {
       toast.error("Something went wrong");
+    }
+  };
+
+  const onSave = async (values: z.infer<typeof formSchema>) => {
+    if (!editingLinkId) return;
+    
+    try {
+      setIsUpdating(true);
+      await axios.patch(`/api/users/${userId}/profile-links/${editingLinkId}`, values);
+      toast.success("Profile link updated");
+      setEditMode(false);
+      setEditingLinkId(null);
+      form.reset();
+      router.refresh();
+    } catch {
+      toast.error("Something went wrong");
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -86,7 +113,8 @@ export const ProfileLinkForm = ({
       });
       toast.success("Profile links reordered");
       router.refresh();
-    } catch {
+    } catch (error) {
+      console.error("Reorder error:", error);
       toast.error("Something went wrong");
     } finally {
       setIsUpdating(false);
@@ -94,31 +122,70 @@ export const ProfileLinkForm = ({
   };
 
   const onEdit = (id: string) => {
-    router.push(`/user/${userId}/profile-links/${id}`);
+    const linkToEdit = profileLinks.find((link) => link.id === id);
+    if (linkToEdit) {
+      setEditMode(true);
+      setEditingLinkId(id);
+      form.setValue("platform", linkToEdit.platform);
+      form.setValue("url", linkToEdit.url);
+    }
+  };
+
+  const onDelete = async (profileLinkId: string) => {
+    try {
+      setIsLoading(true);
+      await axios.delete(`/api/users/${userId}/profile-links/${profileLinkId}`);
+      toast.success("Profile link deleted");
+      router.refresh();
+    } catch {
+      toast.error("Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="relative mt-6 border border-[#94a3b8] bg-gray-700 rounded-md p-4">
+    <div className={cn(
+      "relative mt-6 rounded-xl p-6 backdrop-blur-sm",
+      "bg-white/30 dark:bg-gray-800/50",
+      "border border-gray-200/50 dark:border-gray-700/50"
+    )}>
       {isUpdating && (
-        <div className="absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-m flex items-center justify-center">
-          <Loader2 className="animate-spin h-6 w-6 text-sky-700" />
+        <div className="absolute inset-0 bg-black/10 dark:bg-gray-900/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          >
+            <Loader2 className="h-6 w-6 text-purple-500 dark:text-purple-400" />
+          </motion.div>
         </div>
       )}
-      <div className="font-medium flex items-center justify-between text-white/90">
-        Profile Links
-        <Button onClick={toggleCreating} variant="ghost">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+          Profile Links
+        </h3>
+        <Button
+          onClick={toggleCreating}
+          variant="ghost"
+          className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+        >
           {isCreating ? (
-            <>Cancel</>
+            "Cancel"
           ) : (
-            <>
-              <PlusCircle className="h-4 w-4 mr-2" /> Add profile link
-            </>
+            <motion.div className="flex items-center gap-2" whileHover={{ x: 5 }}>
+              <PlusCircle className="h-4 w-4" />
+              Add profile link
+            </motion.div>
           )}
         </Button>
       </div>
-      {isCreating && (
+
+      {(isCreating || editMode) && (
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+          <form
+            onSubmit={form.handleSubmit(editMode ? onSave : onSubmit)}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="platform"
@@ -126,13 +193,19 @@ export const ProfileLinkForm = ({
                 <FormItem>
                   <FormControl>
                     <Input
-                      disabled={isSubmitting}
-                      placeholder="Platform (e.g., Twitter)"
-                      className="text-cyan-400 font-semibold bg-gray-600"
                       {...field}
+                      disabled={isSubmitting || isUpdating}
+                      placeholder="Platform (e.g., Twitter)"
+                      className={cn(
+                        "bg-white/50 dark:bg-gray-900/50",
+                        "border-gray-200 dark:border-gray-700",
+                        "text-gray-900 dark:text-gray-200",
+                        "placeholder:text-gray-500 dark:placeholder:text-gray-400",
+                        "focus:border-purple-500/50 transition-all"
+                      )}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-500 dark:text-rose-400" />
                 </FormItem>
               )}
             />
@@ -143,39 +216,67 @@ export const ProfileLinkForm = ({
                 <FormItem>
                   <FormControl>
                     <Input
-                      disabled={isSubmitting}
-                      placeholder="Profile URL"
-                      className="text-cyan-400 font-semibold bg-gray-600"
                       {...field}
+                      disabled={isSubmitting || isUpdating}
+                      placeholder="Profile URL"
+                      className={cn(
+                        "bg-white/50 dark:bg-gray-900/50",
+                        "border-gray-200 dark:border-gray-700",
+                        "text-gray-900 dark:text-gray-200",
+                        "placeholder:text-gray-500 dark:placeholder:text-gray-400",
+                        "focus:border-purple-500/50 transition-all"
+                      )}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-500 dark:text-rose-400" />
                 </FormItem>
               )}
             />
-            <Button disabled={!isFormComplete || isSubmitting} type="submit">
-              Create
-            </Button>
+            <div className="flex gap-3 pt-2">
+              <Button
+                disabled={!isFormComplete || isSubmitting || isUpdating}
+                type="submit"
+                className="bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white transition-colors"
+              >
+                {editMode ? "Save Changes" : "Create Link"}
+              </Button>
+              {editMode && (
+                <Button
+                  variant="outline"
+                  onClick={cancelEditMode}
+                  disabled={isSubmitting || isUpdating}
+                  className="border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
+                  Cancel
+                </Button>
+              )}
+            </div>
           </form>
         </Form>
       )}
-      {!isCreating && (
-        <div
-          className={cn(
-            "text-sm mt-2",
-            profileLinks.length === 0 && "text-cyan-500 italic font-semibold"
-          )}
-        >
-          {profileLinks.length === 0 && "No profile links"}
+
+      {!isCreating && !editMode && (
+        <>
+          <div className={cn(
+            "mt-4",
+            profileLinks.length === 0 && "text-gray-500 dark:text-gray-400 italic"
+          )}>
+            {profileLinks.length === 0 && "No profile links"}
+            {profileLinks.length > 0 && (
+              <ProfileLinkList
+                onEdit={onEdit}
+                onReorder={onReorder}
+                onDelete={onDelete}
+                items={profileLinks}
+              />
+            )}
+          </div>
           {profileLinks.length > 0 && (
-            <ProfileLinkList onEdit={onEdit} onReorder={onReorder} items={profileLinks} />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-4 italic">
+              Drag and drop to reorder your profile links
+            </p>
           )}
-        </div>
-      )}
-      {!isCreating && (
-        <p className="text-xs text-white/90 mt-4">
-          Drag and drop to reorder the profile links
-        </p>
+        </>
       )}
     </div>
   );

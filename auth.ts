@@ -8,7 +8,7 @@ import { getUserById } from "@/data/user";
 import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
 import { getAccountByUserId } from "./data/account";
 
-export const { handlers: { GET, POST }, auth, signIn, signOut, update,} = NextAuth({
+export const { handlers: { GET, POST }, auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/auth/login",
     error: "/auth/error",
@@ -23,12 +23,12 @@ export const { handlers: { GET, POST }, auth, signIn, signOut, update,} = NextAu
   },
   callbacks: {
     async signIn({ user, account }) {
-      // Allow OAuth without email verification
       if (account?.provider !== "credentials") return true;
-     
+      
+      if (!user.id) return false;
+      
       const existingUser = await getUserById(user.id);
 
-      // Prevent sign in without email verification
       if (!existingUser?.emailVerified) return false;
 
       if (existingUser.isTwoFactorEnabled) {
@@ -36,7 +36,6 @@ export const { handlers: { GET, POST }, auth, signIn, signOut, update,} = NextAu
 
         if (!twoFactorConfirmation) return false;
 
-        // Delete two factor confirmation for next sign in
         await db.twoFactorConfirmation.delete({
           where: { id: twoFactorConfirmation.id }
         });
@@ -58,8 +57,8 @@ export const { handlers: { GET, POST }, auth, signIn, signOut, update,} = NextAu
       }
 
       if (session.user) {
-        session.user.name = token.name;
-        session.user.email = token.email;
+        session.user.name = token.name as string;
+        session.user.email = token.email as string;
         session.user.isOAuth = token.isOAuth as boolean;
       }
       //console.log(session)

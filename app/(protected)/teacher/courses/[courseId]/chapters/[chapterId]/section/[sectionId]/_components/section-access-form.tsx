@@ -4,11 +4,11 @@ import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Pencil } from "lucide-react";
+import { Lock, Unlock, Loader2 } from "lucide-react";
 import { useState } from "react";
-import {toast} from "sonner";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { Section } from "@prisma/client";
+import { motion } from "framer-motion";
 
 import {
   Form,
@@ -16,20 +16,20 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Editor } from "@/components/editor";
-import { Preview } from "@/components/preview";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 
 interface SectionAccessFormProps {
-  initialData: Section;
+  initialData: {
+    isFree: boolean;
+    isPublished: boolean;
+  };
   courseId: string;
   chapterId: string;
-  sectionId:string;
-};
+  sectionId: string;
+}
 
 const formSchema = z.object({
   isFree: z.boolean().default(false),
@@ -39,12 +39,9 @@ export const SectionAccessForm = ({
   initialData,
   courseId,
   chapterId,
-  sectionId
+  sectionId,
 }: SectionAccessFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
-
-  const toggleEdit = () => setIsEditing((current) => !current);
-
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -54,45 +51,88 @@ export const SectionAccessForm = ({
     },
   });
 
-  const { isSubmitting, isValid } = form.formState;
+  const { isSubmitting } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}/section/${sectionId}`, values);
-      toast.success("Chapter updated");
-      toggleEdit();
+      await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}/sections/${sectionId}`, values);
+      toast.success("Section access updated");
+      setIsEditing(false);
       router.refresh();
     } catch {
       toast.error("Something went wrong");
     }
-  }
+  };
+
+  const Icon = form.getValues("isFree") ? Unlock : Lock;
 
   return (
-    <div className="mt-6 border border-[#94a3b8] bg-gray-700 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between text-white/90">
-        Section access
-        <Button onClick={toggleEdit} variant="ghost">
-          {isEditing ? (
-            <>Cancel</>
-          ) : (
-            <>
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit access
-            </>
+    <div className={cn(
+      "p-4 mt-4 rounded-lg",
+      "border border-gray-200 dark:border-gray-700/50",
+      "bg-white/50 dark:bg-gray-800/40",
+      "hover:bg-gray-50 dark:hover:bg-gray-800/60",
+      "transition-all duration-200",
+      "backdrop-blur-sm"
+    )}>
+      <div className="font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-2">
+        <div className="flex items-center gap-x-2">
+          <div className={cn(
+            "p-2 w-fit rounded-lg transition-all duration-200",
+            form.getValues("isFree")
+              ? "bg-emerald-50 dark:bg-emerald-500/10"
+              : "bg-amber-50 dark:bg-amber-500/10"
+          )}>
+            <Icon className={cn(
+              "h-5 w-5",
+              form.getValues("isFree")
+                ? "text-emerald-600 dark:text-emerald-400"
+                : "text-amber-600 dark:text-amber-400"
+            )} />
+          </div>
+          <div>
+            <h3 className={cn(
+              "text-base sm:text-lg font-semibold bg-gradient-to-r bg-clip-text text-transparent",
+              form.getValues("isFree")
+                ? "from-emerald-600 to-cyan-600 dark:from-emerald-400 dark:to-cyan-400"
+                : "from-amber-600 to-yellow-600 dark:from-amber-400 dark:to-yellow-400"
+            )}>
+              Section Access Settings
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Control who can access this section
+            </p>
+          </div>
+        </div>
+        <Button
+          onClick={() => setIsEditing(!isEditing)}
+          variant="ghost"
+          size="sm"
+          className={cn(
+            "transition-all duration-200",
+            "w-full sm:w-auto",
+            "justify-center",
+            form.getValues("isFree")
+              ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 hover:text-emerald-800 dark:hover:text-emerald-200"
+              : "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/20 hover:text-amber-800 dark:hover:text-amber-200"
           )}
+        >
+          {isEditing ? "Cancel" : "Edit access"}
         </Button>
       </div>
       {!isEditing && (
-        <p className={cn(
-          "text-sm mt-2 text-white/60",
-          !initialData.isFree && "text-cyan-400 italic font-semibold"
-        )}>
-          {initialData.isFree ? (
-            <>This section is free for preview.</>
-          ) : (
-            <>This section is not free.</>
+        <motion.p 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={cn(
+            "text-sm sm:text-base mt-2",
+            form.getValues("isFree")
+              ? "text-emerald-700 dark:text-emerald-300"
+              : "text-amber-700 dark:text-amber-300"
           )}
-        </p>
+        >
+          This section is {form.getValues("isFree") ? "free for preview" : "only for enrolled students"}
+        </motion.p>
       )}
       {isEditing && (
         <Form {...form}>
@@ -104,32 +144,67 @@ export const SectionAccessForm = ({
               control={form.control}
               name="isFree"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 bg-white/90">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormDescription className="text-black font-semibold">
-                      Check this box if you want to make this section free for preview
-                    </FormDescription>
+                <FormItem className={cn(
+                  "p-4 rounded-lg space-y-3",
+                  "border border-gray-200 dark:border-gray-700/50",
+                  "bg-white/50 dark:bg-gray-900/50"
+                )}>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-x-2">
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className={cn(
+                          "data-[state=checked]:bg-emerald-600 dark:data-[state=checked]:bg-emerald-500",
+                          "data-[state=unchecked]:bg-amber-600 dark:data-[state=unchecked]:bg-amber-500"
+                        )}
+                      />
+                    </FormControl>
+                    <div className="space-y-1">
+                      <p className="font-medium text-gray-900 dark:text-gray-200">
+                        Free Section Preview
+                      </p>
+                      <FormDescription className="text-gray-600 dark:text-gray-400">
+                        Make this section free for preview
+                      </FormDescription>
+                    </div>
                   </div>
                 </FormItem>
               )}
             />
             <div className="flex items-center gap-x-2">
               <Button
-                disabled={!isValid || isSubmitting}
+                disabled={isSubmitting}
                 type="submit"
+                variant="ghost"
+                size="sm"
+                className={cn(
+                  "transition-all duration-200",
+                  "w-full sm:w-auto",
+                  "justify-center",
+                  form.getValues("isFree")
+                    ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 hover:text-emerald-800 dark:hover:text-emerald-200 border border-emerald-200/20 dark:border-emerald-500/20"
+                    : "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/20 hover:text-amber-800 dark:hover:text-amber-200 border border-amber-200/20 dark:border-amber-500/20"
+                )}
               >
-                Save
+                {isSubmitting ? (
+                  <div className="flex items-center gap-x-2">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    >
+                      <Loader2 className="h-4 w-4" />
+                    </motion.div>
+                    <span>Saving...</span>
+                  </div>
+                ) : (
+                  "Save"
+                )}
               </Button>
             </div>
           </form>
         </Form>
       )}
     </div>
-  )
-}
+  );
+};
