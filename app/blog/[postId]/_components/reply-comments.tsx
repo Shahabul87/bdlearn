@@ -9,7 +9,8 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Post } from "@prisma/client";
 import Image from 'next/image';
-
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -18,7 +19,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 
 interface PostCommentProps {
   initialData: Post;
@@ -91,16 +91,37 @@ export const ReplyComment = ({
   };
 
   return (
-    <div className="mt-4 border-t border-gray-700 pt-4">
-      <div className="flex items-center space-x-3">
+    <div className={cn(
+      "mt-4 pt-4",
+      "border-t border-gray-200/50 dark:border-gray-700/50",
+      "bg-gradient-to-br from-white/50 to-gray-50/50 dark:from-gray-800/30 dark:to-gray-900/30",
+      "backdrop-blur-sm",
+      "rounded-xl",
+      "transition-all duration-300"
+    )}>
+      <div className="flex items-center space-x-3 px-4">
         <Image 
           src="/path/to/avatar.jpg"
           alt="User avatar"
           width={40}
           height={40}
-          className="rounded-full"
+          className={cn(
+            "rounded-full",
+            "ring-2 ring-purple-500/20",
+            "transition-all duration-300",
+            "group-hover:ring-purple-500/40"
+          )}
         />
-        <Button onClick={toggleComment} variant="ghost" className="text-gray-400">
+        <Button 
+          onClick={toggleComment} 
+          variant="ghost" 
+          className={cn(
+            "text-gray-600 dark:text-gray-400",
+            "hover:text-gray-700 hover:bg-gray-100/50",
+            "dark:hover:text-gray-300 dark:hover:bg-gray-800/50",
+            "transition-colors duration-200"
+          )}
+        >
           Write a reply...
         </Button>
       </div>
@@ -109,7 +130,7 @@ export const ReplyComment = ({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="mt-2"
+            className="mt-2 px-4 pb-4"
           >
             <FormField
               control={form.control}
@@ -120,11 +141,20 @@ export const ReplyComment = ({
                     <Input
                       disabled={isSubmitting}
                       placeholder="Write your reply here..."
-                      className="text-white bg-gray-800 rounded-full px-4 py-2 w-full"
+                      className={cn(
+                        "bg-white/80 dark:bg-gray-900/50",
+                        "text-gray-700 dark:text-gray-200",
+                        "border border-gray-200/50 dark:border-gray-700/50",
+                        "rounded-full px-4 py-2 w-full",
+                        "placeholder:text-gray-500",
+                        "focus:ring-2 focus:ring-purple-500/20",
+                        "hover:bg-white dark:hover:bg-gray-900/70",
+                        "transition-all duration-200"
+                      )}
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-500 dark:text-red-400" />
                 </FormItem>
               )}
             />
@@ -133,18 +163,34 @@ export const ReplyComment = ({
                 type="button"
                 onClick={toggleEmojiPicker}
                 variant="ghost"
-                className="text-gray-400"
+                className={cn(
+                  "text-gray-600 dark:text-gray-400",
+                  "hover:text-gray-700 hover:bg-gray-100/50",
+                  "dark:hover:text-gray-300 dark:hover:bg-gray-800/50",
+                  "transition-colors duration-200"
+                )}
               >
                 😊 Reaction
               </Button>
               
               {showEmojiPicker && (
-                <div className="absolute bottom-full mb-2 bg-gray-700 rounded-md shadow-lg p-2 flex gap-2 flex-wrap max-w-xs">
+                <div className={cn(
+                  "absolute bottom-full mb-2",
+                  "bg-white/95 dark:bg-gray-900/95",
+                  "border border-gray-200/50 dark:border-gray-700/50",
+                  "rounded-md shadow-lg",
+                  "p-2 flex gap-2 flex-wrap max-w-xs",
+                  "backdrop-blur-sm"
+                )}>
                   {emojiOptions.map((emoji) => (
                     <button
                       key={emoji}
                       onClick={() => handleReactionSelect(emoji)}
-                      className="text-lg"
+                      className={cn(
+                        "text-lg p-1 rounded",
+                        "hover:bg-gray-100/80 dark:hover:bg-gray-700/80",
+                        "transition-all duration-200"
+                      )}
                     >
                       {emoji}
                     </button>
@@ -156,14 +202,29 @@ export const ReplyComment = ({
                 type="button"
                 onClick={toggleComment}
                 variant="ghost"
-                className="text-gray-400"
+                className={cn(
+                  "text-gray-600 dark:text-gray-400",
+                  "hover:text-gray-700 hover:bg-gray-100/50",
+                  "dark:hover:text-gray-300 dark:hover:bg-gray-800/50",
+                  "transition-colors duration-200"
+                )}
               >
                 Cancel
               </Button>
               <Button
                 disabled={!isValid || isSubmitting}
                 type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded-full"
+                className={cn(
+                  "bg-blue-500 hover:bg-blue-600",
+                  "dark:bg-blue-600 dark:hover:bg-blue-700",
+                  "text-white font-medium",
+                  "px-4 py-2 rounded-full",
+                  "shadow-lg shadow-blue-500/10",
+                  "hover:shadow-blue-500/20",
+                  "transition-all duration-200",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
+                  "disabled:hover:shadow-none"
+                )}
               >
                 Save
               </Button>

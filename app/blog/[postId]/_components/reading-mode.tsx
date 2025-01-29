@@ -41,17 +41,17 @@ const ReadingModes = ({ post }: ReadingModesProps) => {
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-wrap items-center justify-between gap-4 p-4 bg-gray-800/50 rounded-xl border border-gray-700/50 backdrop-blur-sm"
+        className="flex flex-wrap items-center justify-between gap-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700/50 backdrop-blur-sm"
       >
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Book className="w-5 h-5 text-purple-400" />
-            <span className="text-sm font-medium bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+            <Book className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
               Reading Mode
             </span>
           </div>
           
-          <div className="h-4 w-px bg-gradient-to-b from-purple-500/50 to-blue-500/50" />
+          <div className="h-4 w-px bg-gray-200 dark:bg-gradient-to-b dark:from-purple-500/50 dark:to-blue-500/50" />
           
           {/* Mode Selection */}
           <div className="flex items-center gap-2">
@@ -64,8 +64,8 @@ const ReadingModes = ({ post }: ReadingModesProps) => {
                 className={cn(
                   "transition-all duration-200",
                   activeMode === mode.id 
-                    ? "bg-purple-500/20 text-purple-300" 
-                    : "text-gray-400 hover:text-gray-300"
+                    ? "bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300" 
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300"
                 )}
               >
                 <mode.icon className="w-4 h-4 mr-2" />
@@ -84,7 +84,9 @@ const ReadingModes = ({ post }: ReadingModesProps) => {
               onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
               className={cn(
                 "transition-all duration-200",
-                theme === 'light' ? "text-yellow-400 hover:text-yellow-300" : "text-blue-400 hover:text-blue-300"
+                theme === 'light' 
+                  ? "text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300" 
+                  : "text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
               )}
             >
               {theme === 'light' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -94,7 +96,7 @@ const ReadingModes = ({ post }: ReadingModesProps) => {
               variant="ghost"
               size="sm"
               onClick={() => setAlignment(alignment === 'left' ? 'center' : 'left')}
-              className="text-gray-400 hover:text-gray-300 transition-all duration-200"
+              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300 transition-all duration-200"
             >
               {alignment === 'left' ? <AlignLeft className="w-4 h-4" /> : <AlignCenter className="w-4 h-4" />}
             </Button>
@@ -102,24 +104,24 @@ const ReadingModes = ({ post }: ReadingModesProps) => {
 
           {/* Font Size Controls */}
           <div className="flex items-center gap-2">
-            <Type className="w-4 h-4 text-gray-400" />
+            <Type className="w-4 h-4 text-gray-600 dark:text-gray-400" />
             <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setFontSize(Math.max(12, fontSize - 2))}
-                className="text-gray-400 hover:text-gray-300"
+                className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300"
               >
                 <Minus className="w-3 h-3" />
               </Button>
-              <span className="text-sm font-medium text-gray-300 min-w-[2rem] text-center">
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-300 min-w-[2rem] text-center">
                 {fontSize}px
               </span>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setFontSize(Math.min(24, fontSize + 2))}
-                className="text-gray-400 hover:text-gray-300"
+                className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300"
               >
                 <Plus className="w-3 h-3" />
               </Button>
@@ -134,16 +136,16 @@ const ReadingModes = ({ post }: ReadingModesProps) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className={cn(
-          "prose prose-invert max-w-none",
-          theme === 'light' && "prose-light",
+          "prose max-w-none",
+          theme === 'light' ? "prose-gray" : "prose-invert",
           alignment === 'center' && "text-center"
         )}
         style={{ 
           fontSize: `${fontSize}px`,
-          backgroundColor: theme === 'light' ? 'rgb(255, 255, 255, 0.05)' : 'transparent',
+          backgroundColor: theme === 'light' ? 'rgb(249, 250, 251)' : 'rgb(17, 24, 39, 0.05)',
           padding: '2rem',
           borderRadius: '0.75rem',
-          border: '1px solid rgba(107, 114, 128, 0.1)',
+          border: theme === 'light' ? '1px solid rgb(229, 231, 235)' : '1px solid rgba(75, 85, 99, 0.1)',
         }}
       >
         {activeMode === 1 && <StickyScroll content={content} />}

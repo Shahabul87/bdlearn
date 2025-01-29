@@ -80,7 +80,7 @@ export const PostComment = ({
   };
 
   return (
-    <div className="mt-6 border-t border-gray-800/50 pt-6 mb-5">
+    <div className="mt-6 border-t border-gray-200/50 dark:border-gray-800/50 pt-6 mb-5">
       <div className="flex items-center gap-4 mb-5">
         <div className="relative group">
           <Image
@@ -96,9 +96,9 @@ export const PostComment = ({
           onClick={toggleComment} 
           variant="ghost" 
           className={cn(
-            "text-gray-400/90 lg:text-lg",
+            "text-gray-600 dark:text-gray-400/90 lg:text-lg",
             "font-light tracking-wide",
-            "hover:text-gray-300 hover:bg-gray-800/50",
+            "hover:text-gray-700 hover:bg-gray-100/50 dark:hover:text-gray-300 dark:hover:bg-gray-800/50",
             "transition-all duration-300"
           )}
         >
@@ -119,18 +119,18 @@ export const PostComment = ({
                       disabled={isSubmitting}
                       placeholder="Write your comment here..."
                       className={cn(
-                        "text-gray-200 bg-gray-800/50",
-                        "border border-gray-700/50",
+                        "text-gray-700 dark:text-gray-200 bg-white/50 dark:bg-gray-800/50",
+                        "border border-gray-200/50 dark:border-gray-700/50",
                         "rounded-xl px-4 py-3",
                         "text-base placeholder:text-gray-500",
                         "focus:ring-2 focus:ring-purple-500/20",
                         "transition-all duration-300",
-                        "hover:bg-gray-800/70"
+                        "hover:bg-gray-50/70 dark:hover:bg-gray-800/70"
                       )}
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage className="text-red-400/90" />
+                  <FormMessage className="text-red-500 dark:text-red-400/90" />
                 </FormItem>
               )}
             />
@@ -140,8 +140,8 @@ export const PostComment = ({
                 onClick={toggleEmojiPicker}
                 variant="ghost"
                 className={cn(
-                  "text-gray-400 hover:text-gray-300",
-                  "hover:bg-gray-800/50",
+                  "text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300",
+                  "hover:bg-gray-100/50 dark:hover:bg-gray-800/50",
                   "transition-all duration-300"
                 )}
               >
@@ -151,9 +151,9 @@ export const PostComment = ({
               {showEmojiPicker && (
                 <div className={cn(
                   "absolute bottom-full mb-2",
-                  "bg-gray-800/95 backdrop-blur-sm",
+                  "bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm",
                   "rounded-xl shadow-xl",
-                  "p-3 border border-gray-700/50",
+                  "p-3 border border-gray-200/50 dark:border-gray-700/50",
                   "flex gap-2 flex-wrap max-w-xs",
                   "animate-in fade-in-50 slide-in-from-bottom-2"
                 )}>
@@ -164,7 +164,7 @@ export const PostComment = ({
                       className={cn(
                         "text-lg hover:scale-110",
                         "transition-transform duration-200",
-                        "p-1 rounded-lg hover:bg-gray-700/50"
+                        "p-1 rounded-lg hover:bg-gray-100/50 dark:hover:bg-gray-700/50"
                       )}
                     >
                       {emoji}
@@ -178,8 +178,8 @@ export const PostComment = ({
                 onClick={toggleComment}
                 variant="ghost"
                 className={cn(
-                  "text-gray-400 hover:text-gray-300",
-                  "hover:bg-gray-800/50",
+                  "text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300",
+                  "hover:bg-gray-100/50 dark:hover:bg-gray-800/50",
                   "transition-all duration-300"
                 )}
               >

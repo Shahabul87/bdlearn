@@ -81,7 +81,7 @@ export const StickyScroll = ({
                 }}
                 className={cn(
                   "text-2xl md:text-3xl lg:text-4xl font-semibold",
-                  "bg-gradient-to-r from-purple-200 via-blue-200 to-cyan-200 bg-clip-text text-transparent",
+                  "bg-gradient-to-r dark:from-purple-200 dark:via-blue-200 dark:to-cyan-200 from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent",
                   "tracking-tight leading-tight",
                   "text-center lg:text-left"
                 )}

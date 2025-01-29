@@ -16,8 +16,8 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Alam Academy',
-  description: 'Learn with Alam',
+  title: 'skillhub',
+  description: 'Learn with Shahabul Alam',
 }
 
 export default async function RootLayout({

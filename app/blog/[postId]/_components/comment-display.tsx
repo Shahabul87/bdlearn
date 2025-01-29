@@ -502,11 +502,17 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
   };
 
   return (
-    <div className="space-y-6">
+    <div className={cn(
+      "space-y-6",
+      "bg-gray-100/80 dark:bg-gray-900/80",
+      "backdrop-blur-sm",
+      "rounded-xl",
+      "p-6"
+    )}>
       {/* Updated Comments Counter */}
-      <div className="flex items-center gap-4 text-gray-400">
+      <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400">
         <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-transparent">
+          <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
             {getCommentCounts(initialData.comments, initialData.comments.flatMap(comment => comment.replies)).comments}
           </span>
           <span className="text-sm">
@@ -517,7 +523,7 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-transparent">
+          <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
             {getCommentCounts(initialData.comments, initialData.comments.flatMap(comment => comment.replies)).replies}
           </span>
           <span className="text-sm">
@@ -528,8 +534,8 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">Total:</span>
-          <span className="text-lg font-semibold bg-gradient-to-r from-blue-200 to-blue-400 bg-clip-text text-transparent">
+          <span className="text-sm text-gray-500 dark:text-gray-500">Total:</span>
+          <span className="text-lg font-semibold text-blue-600 dark:text-blue-400">
             {getCommentCounts(initialData.comments, initialData.comments.flatMap(comment => comment.replies)).total}
           </span>
         </div>
@@ -541,7 +547,14 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
           {sortByDate(initialData.comments).map((comment) => (
             <div 
               key={comment.id}
-              className="group bg-gray-800/30 rounded-xl border border-gray-700/50 p-6 backdrop-blur-sm transition-all duration-300 hover:bg-gray-800/50"
+              className={cn(
+                "group rounded-xl p-6",
+                "bg-white/50 dark:bg-gray-800/50",
+                "border border-gray-200/50 dark:border-gray-700/50",
+                "backdrop-blur-sm",
+                "transition-all duration-300",
+                "hover:bg-gray-50/80 dark:hover:bg-gray-800/70"
+              )}
             >
               {/* Comment Header */}
               <div className="flex items-center gap-4 mb-3">
@@ -556,10 +569,10 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
                   <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-blue-500/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 <div>
-                  <span className="font-semibold text-lg bg-gradient-to-r from-gray-100 to-gray-300 bg-clip-text text-transparent">
+                  <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
                     {comment.user?.name || "Anonymous"}
                   </span>
-                  <p className="text-gray-400 text-sm font-medium tracking-wide">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm font-medium tracking-wide">
                     {new Date(comment.createdAt).toLocaleDateString('en-US', {
                       month: 'long',
                       day: 'numeric',
@@ -570,7 +583,7 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
               </div>
 
               {/* Comment Content */}
-              <p className="text-gray-300 text-base leading-relaxed tracking-wide font-light ml-14 mb-4">
+              <p className="text-gray-700 dark:text-gray-300 text-base leading-relaxed tracking-wide font-light ml-14 mb-4">
                 {comment.comments}
               </p>
 
@@ -585,17 +598,14 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
                       "transition-all duration-300",
                       comment.reactions.some(r => r.user?.id === session?.user?.id && r.type === name)
                         ? name === 'HEART' 
-                          ? "bg-red-500/10 text-red-400" 
-                          : "bg-blue-500/10 text-blue-400"
-                        : "hover:bg-gray-800/50 text-gray-400 hover:text-gray-300"
+                          ? "bg-red-500/10 text-red-500 dark:text-red-400" 
+                          : "bg-blue-500/10 text-blue-500 dark:text-blue-400"
+                        : "hover:bg-gray-100/80 dark:hover:bg-gray-800/50 text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                     )}
                   >
                     <motion.span
                       className="text-base"
-                      whileHover={{ 
-                        scale: 1.3,
-                        transition: { duration: 0.2 }
-                      }}
+                      whileHover={{ scale: 1.3, transition: { duration: 0.2 } }}
                     >
                       {type}
                     </motion.span>
@@ -603,8 +613,8 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
                       <span className={cn(
                         "text-[10px]",
                         comment.reactions.some(r => r.user?.id === session?.user?.id && r.type === name)
-                          ? name === 'HEART' ? "text-red-400" : "text-blue-400"
-                          : "text-gray-400"
+                          ? name === 'HEART' ? "text-red-500 dark:text-red-400" : "text-blue-500 dark:text-blue-400"
+                        : "text-gray-600 dark:text-gray-400"
                       )}>
                         {comment.reactions.filter(r => r.type === name).length}
                       </span>
@@ -614,7 +624,7 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
 
                 <motion.button
                   whileHover={{ scale: 1.05 }}
-                  className="text-xs text-blue-400 hover:text-blue-300 transition-colors font-medium ml-2"
+                  className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors font-medium ml-2"
                   onClick={() => setActiveReply(activeReply === comment.id ? null : comment.id)}
                 >
                   Reply
@@ -639,11 +649,17 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
                                 {...field}
                                 disabled={isSubmitting}
                                 placeholder="Write your reply..."
-                                className="bg-gray-900/50 border-gray-700/50 text-gray-200 focus:border-blue-500/50 focus:ring-blue-500/20 
-                                  placeholder:text-gray-500 transition-all"
+                                className={cn(
+                                  "bg-white/50 dark:bg-gray-900/50",
+                                  "border-gray-200/50 dark:border-gray-700/50",
+                                  "text-gray-700 dark:text-gray-200",
+                                  "focus:border-blue-500/50 focus:ring-blue-500/20",
+                                  "placeholder:text-gray-500",
+                                  "transition-all"
+                                )}
                               />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-red-500 dark:text-red-400" />
                           </FormItem>
                         )}
                       />
@@ -652,7 +668,7 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
                           type="button"
                           onClick={toggleEmojiPicker}
                           variant="ghost"
-                          className="text-gray-400 hover:text-gray-300 transition-colors"
+                          className="text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                         >
                           😊 Add Reaction
                         </Button>
@@ -661,29 +677,38 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
                             type="button"
                             onClick={() => setActiveReply(null)}
                             variant="ghost"
-                            className="text-gray-400 hover:text-gray-300"
+                            className="text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                           >
                             Cancel
                           </Button>
                           <Button
                             disabled={!isValid || isSubmitting}
                             type="submit"
-                            className="bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 hover:text-blue-200 
-                              transition-all duration-200 border border-blue-500/20"
+                            className={cn(
+                              "bg-blue-500/10 dark:bg-blue-500/10",
+                              "text-blue-600 dark:text-blue-300",
+                              "hover:bg-blue-500/20 dark:hover:bg-blue-500/20",
+                              "hover:text-blue-700 dark:hover:text-blue-200",
+                              "transition-all duration-200",
+                              "border border-blue-500/20"
+                            )}
                           >
                             Reply
                           </Button>
                         </div>
                       </div>
                       {showEmojiPicker && (
-                        <div className="absolute mt-2 bg-gray-800/95 rounded-lg border border-gray-700/50 
-                          shadow-lg p-3 backdrop-blur-sm z-10">
+                        <div className={cn(
+                          "absolute mt-2 rounded-lg shadow-lg p-3 backdrop-blur-sm z-10",
+                          "bg-white/95 dark:bg-gray-800/95",
+                          "border border-gray-200/50 dark:border-gray-700/50"
+                        )}>
                           <div className="grid grid-cols-6 gap-2">
                             {emojiOptions.map((emoji) => (
                               <button
                                 key={emoji}
                                 onClick={() => handleReactionSelect(emoji)}
-                                className="text-xl hover:scale-125 transition-transform p-1"
+                                className="text-xl hover:scale-125 transition-transform p-1 hover:bg-gray-100/50 dark:hover:bg-gray-700/50 rounded-lg"
                               >
                                 {emoji}
                               </button>
@@ -696,12 +721,9 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
                 </div>
               )}
 
-              {/* Replies Section - Sort replies by most recent */}
+              {/* Replies Section */}
               <div className="mt-6 ml-14 space-y-4">
-                {sortByDate(
-                  comment.replies
-                ).map((reply) => {
-                  // Find child replies for this reply
+                {sortByDate(comment.replies).map((reply) => {
                   const childReplies = comment.replies.filter(
                     (r) => r.parentReplyId === reply.id
                   );
@@ -711,7 +733,7 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
                       key={reply.id}
                       reply={{
                         ...reply,
-                        childReplies // Pass child replies to the component
+                        childReplies
                       }}
                       commentId={comment.id}
                     />

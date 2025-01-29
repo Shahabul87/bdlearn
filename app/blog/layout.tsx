@@ -1,4 +1,3 @@
-
 import { SessionProvider } from 'next-auth/react'
 import { auth } from '@/auth'
 import { Toaster } from "@/components/ui/sonner";
@@ -24,16 +23,15 @@ export default async function BlogLayout({
    <SessionProvider session={session}>
     {!user ? <Header /> : <HeaderAfterLogin user={user}/>}
       <div className="relative min-h-screen w-screen">
-        <div className="antialiased bg-gray-800 text-zinc-300 font-body min-h-screen">
+        <div className="antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
           <ConfettiProvider />
           <Toaster />
          
-          <main className ="w-full min-h-screen p-6 px-10">             
+          <main className="w-full min-h-screen p-6 px-10">             
               {children}
           </main> 
         </div>
       </div>
    </SessionProvider>
- 
   )
 }
