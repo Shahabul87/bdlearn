@@ -1,7 +1,14 @@
 "use server";
 
 import { currentRole } from "@/lib/auth";
-import { UserRole } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
+
+const UserRole = {
+  ADMIN: 'ADMIN',
+  USER: 'USER'
+} as const;
+
+type UserRole = (typeof UserRole)[keyof typeof UserRole];
 
 export const admin = async () => {
   const role = await currentRole();

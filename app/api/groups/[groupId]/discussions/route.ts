@@ -56,7 +56,7 @@ export async function GET(
         _count: {
           select: {
             likedBy: true,
-            commentsList: true,
+            comments: true,
           },
         },
       },

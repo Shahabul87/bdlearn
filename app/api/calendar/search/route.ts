@@ -28,14 +28,6 @@ export async function GET(req: Request) {
               { description: { contains: query, mode: 'insensitive' } },
             ],
           } : {},
-          // Categories filter
-          categories?.length ? {
-            category: { in: categories },
-          } : {},
-          // Status filter
-          status?.length ? {
-            status: { in: status },
-          } : {},
           // Date range filter
           startDate ? {
             startDate: { gte: new Date(startDate) },

@@ -26,7 +26,7 @@ export async function generateMetadata({
 
   return {
     title: section.title,
-    description: section.description || undefined
+    description: `Section: ${section.title}`
   };
 }
 

@@ -38,6 +38,8 @@ const formSchema = z.object({
   url: z.string().url("Please enter a valid URL"),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 interface NewResourceDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -55,17 +57,17 @@ export const NewResourceDialog = ({
 }: NewResourceDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
       description: "",
-      type: "link",
+      type: "link" as const,
       url: "",
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: FormValues) => {
     try {
       setIsSubmitting(true);
       await axios.post(`/api/groups/${groupId}/resources`, values);

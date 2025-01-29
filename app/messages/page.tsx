@@ -4,10 +4,10 @@ import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { MessageCenter } from "./_components/message-center";
 
-const MessagesPage = async () => {
+export default async function MessagesPage() {
   const user = await currentUser();
   
-  if (!user) {
+  if (!user?.id) {
     return redirect("/");
   }
 
@@ -16,11 +16,9 @@ const MessagesPage = async () => {
       <ConditionalHeader user={user} />
       <SidebarDemo>
         <div className="p-6 mt-20">
-          <MessageCenter userId={user.id} />
+          <MessageCenter userId={user.id!} />
         </div>
       </SidebarDemo>
     </>
   );
-};
-
-export default MessagesPage; 
+} 

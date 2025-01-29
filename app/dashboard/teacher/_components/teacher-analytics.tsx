@@ -71,9 +71,9 @@ export const TeacherAnalytics = ({ courses }: TeacherAnalyticsProps) => {
         display: false,
       },
       tooltip: {
-        backgroundColor: 'rgb(147, 51, 234)',
-        titleColor: 'white',
-        bodyColor: 'white',
+        backgroundColor: '#1e1e1e',
+        titleColor: '#fff',
+        bodyColor: '#fff',
         padding: 12,
         displayColors: false,
       },
@@ -82,18 +82,24 @@ export const TeacherAnalytics = ({ courses }: TeacherAnalyticsProps) => {
       y: {
         beginAtZero: true,
         grid: {
-          color: 'rgba(0, 0, 0, 0.1)',
+          color: 'rgba(255, 255, 255, 0.1)',
+        },
+        ticks: {
+          color: '#9ca3af',
         },
       },
       x: {
         grid: {
           display: false,
         },
+        ticks: {
+          color: '#9ca3af',
+        },
       },
     },
     interaction: {
+      mode: 'nearest' as const,
       intersect: false,
-      mode: 'index',
     },
   };
 

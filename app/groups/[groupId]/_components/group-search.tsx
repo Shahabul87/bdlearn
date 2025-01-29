@@ -11,6 +11,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import Image from 'next/image';
 
 interface GroupSearchProps {
   group: any;
@@ -51,10 +52,12 @@ export const GroupSearch = ({ group }: GroupSearchProps) => {
                 value={member.user.name}
                 className="flex items-center gap-2"
               >
-                <img
+                <Image 
                   src={member.user.image || "/placeholder.png"}
-                  alt={member.user.name}
-                  className="w-6 h-6 rounded-full"
+                  alt={member.user.name || "Search result"}
+                  width={40}
+                  height={40}
+                  className="rounded-full"
                 />
                 <span>{member.user.name}</span>
                 <span className="text-xs text-gray-500">

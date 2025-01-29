@@ -66,7 +66,7 @@ export const TestimonialsSection = () => {
                   <div className="text-gray-400 text-sm">{testimonial.role}</div>
                 </div>
               </div>
-              <p className="text-gray-300 italic">"{testimonial.quote}"</p>
+              <p className="text-gray-300 italic">&quot;{testimonial.quote}&quot;</p>
             </motion.div>
           ))}
         </div>

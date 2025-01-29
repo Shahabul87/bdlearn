@@ -20,7 +20,8 @@ type CourseForHomepage = {
   title: string;
   description: string | null;
   imageUrl: string | null;
-  price:number;
+  price: number | null;
+  chaptersLength?: number;
   category: {
     id: string;
     name: string;
@@ -51,7 +52,7 @@ export default function PlaceholdersAndVanishInputDemo({ searchParams }: SearchP
 
   useEffect(() => {
     const fetchCourses = async () => {
-      const fetchedCourses = await getCoursesForHomepage({ ...searchParams });
+      const fetchedCourses = await getCoursesForHomepage();
       setCourses(fetchedCourses);
     };
     fetchCourses();
@@ -80,10 +81,11 @@ export default function PlaceholdersAndVanishInputDemo({ searchParams }: SearchP
                 key={item.id}
                 id={item.id}
                 title={item.title}
-                imageUrl={item.imageUrl!}
-                price={item.price!}
-                category={item?.category?.name!}
-                description={item.description}
+                imageUrl={item.imageUrl || '/default-image.jpg'}
+                price={item.price || 0}
+                category={item?.category?.name || 'Uncategorized'}
+                description={item.description || ''}
+                chaptersLength={item.chaptersLength || 0}
               />
             ))}
           </div>

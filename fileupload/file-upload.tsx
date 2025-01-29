@@ -25,17 +25,18 @@ const secondaryVariant = {
   },
 };
 
-export const FileUpload = ({
-  onChange,
-}: {
-  onChange?: (files: File[]) => void;
-}) => {
+interface FileUploadProps {
+  onChange: (files: File[]) => void;
+  className?: string;
+}
+
+export const FileUpload = ({ onChange, className }: FileUploadProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (newFiles: File[]) => {
     setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    onChange && onChange([...files, ...newFiles]);
+    onChange([...files, ...newFiles]);
   };
 
   const handleRemoveFile = (e: React.MouseEvent, fileIndex: number) => {
@@ -44,7 +45,7 @@ export const FileUpload = ({
 
     const updatedFiles = files.filter((_, index) => index !== fileIndex);
     setFiles(updatedFiles);
-    onChange && onChange(updatedFiles);
+    onChange(updatedFiles);
   };
 
   const handleClick = () => {
@@ -61,7 +62,7 @@ export const FileUpload = ({
   });
 
   return (
-    <div className="w-full" {...getRootProps()}>
+    <div className={cn("w-full", className)} {...getRootProps()}>
       <motion.div
         onClick={handleClick}
         whileHover="animate"

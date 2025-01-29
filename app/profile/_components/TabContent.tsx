@@ -13,6 +13,7 @@ import { IdeasContent } from "./ideas-content";
 import { MindsContent } from "./minds-content";
 import { ScriptsContent } from "./scripts-content";
 import { BillingContent } from "./billing-content";
+import { db } from "@/lib/db";
 
 interface TabContentProps {
   selectedTab: string;
@@ -25,7 +26,7 @@ interface TabContentProps {
   subscriptions: Subscription[];
 }
 
-const TabContent: React.FC<TabContentProps> = ({ 
+const TabContent: React.FC<TabContentProps> = async ({ 
   selectedTab, 
   userId, 
   profileLinks, 
@@ -36,7 +37,6 @@ const TabContent: React.FC<TabContentProps> = ({
   subscriptions,
 }) => {
 
-  
   switch (selectedTab) {
     case "IDEAS":
       return <IdeasContent userId={userId} />;
@@ -59,7 +59,11 @@ const TabContent: React.FC<TabContentProps> = ({
     case "FOLLOWING":
       return <p>User follows nobody</p>;
     case "SETTINGS":
-      return <SettingsContent userId={userId} />;
+      const userDetails = await db.user.findUnique({
+        where: { id: userId },
+        include: { profileLinks: true }
+      });
+      return <SettingsContent userDetails={userDetails} />;
     case "SUBSCRIPTION":
       return <SubscriptionLinkForm userId={userId} subscriptions={subscriptions} />;
     case "BILLING":

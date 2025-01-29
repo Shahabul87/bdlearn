@@ -7,10 +7,11 @@ import { cn } from "@/lib/utils";
 interface DayViewProps {
   selectedDate: Date;
   events: any[];
-  onSelectTime: (hour: number) => void;
+  onTimeSelect: (date: Date) => void;
+  onEventClick: (event: any) => void;
 }
 
-export const DayView = ({ selectedDate, events, onSelectTime }: DayViewProps) => {
+export const DayView = ({ selectedDate, events, onTimeSelect, onEventClick }: DayViewProps) => {
   return (
     <div className="space-y-2">
       {/* Day Header */}
@@ -36,7 +37,7 @@ export const DayView = ({ selectedDate, events, onSelectTime }: DayViewProps) =>
                 "hover:border-purple-500 dark:hover:border-purple-400",
                 "transition-colors"
               )}
-              onClick={() => onSelectTime(hour)}
+              onClick={() => onTimeSelect(new Date(new Date(selectedDate).setHours(hour)))}
             >
               {/* Time Label */}
               <div className="absolute -left-16 top-0 w-14 text-right">

@@ -29,7 +29,12 @@ const iconMap = {
   success: CheckCircleIcon,
 };
 
-const BannerContent = ({ children, className }) => {
+interface BannerContentProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+const BannerContent = ({ children, className }: BannerContentProps) => {
   return (
     <motion.div 
       initial={{ opacity: 0, y: -20 }}

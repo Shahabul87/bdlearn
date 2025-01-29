@@ -105,6 +105,7 @@ export const PostChapterDescriptionForm = ({
                   <FormControl>
                     <Editor
                       {...field}
+                      disabled={false}
                     />
                   </FormControl>
                   <FormMessage />

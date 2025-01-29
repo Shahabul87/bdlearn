@@ -32,32 +32,12 @@ import { UserRole } from "@prisma/client";
 
 export const SettingsSchema = z.object({
   name: z.optional(z.string()),
-  isTwoFactorEnabled: z.optional(z.boolean()),
-  role: z.enum(["ADMIN", "USER", "TEACHER", "PARENTS"] as const), // Explicitly defined roles
   email: z.optional(z.string().email()),
   password: z.optional(z.string().min(6)),
   newPassword: z.optional(z.string().min(6)),
-})
-  .refine((data) => {
-    if (data.password && !data.newPassword) {
-      return false;
-    }
-
-    return true;
-  }, {
-    message: "New password is required!",
-    path: ["newPassword"]
-  })
-  .refine((data) => {
-    if (data.newPassword && !data.password) {
-      return false;
-    }
-
-    return true;
-  }, {
-    message: "Password is required!",
-    path: ["password"]
-  });
+  role: z.enum(["ADMIN", "USER"]), // Only include roles that exist in Prisma schema
+  isTwoFactorEnabled: z.optional(z.boolean())
+});
 
 
 export const NewPasswordSchema = z.object({

@@ -9,16 +9,7 @@ import {
   ExternalLink 
 } from "lucide-react";
 import Image from "next/image";
-
-interface Resource {
-  id: string;
-  title: string;
-  type: string;
-  description: string;
-  imageUrl?: string;
-  link: string;
-  category: string;
-}
+import { Resource } from "./types";
 
 interface ResourceGridProps {
   resources: Resource[];

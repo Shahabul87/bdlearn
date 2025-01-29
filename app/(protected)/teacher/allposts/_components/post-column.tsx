@@ -1,7 +1,7 @@
 "use client";
 
 import { Post } from "@prisma/client";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { ArrowUpDown, Pencil, Trash2, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -127,72 +127,76 @@ export const columns: ColumnDef<Post>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const [isDeleting, setIsDeleting] = useState(false);
-      const router = useRouter();
-      const { id } = row.original;
+      const Cell = ({ row }: { row: Row<Post> }) => {
+        const [isDeleting, setIsDeleting] = useState(false);
+        const router = useRouter();
+        const { id } = row.original;
 
-      const onDelete = async () => {
-        try {
-          setIsDeleting(true);
-          await axios.delete(`/api/posts/${id}`);
-          toast.success("Post deleted");
-          router.refresh();
-        } catch {
-          toast.error("Something went wrong");
-        } finally {
-          setIsDeleting(false);
-        }
+        const onDelete = async () => {
+          try {
+            setIsDeleting(true);
+            await axios.delete(`/api/posts/${id}`);
+            toast.success("Post deleted");
+            router.refresh();
+          } catch {
+            toast.error("Something went wrong");
+          } finally {
+            setIsDeleting(false);
+          }
+        };
+
+        return (
+          <div className="flex items-center gap-x-2">
+            <Link href={`/teacher/posts/${id}`}>
+              <Button size="sm" variant="ghost" className="text-white hover:text-white">
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </Link>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  size="sm" 
+                  variant="ghost"
+                  className="text-red-500 hover:text-red-600"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="bg-gray-900 border border-gray-800">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="text-white">
+                    Are you sure you want to delete this post?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-gray-400">
+                    This action cannot be undone. This will permanently delete your post.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="text-white bg-gray-800 hover:bg-gray-700 border-gray-700">
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={onDelete}
+                    className="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600"
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Deleting...
+                      </>
+                    ) : (
+                      "Delete Post"
+                    )}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        );
       };
 
-      return (
-        <div className="flex items-center gap-x-2">
-          <Link href={`/teacher/posts/${id}`}>
-            <Button size="sm" variant="ghost" className="text-white hover:text-white">
-              <Pencil className="h-4 w-4" />
-            </Button>
-          </Link>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button 
-                size="sm" 
-                variant="ghost"
-                className="text-red-500 hover:text-red-600"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent className="bg-gray-900 border border-gray-800">
-              <AlertDialogHeader>
-                <AlertDialogTitle className="text-white">
-                  Are you sure you want to delete this post?
-                </AlertDialogTitle>
-                <AlertDialogDescription className="text-gray-400">
-                  This action cannot be undone. This will permanently delete your post.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel className="text-white bg-gray-800 hover:bg-gray-700 border-gray-700">
-                  Cancel
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={onDelete}
-                  className="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600"
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Deleting...
-                    </>
-                  ) : (
-                    "Delete Post"
-                  )}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-      );
+      return <Cell row={row} />;
     }
   }
 ];

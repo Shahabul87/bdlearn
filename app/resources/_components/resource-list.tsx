@@ -10,16 +10,7 @@ import {
   Calendar 
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-
-interface Resource {
-  id: string;
-  title: string;
-  type: string;
-  description: string;
-  link: string;
-  category: string;
-  createdAt: Date;
-}
+import { Resource } from "./types";
 
 interface ResourceListProps {
   resources: Resource[];

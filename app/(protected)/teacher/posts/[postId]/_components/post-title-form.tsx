@@ -36,6 +36,7 @@ export const PostTitleForm = ({
   initialData,
   postId
 }: TitleFormProps) => {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({

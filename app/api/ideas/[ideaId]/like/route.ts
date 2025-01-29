@@ -45,7 +45,7 @@ export async function POST(
 
     await db.idea.update({
       where: {
-        id: params.ideId,
+        id: params.ideaId,
       },
       data: {
         likes: likesCount,

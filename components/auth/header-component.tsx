@@ -11,7 +11,7 @@ interface HeaderProps {
   className?: string; // Optional className prop
 };
 
-export const Header = ({
+export const HeaderComponent = ({
   label,
   className, // Accept className as a prop
 }: HeaderProps) => {

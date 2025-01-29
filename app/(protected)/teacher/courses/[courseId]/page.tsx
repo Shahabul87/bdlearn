@@ -16,7 +16,6 @@ import { FileUploadForm } from "./_components/file-upload-form";
 import { Header } from "@/app/(homepage)/header";
 import { HeaderAfterLogin } from "@/app/(homepage)/header-after-login";
 import { SidebarDemo } from "@/components/ui/sidebar-demo";
-import { ImageFormNew } from "./_components/image-upload-form";
 import { ImageFormCombined } from "./_components/image-upload-form-combined";
 import ConditionalHeader from "@/app/(homepage)/user-header";
 import { cn } from "@/lib/utils";

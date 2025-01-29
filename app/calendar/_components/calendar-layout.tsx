@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { CalendarContainer } from "./calendar-container";
 import { SearchHandler } from "./search-handler";
 import { SettingsPanel } from "./settings-panel";
@@ -10,10 +10,12 @@ import { useSearchParams } from "next/navigation";
 import { handleCalendarError } from "../_lib/error-handler";
 
 interface CalendarLayoutProps {
-  userId: string;
+  userId: string | undefined;
 }
 
 export const CalendarLayout = ({ userId }: CalendarLayoutProps) => {
+  if (!userId) return null;
+
   const searchParams = useSearchParams();
   const { settings } = useSettingsStore();
   const { syncSettings, isInitialized } = useSettingsSync();
@@ -23,11 +25,11 @@ export const CalendarLayout = ({ userId }: CalendarLayoutProps) => {
     if (isInitialized) {
       syncSettings().catch((error) => {
         handleCalendarError(error, { 
-          silent: !isInitialized // Only show error if it's not the initial sync
+          silent: !isInitialized
         });
       });
     }
-  }, [isInitialized, settings]);
+  }, [isInitialized, settings, syncSettings]);
 
   // Get filters from URL
   const filters = {

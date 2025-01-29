@@ -42,16 +42,20 @@ const ReactQuill = dynamic(() => import('react-quill'), {
 
 interface EditorProps {
   onChange: (value: string) => void;
-  value: string;
-};
+  disabled?: boolean;
+  placeholder?: string;
+  value?: string;
+}
 
-export const Editor = ({ onChange, value }: EditorProps) => {
+export const Editor = ({ onChange, disabled, placeholder, value }: EditorProps) => {
   return (
     <div className="bg-white">
       <ReactQuill
         theme="snow"
         value={value}
         onChange={onChange}
+        placeholder={placeholder}
+        readOnly={disabled}
       />
     </div>
   );

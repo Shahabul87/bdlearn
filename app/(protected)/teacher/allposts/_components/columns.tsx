@@ -27,13 +27,13 @@ export const columns: ColumnDef<any>[] = [
     accessorKey: "category",
     header: "Category",
     cell: ({ row }) => {
-      const category = row.getValue("category");
+      const category = row.getValue("category") as string;
       
       return (
         <div className={cn(
-          "inline-flex items-center px-2 py-1 rounded-full text-sm font-medium",
-          "bg-purple-50 dark:bg-purple-500/10",
-          "text-purple-700 dark:text-purple-300",
+          "px-2 py-1 rounded-full text-xs",
+          "bg-purple-100 dark:bg-purple-500/10",
+          "text-purple-600 dark:text-purple-400",
           "border border-purple-200 dark:border-purple-500/20"
         )}>
           {category}
@@ -60,7 +60,7 @@ export const columns: ColumnDef<any>[] = [
       return (
         <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
           <Calendar className="h-4 w-4 text-gray-400" />
-          {format(new Date(date), 'MMM dd, yyyy')}
+          {format(new Date(date as string), 'MMM dd, yyyy')}
         </div>
       )
     },

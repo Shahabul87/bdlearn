@@ -23,6 +23,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
+import { currentUser } from '@/lib/auth'
 
 // Define the component props with replies as a separate field on initialData
 interface ReplyType {
@@ -451,35 +452,31 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
     }
   };
 
-  const handleReaction = async (commentId: string, reactionType: 'THUMBSUP' | 'HEART') => {
+  const handleReaction = async (commentId: string, reactionType: string) => {
+    const user = await currentUser();
+
+    if (!user?.id) {
+      toast.error("You must be logged in to react");
+      return;
+    }
+
     try {
-      if (!session?.user) {
-        toast.error("Please sign in to react");
-        return;
-      }
-
-      // Find if user already has this reaction
-      const comment = comments.find(c => c.id === commentId);
-      const existingReaction = comment?.reactions.find(
-        r => r.user.id === session.user.id && r.type === reactionType
-      );
-
-      // If reaction exists, remove it (decrement)
-      // If it doesn't exist, add it (increment)
-      const action = existingReaction ? 'remove' : 'add';
-
-      await axios.post(`/api/posts/${postId}/comments/${commentId}/reactions`, {
+      const response = await axios.post(`/api/posts/${postId}/comments/${commentId}/reactions`, {
         type: reactionType,
-        action
+        user: {
+          id: user.id as string,
+          name: user.name || null,
+          email: user.email || null
+        }
       });
-      
+
       // Update local state
       setComments(comments.map(comment => {
         if (comment.id === commentId) {
-          if (action === 'remove') {
+          if (response.data.action === 'remove') {
             // Remove the reaction (decrement)
             comment.reactions = comment.reactions.filter(
-              r => !(r.user.id === session.user.id && r.type === reactionType)
+              r => !(r.user.id === (user.id as string) && r.type === reactionType)
             );
           } else {
             // Add new reaction (increment)
@@ -487,9 +484,9 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
               id: Date.now().toString(),
               type: reactionType,
               user: {
-                id: session.user.id,
-                name: session.user.name || null,
-                email: session.user.email || null
+                id: user.id as string,
+                name: user.name || null,
+                email: user.email || null
               }
             });
           }
@@ -499,7 +496,7 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
 
       router.refresh();
     } catch (error) {
-      console.error(error);
+      console.error("Error adding reaction:", error);
       toast.error("Something went wrong");
     }
   };

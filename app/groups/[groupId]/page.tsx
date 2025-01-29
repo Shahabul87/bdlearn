@@ -15,9 +15,10 @@ interface GroupPageProps {
 export default async function GroupPage({ params }: GroupPageProps) {
   const user = await currentUser();
 
-  if (!user) {
+  if (!user?.id) {
     return redirect("/");
   }
+
 
   const group = await db.group.findUnique({
     where: {
@@ -42,7 +43,7 @@ export default async function GroupPage({ params }: GroupPageProps) {
           author: true,
           _count: {
             select: {
-              commentsList: true,
+              comments: true,
               likedBy: true,
             },
           },

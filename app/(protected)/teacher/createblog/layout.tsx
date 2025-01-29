@@ -1,8 +1,8 @@
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { SidebarDemo } from "@/components/ui/sidebar-demo";
-import { HeaderAfterLogin } from "@/app/(homepage)/header-after-login";
 import { Header } from "@/app/(homepage)/header";
+import { HeaderAfterLogin } from "@/app/(homepage)/header-after-login";
 
 export default async function CreateBlogLayout({
   children,
@@ -22,7 +22,7 @@ export default async function CreateBlogLayout({
           <Header />
         </div>
       ) : (
-        <HeaderAfterLogin />
+        <HeaderAfterLogin user={user} />
       )}
       <SidebarDemo>
         <div className="min-h-screen pt-20">

@@ -22,7 +22,7 @@ export default async function BlogLayout({
 
   return (
    <SessionProvider session={session}>
-    {!user ? <Header /> : <HeaderAfterLogin />}
+    {!user ? <Header /> : <HeaderAfterLogin user={user}/>}
       <div className="relative min-h-screen w-screen">
         <div className="antialiased bg-gray-800 text-zinc-300 font-body min-h-screen">
           <ConfettiProvider />

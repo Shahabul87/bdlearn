@@ -18,10 +18,12 @@ import { ChatView } from "./chat-view";
 import { NewMessageDialog } from "./new-message-dialog";
 
 interface MessageCenterProps {
-  userId: string;
+  userId: string | undefined;
 }
 
 export const MessageCenter = ({ userId }: MessageCenterProps) => {
+  if (!userId) return null;
+
   const [searchQuery, setSearchQuery] = useState("");
   const [activeChat, setActiveChat] = useState<string | null>(null);
   const [isNewMessageOpen, setIsNewMessageOpen] = useState(false);

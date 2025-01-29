@@ -49,8 +49,9 @@ export const BlogContent = ({ blogId }: BlogContentProps) => {
       <h1 className="text-3xl font-bold text-white mb-4">{blog.title}</h1>
       <div className="prose prose-invert max-w-none">
         <Editor 
-          initialContent={blog.content}
-          editable={false}
+          value={blog.content}
+          disabled={true}
+          onChange={() => {}}
         />
       </div>
     </div>

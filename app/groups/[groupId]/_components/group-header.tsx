@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { NotificationsBell } from "./notifications-bell";
 import { GroupSearch } from "./group-search";
+import Image from 'next/image';
 
 interface GroupHeaderProps {
   group: any;
@@ -22,9 +23,11 @@ export const GroupHeader = ({ group, currentUser, isGroupMember }: GroupHeaderPr
     >
       <div className="relative h-48 rounded-xl overflow-hidden">
         {group.imageUrl ? (
-          <img
+          <Image 
             src={group.imageUrl}
             alt={group.name}
+            width={1200}
+            height={400}
             className="w-full h-full object-cover"
           />
         ) : (

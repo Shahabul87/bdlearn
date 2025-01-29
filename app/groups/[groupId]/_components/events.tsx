@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Calendar, Plus, Clock, MapPin, Users, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ export const Events = ({ group, currentUser, isGroupMember }: EventsProps) => {
   const [events, setEvents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     try {
       const response = await fetch(`/api/groups/${group.id}/events`);
       if (!response.ok) throw new Error("Failed to fetch events");
@@ -31,11 +31,11 @@ export const Events = ({ group, currentUser, isGroupMember }: EventsProps) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [group.id]);
 
   useEffect(() => {
     fetchEvents();
-  }, [group.id]);
+  }, [fetchEvents]);
 
   const upcomingEvents = events.filter(event => isFuture(new Date(event.date)));
   const pastEvents = events.filter(event => isPast(new Date(event.date)));

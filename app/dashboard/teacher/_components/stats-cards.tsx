@@ -12,8 +12,18 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+interface Chapter {
+  sections: any[];
+}
+
+interface Course {
+  chapters: Chapter[];
+  enrollments: any[];
+  reviews: any[];
+}
+
 interface StatsCardsProps {
-  courses: any[];
+  courses: Course[];
 }
 
 const StatCard = ({ 
@@ -102,8 +112,8 @@ export const StatsCards = ({ courses }: StatsCardsProps) => {
       }, 0) / courses.length
     : 0;
 
-  const totalSections = courses.reduce((acc, course) => 
-    acc + course.chapters.reduce((chAcc, chapter) => 
+  const totalSections = courses.reduce((acc: number, course: Course) =>
+    acc + course.chapters.reduce((chAcc: number, chapter: Chapter) =>
       chAcc + chapter.sections.length, 0
     ), 0
   );

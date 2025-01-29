@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Code, Book, Microscope, Calculator, Language, Music } from "lucide-react";
+import { ArrowRight, Code, Book, Microscope, Calculator, Languages, Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -31,7 +31,7 @@ const CATEGORIES = [
     color: "bg-red-500",
   },
   {
-    icon: Language,
+    icon: Languages,
     name: "Languages",
     description: "English, Spanish, Mandarin & more",
     color: "bg-yellow-500",

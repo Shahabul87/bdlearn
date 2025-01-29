@@ -8,7 +8,7 @@ import { db } from "@/lib/db";
 export default async function CreateGroupPage() {
   const user = await currentUser();
 
-  if (!user) {
+  if (!user?.id) {
     return redirect("/");
   }
 
@@ -37,7 +37,7 @@ export default async function CreateGroupPage() {
         <main className="container mx-auto px-4 pt-24 pb-16 flex items-center justify-center min-h-[calc(100vh-80px)]">
           <div className="w-full max-w-3xl">
             <CreateGroupForm 
-              userId={user.id} 
+              userId={user.id!} 
               enrolledCourses={courses}
             />
           </div>

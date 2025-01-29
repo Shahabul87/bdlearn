@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Calendar, LayoutDay, LayoutWeek } from "lucide-react";
+import { Calendar, LayoutGrid, Layout, CalendarDays } from "lucide-react";
 
 interface CalendarHeaderProps {
   view: "month" | "week" | "day";
@@ -12,8 +12,8 @@ interface CalendarHeaderProps {
 export const CalendarHeader = ({ view, onViewChange }: CalendarHeaderProps) => {
   const views = [
     { id: "month", label: "Month", icon: Calendar },
-    { id: "week", label: "Week", icon: LayoutWeek },
-    { id: "day", label: "Day", icon: LayoutDay },
+    { id: "week", label: "Week", icon: LayoutGrid },
+    { id: "day", label: "Day", icon: Layout },
   ] as const;
 
   return (

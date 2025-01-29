@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Sync, Check } from "lucide-react";
+import { RefreshCw, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -50,7 +50,7 @@ export const SyncButton = ({ onSync }: SyncButtonProps) => {
         {syncComplete ? (
           <Check className="w-4 h-4" />
         ) : (
-          <Sync className="w-4 h-4" />
+          <RefreshCw className="w-4 h-4" />
         )}
       </motion.div>
       <span className="ml-2">

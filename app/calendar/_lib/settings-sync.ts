@@ -25,7 +25,7 @@ export const useSettingsSync = () => {
     if (!isInitialized) {
       fetchSettings();
     }
-  }, [isInitialized]);
+  }, [setInitialized, setSettings, isInitialized]);
 
   // Sync settings to server only when initialized
   const syncSettings = async () => {

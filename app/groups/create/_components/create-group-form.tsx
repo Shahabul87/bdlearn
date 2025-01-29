@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Users, Lock, Globe, UserPlus, Image as ImageIcon } from "lucide-react";
 import { z } from "zod";
+import Image from 'next/image';
 
 import {
   Form,
@@ -42,26 +43,24 @@ const formSchema = z.object({
 });
 
 interface CreateGroupFormProps {
-  userId: string;
-  enrolledCourses: {
-    id: string;
-    title: string;
-    imageUrl?: string | null;
-  }[];
+  userId: string | undefined;
+  enrolledCourses: any[];
 }
 
 export const CreateGroupForm = ({ userId, enrolledCourses }: CreateGroupFormProps) => {
+  if (!userId) return null;  // Early return if no userId
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       description: "",
       imageUrl: "",
       category: "general",
-      privacy: "public",
+      privacy: "public" as "public" | "private" | "invite-only",
       rules: [],
       tags: [],
       courseId: null,
@@ -347,9 +346,11 @@ export const CreateGroupForm = ({ userId, enrolledCourses }: CreateGroupFormProp
                         >
                           <div className="flex items-center gap-2">
                             {course.imageUrl && (
-                              <img
+                              <Image 
                                 src={course.imageUrl}
                                 alt={course.title}
+                                width={500}
+                                height={300}
                                 className="w-6 h-6 rounded-full object-cover"
                               />
                             )}

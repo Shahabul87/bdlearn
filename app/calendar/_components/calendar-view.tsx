@@ -12,7 +12,7 @@ interface CalendarViewProps {
 }
 
 export const CalendarView = ({ userId }: CalendarViewProps) => {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [isNewEventOpen, setIsNewEventOpen] = useState(false);
   const [view, setView] = useState<"month" | "week" | "day">("month");
 
@@ -62,8 +62,12 @@ export const CalendarView = ({ userId }: CalendarViewProps) => {
       <NewEventDialog
         open={isNewEventOpen}
         onClose={() => setIsNewEventOpen(false)}
-        selectedDate={selectedDate}
+        selectedDate={selectedDate ?? null}
         userId={userId}
+        onEventCreated={() => {
+          setIsNewEventOpen(false);
+          // Add any additional refresh logic here if needed
+        }}
       />
     </div>
   );

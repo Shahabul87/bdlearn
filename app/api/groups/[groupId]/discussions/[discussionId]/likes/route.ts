@@ -35,7 +35,7 @@ export async function POST(
           id: params.discussionId,
         },
         data: {
-          likes: {
+          likesCount: {
             decrement: 1,
           },
         },
@@ -57,7 +57,7 @@ export async function POST(
         id: params.discussionId,
       },
       data: {
-        likes: {
+        likesCount: {
           increment: 1,
         },
       },

@@ -37,8 +37,24 @@ export const NewEventDialog = ({
 }: NewEventDialogProps) => {
   const [isPending, setIsPending] = useState(false);
 
+  const form = useForm<EventFormValues>({
+    resolver: zodResolver(EventSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      startDate: new Date(),
+      endDate: new Date(),
+      isAllDay: false,
+      location: "",
+      notification: true,
+      notificationTime: 30,
+      userId,
+    },
+  });
+
   useEffect(() => {
-    if (selectedDate) {
+    if (selectedDate && open) {
+      form.reset();
       const date = new Date(selectedDate);
       date.setHours(12, 0, 0, 0);
       
@@ -54,22 +70,7 @@ export const NewEventDialog = ({
         userId,
       });
     }
-  }, [selectedDate, open]);
-
-  const form = useForm<EventFormValues>({
-    resolver: zodResolver(EventSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      startDate: new Date(),
-      endDate: new Date(),
-      isAllDay: false,
-      location: "",
-      notification: true,
-      notificationTime: 30,
-      userId,
-    },
-  });
+  }, [selectedDate, open, form, userId]);
 
   const onSubmit = async (values: EventFormValues) => {
     try {

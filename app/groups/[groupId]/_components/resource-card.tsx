@@ -1,10 +1,11 @@
 "use client";
 
-import { FileText, Video, Link as LinkIcon, Download, ExternalLink, Book, Image, File } from "lucide-react";
+import { FileText, Video, Link as LinkIcon, Download, ExternalLink, Book, Image as ImageIcon, File } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
+import Image from 'next/image';
 
 interface ResourceCardProps {
   resource: any;
@@ -20,7 +21,7 @@ export const ResourceCard = ({ resource, currentUser, groupId }: ResourceCardPro
       case "video":
         return <Video className="w-5 h-5" />;
       case "image":
-        return <Image className="w-5 h-5" />;
+        return <ImageIcon className="w-5 h-5" />;
       case "link":
         return <LinkIcon className="w-5 h-5" />;
       case "book":
@@ -34,10 +35,12 @@ export const ResourceCard = ({ resource, currentUser, groupId }: ResourceCardPro
     if (resource.type === "image" && resource.thumbnail) {
       return (
         <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
-          <img 
+          <Image 
             src={resource.thumbnail} 
-            alt={resource.title}
+            alt={`${resource.title} thumbnail`}
             className="w-full h-full object-cover"
+            width={500}
+            height={300}
           />
         </div>
       );
@@ -46,10 +49,12 @@ export const ResourceCard = ({ resource, currentUser, groupId }: ResourceCardPro
     if (resource.type === "video" && resource.thumbnail) {
       return (
         <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
-          <img 
+          <Image 
             src={resource.thumbnail} 
-            alt={resource.title}
+            alt={`${resource.title} thumbnail`}
             className="w-full h-full object-cover"
+            width={500}
+            height={300}
           />
         </div>
       );

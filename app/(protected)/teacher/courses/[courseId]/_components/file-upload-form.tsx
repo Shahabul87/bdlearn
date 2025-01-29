@@ -8,6 +8,8 @@ import {toast} from "sonner";
 import { useRouter } from "next/navigation";
 import { Course } from "@prisma/client";
 import Image from "next/image";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 
@@ -42,6 +44,13 @@ export const FileUploadForm = ({
   const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
 
   const router = useRouter();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      imageUrl: "",
+    },
+  });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -103,7 +112,10 @@ export const FileUploadForm = ({
             {/* Submit Button */}
             <div className="flex justify-center mt-4">
                 <button
-                onClick={onSubmit}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onSubmit({ imageUrl: uploadedFileUrl || "" });
+                }}
                 className={`px-6 py-2 bg-blue-600 text-white rounded-lg ${
                     isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                 }`}

@@ -22,7 +22,7 @@ export const SettingsPanel = () => {
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [settings]);
+  }, [syncSettings]);
 
   const handleReset = async () => {
     try {

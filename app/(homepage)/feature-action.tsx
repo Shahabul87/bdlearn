@@ -26,7 +26,7 @@ export const FeatureAction = () => {
             <div>
               <h3 className="text-lg font-semibold text-white">Sponsor us</h3>
               <p className="text-gray-400 mt-2">
-                Patronize us on <a href="#" className="text-blue-400">GitHub Sponsors</a>, <a href="#" className="text-blue-400">Open Collective</a> or <a href="#" className="text-blue-400">PayPal</a> to back our project's growth. Together, we make a difference!
+                Patronize us on <a href="#" className="text-blue-400">GitHub Sponsors</a>, <a href="#" className="text-blue-400">Open Collective</a> or <a href="#" className="text-blue-400">PayPal</a> to back our project&apos;s growth. Together, we make a difference!
               </p>
             </div>
           </div>

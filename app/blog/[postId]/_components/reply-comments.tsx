@@ -8,6 +8,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Post } from "@prisma/client";
+import Image from 'next/image';
 
 import {
   Form,
@@ -72,8 +73,11 @@ export const ReplyComment = ({
       onSave(); // Call onSave to close the reply box
       router.refresh();
     } catch (error) {
-      // Log the full error response for debugging
-      console.error("Error adding reply:", error.response?.data || error.message);
+      if (axios.isAxiosError(error)) {
+        console.error("Error adding reply:", error.response?.data || error.message);
+      } else {
+        console.error("Error adding reply:", error);
+      }
       toast.error("Something went wrong. Please try again.");
     }
   };
@@ -89,10 +93,12 @@ export const ReplyComment = ({
   return (
     <div className="mt-4 border-t border-gray-700 pt-4">
       <div className="flex items-center space-x-3">
-        <img
-          src="/path/to/avatar.jpg" // Placeholder for user's avatar image
-          alt="User Avatar"
-          className="h-8 w-8 rounded-full"
+        <Image 
+          src="/path/to/avatar.jpg"
+          alt="User avatar"
+          width={40}
+          height={40}
+          className="rounded-full"
         />
         <Button onClick={toggleComment} variant="ghost" className="text-gray-400">
           Write a reply...

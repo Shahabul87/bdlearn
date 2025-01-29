@@ -11,14 +11,17 @@ import { AccountAndBilling } from './_components/AccountAndBilling';
 import { NotificationsSettings } from './_components/NotificationsSettings';
 import { PrivacyAndSecurity } from './_components/PrivacyAndSecurity';
 import { PublicDetails } from './_components/PublicDetails';
+import { User as PrismaUser, ProfileLink } from "@prisma/client";
 
 interface SettingsContentProps {
-  userId: string;
+  userDetails: (PrismaUser & {
+    profileLinks: ProfileLink[];
+  }) | null;
 }
 
-export const SettingsContent: React.FC<SettingsContentProps> = ({ userId }) => {
-  const [userDetails, setUserDetails] = useState<any>(null);
+export const SettingsContent = ({ userDetails: initialUserDetails }: SettingsContentProps) => {
   const [loading, setLoading] = useState(true);
+  const [userDetails, setUserDetails] = useState(initialUserDetails);
   const [selectedSettingsTab, setSelectedSettingsTab] = useState("Profile");
   const [selectedProfileSection, setSelectedProfileSection] = useState("Public Details");
 
@@ -37,7 +40,7 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({ userId }) => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const user = await getUserDetails(userId);
+        const user = await getUserDetails(initialUserDetails?.id || "");
         setUserDetails(user);
       } catch (error) {
         console.error("Error fetching user details:", error);
@@ -47,7 +50,7 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({ userId }) => {
     };
 
     fetchUserDetails();
-  }, [userId]);
+  }, [initialUserDetails?.id]);
 
   if (loading) {
     return (

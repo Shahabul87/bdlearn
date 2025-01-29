@@ -19,12 +19,13 @@ import { Button } from "@/components/ui/button";
 import { ResourceGrid } from "./resource-grid";
 import { ResourceList } from "./resource-list";
 import { ResourceFilters } from "./resource-filters";
+import { Resource } from "./types";
 
 interface ResourceCenterProps {
   userId: string;
 }
 
-const resources = [
+const resources: Resource[] = [
   {
     id: "1",
     title: "Getting Started Guide",
@@ -34,6 +35,7 @@ const resources = [
     downloadUrl: "/guides/getting-started.pdf",
     category: "Guides",
     tags: ["beginner", "tutorial"],
+    createdAt: new Date(),
   },
   {
     id: "2",
@@ -44,6 +46,7 @@ const resources = [
     downloadUrl: "/tutorials/complete-series.zip",
     category: "Tutorials",
     tags: ["video", "tutorial"],
+    createdAt: new Date(),
   },
   // Add more resources...
 ];
@@ -93,13 +96,15 @@ export const ResourceCenter = ({ userId }: ResourceCenterProps) => {
 
       {/* Search and Filters */}
       <div className="flex gap-4">
-        <Input
-          placeholder="Search resources..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="bg-gray-800 border-gray-700 text-gray-200"
-          leftIcon={<Search className="w-4 h-4 text-gray-400" />}
-        />
+        <div className="relative w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Input
+            placeholder="Search resources..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="bg-gray-800 border-gray-700 text-gray-200 pl-10"
+          />
+        </div>
       </div>
 
       {/* Filters Panel */}
@@ -109,7 +114,14 @@ export const ResourceCenter = ({ userId }: ResourceCenterProps) => {
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
         >
-          <ResourceFilters />
+          <ResourceFilters 
+            categories={["All", "Guides", "Tutorials", "Documentation"]}
+            selectedCategory="All"
+            onCategoryChange={(category) => {/* handle change */}}
+            types={["All", "guide", "video", "document"]}
+            selectedType="All"
+            onTypeChange={(type) => {/* handle change */}}
+          />
         </motion.div>
       )}
 

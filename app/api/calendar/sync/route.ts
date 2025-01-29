@@ -27,25 +27,45 @@ export async function POST(req: Request) {
     }
 
     const calendarSync = new CalendarSync({
-      access_token: account.access_token,
-      refresh_token: account.refresh_token,
+      access_token: account.access_token || '',
+      refresh_token: account.refresh_token || '',
       expiry_date: account.expires_at ? account.expires_at * 1000 : null,
     });
 
     const externalEvents = await calendarSync.syncWithGoogle();
+
+    if (!externalEvents) {
+      return NextResponse.json({ success: false, message: "No events to sync" });
+    }
 
     // Sync events to database
     for (const event of externalEvents) {
       await db.calendarEvent.upsert({
         where: {
           externalId_source: {
-            externalId: event.externalId,
-            source: event.source,
+            externalId: event.externalId || '',
+            source: event.source || '',
           },
         },
-        update: event,
+        update: {
+          title: event.title || '',
+          description: event.description || null,
+          startDate: new Date(event.startDate || ''),
+          endDate: new Date(event.endDate || ''),
+          location: event.location || null,
+          isAllDay: !!event.isAllDay,
+          source: event.source,
+          externalId: event.externalId || '',
+        },
         create: {
-          ...event,
+          title: event.title || '',
+          description: event.description || null,
+          startDate: new Date(event.startDate || ''),
+          endDate: new Date(event.endDate || ''),
+          location: event.location || null,
+          isAllDay: !!event.isAllDay,
+          source: event.source,
+          externalId: event.externalId || '',
           userId: session.user.id,
         },
       });

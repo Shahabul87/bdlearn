@@ -2,7 +2,7 @@
 
 import { NextResponse } from "next/server";
 import * as z from "zod";
-import bcrypt from "bcryptjs";
+import { hash } from "bcryptjs";
 
 import { db } from "@/lib/db";
 import { RegisterSchema } from "@/schemas";
@@ -19,48 +19,57 @@ export async function POST(req: Request) {
     console.log(validatedFields)
     if (!validatedFields.success) {
       return NextResponse.json(
-        { error: "Invalid fields!", details: validatedFields.error.errors },
+        { error: "Invalid fields!" },
         { status: 400 }
       );
     }
 
     // Map input fields to match the user model
-    const { Name: name, Email: email, "Choose a password": password, "Confirm password": confirmPassword } = validatedFields.data;
+    const { name, email, password } = validatedFields.data;
 
-    // Check if password and confirm password match
-    if (password !== confirmPassword) {
-      return NextResponse.json({ error: "Passwords do not match!" }, { status: 400 });
-    }
+    // Check if email already exists
+    const existingUser = await db.user.findUnique({
+      where: {
+        email
+      }
+    });
 
-    // Check if the user already exists by email
-    const existingUser = await getUserByEmail(email);
     if (existingUser) {
-      return NextResponse.json({ error: "Email already in use!" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Email already exists!" },
+        { status: 409 }
+      );
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash password
+    const hashedPassword = await hash(password, 10);
 
-    // Create a new user in the database
+    // Create user
     const user = await db.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-      },
+      }
     });
-
-    console.log(user)
 
     // Generate verification token and send a verification email
     const verificationToken = await generateVerificationToken(email);
     await sendVerificationEmail(verificationToken.email, verificationToken.token);
 
     // Return success response
-    return NextResponse.json({ success: "Confirmation email sent!" });
+    return NextResponse.json({ 
+      user: {
+        name: user.name,
+        email: user.email,
+      }
+    }, { status: 201 });
   } catch (error) {
-    console.error("[REGISTER]", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    console.error("[REGISTER_ERROR]", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 

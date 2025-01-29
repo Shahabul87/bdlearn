@@ -49,8 +49,9 @@ export const NoteContent = ({ noteId }: NoteContentProps) => {
       <h1 className="text-3xl font-bold text-white mb-4">{note.title}</h1>
       <div className="prose prose-invert max-w-none">
         <Editor 
-          initialContent={note.content}
-          editable={false}
+          value={note.content}
+          disabled={true}
+          onChange={() => {}}
         />
       </div>
     </div>

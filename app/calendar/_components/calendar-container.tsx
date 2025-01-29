@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { OptimizedCalendar } from "./optimized-calendar";
 import { NewEventDialog } from "./new-event-dialog";
 import { handleCalendarError } from "../_lib/error-handler";
@@ -27,11 +27,7 @@ export const CalendarContainer = ({
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
-  useEffect(() => {
-    fetchEvents();
-  }, [userId, filters]);
-
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     try {
       setIsLoading(true);
       const searchParams = new URLSearchParams({
@@ -56,7 +52,11 @@ export const CalendarContainer = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [userId, filters]);
+
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
 
   const handleDateSelect = (date: Date) => {
     console.log("Date selected:", date);

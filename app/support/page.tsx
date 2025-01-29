@@ -4,10 +4,10 @@ import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { SupportContent } from "./_components/support-content";
 
-const SupportPage = async () => {
+export default async function SupportPage() {
   const user = await currentUser();
   
-  if (!user) {
+  if (!user?.id) {
     return redirect("/");
   }
 
@@ -16,11 +16,9 @@ const SupportPage = async () => {
       <ConditionalHeader user={user} />
       <SidebarDemo>
         <div className="p-6 mt-20">
-          <SupportContent userId={user.id} />
+          <SupportContent userId={user.id!} />
         </div>
       </SidebarDemo>
     </>
   );
-};
-
-export default SupportPage; 
+} 

@@ -16,17 +16,25 @@ import { Grip, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
-interface PostChaptersListProps {
-  items:PostChapterSection[];
-  onReorder: (updateData: { id: string; position: number }[]) => void;
+interface ProfileLinksListPageProps {
+  items: {
+    id: string;
+    platform: string;
+    url: string;
+    position: number | null;
+    createdAt: Date;
+    updatedAt: Date;
+    userId: string;
+  }[];
   onEdit: (id: string) => void;
-};
+  onReorder: (updateData: { id: string; position: number }[]) => void;
+}
 
 export const ProfileLinksListPage = ({
   items,
   onReorder,
   onEdit
-}: PostChaptersListProps) => {
+}: ProfileLinksListPageProps) => {
   const [isMounted, setIsMounted] = useState(false);
   const [chapters, setChapters] = useState(items);
 
@@ -82,40 +90,24 @@ export const ProfileLinksListPage = ({
               >
                     {(provided) => (
                       <div
-                        className={cn(
-                          "flex items-center gap-x-2 bg-slate-200 border-slate-200 border text-slate-700 rounded-md mb-4 text-sm",
-                          chapter.isPublished && "bg-sky-100 border-sky-200 text-sky-700"
-                        )}
+                        className="flex items-center gap-x-2 bg-slate-200 border-slate-200 border text-slate-700 rounded-md mb-4 text-sm"
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                       >
                         <div
-                          className={cn(
-                            "px-2 py-3 border-r border-r-slate-200 hover:bg-slate-300 rounded-l-md transition",
-                            chapter.isPublished && "border-r-sky-200 hover:bg-sky-200"
-                          )}
+                          className="px-2 py-3 border-r border-r-slate-200 hover:bg-slate-300 rounded-l-md transition"
                           {...provided.dragHandleProps}
                         >
-                          <Grip
-                            className="h-5 w-5"
-                          />
+                          <Grip className="h-5 w-5" />
                         </div>
-                        {chapter.title}
-                        <div className="ml-auto pr-2 flex items-center gap-x-2">
-                          {chapter.isFree && (
-                            <Badge>
-                              Free
-                            </Badge>
-                          )}
-                          <Badge className={cn( "bg-slate-500", chapter.isPublished && "bg-sky-700" )}>
-                            {chapter.isPublished ? "Published" : "Draft"}
-                          </Badge>
-                          <span className="flex items-center justify-between cursor-pointer hover:opacity-75 transition" 
-                                onClick={() => onEdit(chapter.id)}>
-                          <Pencil 
-                            className="w-4 h-4 cursor-pointer hover:opacity-75 transition mr-1"
-                          /> Edit</span>
+                        <div className="flex-1">
+                          <div className="font-medium">{chapter.platform}</div>
+                          <div className="text-xs text-gray-500">{chapter.url}</div>
                         </div>
+                        <span className="flex items-center cursor-pointer hover:opacity-75 transition" 
+                              onClick={() => onEdit(chapter.id)}>
+                          <Pencil className="w-4 h-4 mr-1" /> Edit
+                        </span>
                       </div>
                     )}
               </Draggable>

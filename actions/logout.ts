@@ -6,8 +6,7 @@ export const logout = async () => {
   try {
     await signOut({
       redirect: true,
-      redirectTo: "/",
-      callbackUrl: "/"
+      redirectTo: "/"
     });
   } catch (error) {
     console.error("Logout error:", error);

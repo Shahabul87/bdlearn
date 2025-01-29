@@ -131,10 +131,9 @@ export async function PATCH(
         title,
         description,
         url,
-        duration: duration ?? null, // Accept null values for optional fields
+        duration: duration ?? null,
         clarityRating: clarityRating ?? null,
         position,
-        category: category ?? null,
         isPublished: isPublished ?? false,
       },
     });

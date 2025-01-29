@@ -4,11 +4,22 @@ import qs from "query-string";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 
-export const SearchInput = () => {
+interface SearchInputProps {
+  placeholder?: string;
+  className?: string;
+  onChange?: (value: string) => void;
+}
+
+export const SearchInput = ({ 
+  placeholder = "Search...", 
+  className,
+  onChange 
+}: SearchInputProps) => {
   const [value, setValue] = useState("")
   const debouncedValue = useDebounce(value);
 
@@ -31,16 +42,13 @@ export const SearchInput = () => {
   }, [debouncedValue, currentCategoryId, router, pathname])
 
   return (
-    <div className="relative ml-10">
-      <Search
-        className="h-4 w-4 absolute top-3 left-3 text-slate-600"
-      />
+    <div className={cn("relative", className)}>
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
       <Input
-        onChange={(e) => setValue(e.target.value)}
-        value={value}
-        className="w-full md:w-[600px] pl-9 rounded-full bg-slate-100 focus-visible:ring-slate-400"
-        placeholder="Search for a course"
+        placeholder={placeholder}
+        onChange={(e) => onChange?.(e.target.value)}
+        className="pl-9"
       />
     </div>
-  )
-}
+  );
+};

@@ -1,13 +1,17 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const user = await currentUser();
+   
+   
+    if (!user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
+    
+    const userId = user?.id
 
     const { label, icon } = await req.json();
 
@@ -15,7 +19,7 @@ export async function POST(req: Request) {
       data: {
         label,
         icon,
-        userId: session.user.id,
+        userId: userId,
       },
     });
 

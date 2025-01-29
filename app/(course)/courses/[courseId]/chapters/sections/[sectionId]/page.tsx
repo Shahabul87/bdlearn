@@ -62,7 +62,7 @@ const course = await db.course.findUnique({
 
   return (
     <>
-     {!user? (
+     {!user ? (
                  <>
                     <div className="">
                        <Header />
@@ -70,7 +70,7 @@ const course = await db.course.findUnique({
                </> ):
                (
                 <>
-                <HeaderAfterLogin />
+                <HeaderAfterLogin user={user} />
                 </>
                )}  
     <div className="min-h-screen bg-slate-800">

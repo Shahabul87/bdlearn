@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 interface EventSearchProps {
   onSearch: (query: string) => void;
   onFilter: (filters: EventFilters) => void;
+  isLoading?: boolean;
 }
 
 interface EventFilters {
@@ -25,7 +26,7 @@ interface EventFilters {
   };
 }
 
-export const EventSearch = ({ onSearch, onFilter }: EventSearchProps) => {
+export const EventSearch = ({ onSearch, onFilter, isLoading }: EventSearchProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<EventFilters>({
     categories: [],

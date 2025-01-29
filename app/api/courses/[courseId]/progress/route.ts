@@ -4,7 +4,7 @@ import { currentUser } from "@/lib/auth";
 
 export async function PUT(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: { courseId: string; sectionId: string } }
 ) {
   try {
     const user = await currentUser();
@@ -17,18 +17,24 @@ export async function PUT(
     // Update or create progress record
     const userProgress = await db.userProgress.upsert({
       where: {
-        userId_videoId: {
+        userId_chapterId: {
           userId: user.id,
-          videoId: videoId,
-        },
+          chapterId: videoId,
+        }
       },
       update: {
-        completed,
+        isCompleted: completed,
       },
       create: {
         userId: user.id,
-        videoId: videoId,
-        completed,
+        chapterId: videoId,
+        isCompleted: completed,
+        chapter: {
+          connect: { id: videoId }
+        },
+        section: {
+          connect: { id: params.sectionId }
+        }
       },
     });
 

@@ -22,6 +22,16 @@ interface CarouselProps {
   initialScroll?: number;
 }
 
+interface CardType {
+  card: {
+    src: string;
+    title: string;
+    category: string;
+    content: React.ReactNode;
+  };
+  index: number;
+}
+
 type Card = {
   src: string;
   title: string;

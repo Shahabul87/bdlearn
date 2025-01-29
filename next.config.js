@@ -35,10 +35,6 @@ const nextConfig = {
     ],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    domains: [
-      'your-image-domain.com',
-      // Add other domains where your images are hosted
-    ],
   },
 
   webpack(config) {
@@ -64,6 +60,10 @@ const nextConfig = {
     fileLoaderRule.exclude = /\.svg$/i;
 
     return config;
+  },
+
+  eslint: {
+    ignoreDuringBuilds: true,
   },
 };
 

@@ -14,11 +14,11 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button"; // Assuming you have a Button component
 
 interface VideoSectionListProps {
-  items: Video[]; // Accept array of Video type
-  sectionId: string; // The section ID to filter videos by
+  items: Video[]; // Make sure this matches the Prisma Video type
+  sectionId: string;
   onReorder: (updateData: { id: string; position: number }[]) => void;
   onEdit: (id: string) => void;
-  onDelete: (id: string) => void; // Add onDelete prop
+  onDelete: (id: string) => void;
 }
 
 // Helper function to format duration
@@ -112,14 +112,18 @@ export const VideoSectionList = ({
                       </div>
                       <div className="flex flex-col">
                         {/* Link to the video URL */}
-                        <a
-                          href={video.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-semibold text-blue-500 hover:underline"
-                        >
-                          {video.title}
-                        </a>
+                        {video.url ? (
+                          <a
+                            href={video.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold text-blue-500 hover:underline"
+                          >
+                            {video.title}
+                          </a>
+                        ) : (
+                          <span className="font-semibold">{video.title}</span>
+                        )}
                         <span className="text-xs text-gray-500">
                           Duration: {video.duration !== null ? formatDuration(video.duration) : "Unknown"} | Clarity: {video.clarityRating}/5
                         </span>

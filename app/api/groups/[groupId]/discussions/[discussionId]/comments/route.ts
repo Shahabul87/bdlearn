@@ -45,9 +45,9 @@ export async function POST(
         id: params.discussionId,
       },
       data: {
-        comments: {
-          increment: 1,
-        },
+        commentsCount: {
+          increment: 1
+        }
       },
     });
 

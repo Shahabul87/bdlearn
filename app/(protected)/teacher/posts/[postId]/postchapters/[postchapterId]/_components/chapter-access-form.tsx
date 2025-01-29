@@ -4,7 +4,7 @@ import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Lock, LockOpen } from "lucide-react";
+import { Lock, Unlock } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -68,7 +68,7 @@ export const ChapterAccessForm = ({
         <div className="space-y-1">
           <div className="flex items-center gap-x-2">
             {initialData.isFree ? (
-              <LockOpen className="h-4 w-4 text-emerald-400" />
+              <Unlock className="h-4 w-4 text-emerald-400" />
             ) : (
               <Lock className="h-4 w-4 text-purple-400" />
             )}

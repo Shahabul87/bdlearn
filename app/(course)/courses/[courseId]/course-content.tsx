@@ -30,12 +30,18 @@ export const CourseContent: React.FC<CourseContentProps> = ({ chapters }) => {
     setExpandedChapter(expandAll ? null : -1);
   };
 
-  const getDifficultyColor = (difficulty?: string) => {
-    switch(difficulty?.toLowerCase()) {
-      case 'beginner': return 'text-emerald-400';
-      case 'intermediate': return 'text-amber-400';
-      case 'advanced': return 'text-rose-400';
-      default: return 'text-gray-400';
+  const getDifficultyColor = (difficulty: string | null | undefined) => {
+    if (!difficulty) return "text-gray-500"; // Default color for null/undefined
+    
+    switch (difficulty.toLowerCase()) {
+      case "beginner":
+        return "text-green-500";
+      case "intermediate":
+        return "text-yellow-500";
+      case "advanced":
+        return "text-red-500";
+      default:
+        return "text-gray-500";
     }
   };
 

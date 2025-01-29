@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
-import { ChaptersList } from "../../../_components/chapters-list";
+import { SectionList } from "./_components/section-list";
 
 interface ChaptersSectionFormProps {
   initialData: Chapter & { sections: Section[] };
@@ -144,7 +144,7 @@ export const ChaptersSectionForm = ({
           !initialData.sections.length && "text-slate-500 italic"
         )}>
           {!initialData.sections.length && "No chapters"}
-          <ChaptersList
+          <SectionList
             onEdit={onEdit}
             onReorder={onReorder}
             items={initialData.sections || []}

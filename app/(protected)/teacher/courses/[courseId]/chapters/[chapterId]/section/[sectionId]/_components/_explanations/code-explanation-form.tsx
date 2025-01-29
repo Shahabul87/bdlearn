@@ -419,7 +419,7 @@ Color examples:
                         "prose-img:rounded-lg"
                       )}
                       components={{
-                        code({ node, inline, className, children, ...props }) {
+                        code({ className, children, ...props }) {
                           return (
                             <code
                               className={cn(

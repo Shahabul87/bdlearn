@@ -9,6 +9,8 @@ interface WeekViewProps {
   selectedDate: Date;
   events: any[];
   onSelectDate: (date: Date) => void;
+  onEventMove: (eventId: string, newDate: Date) => void;
+  onEventClick: (event: any) => void;
 }
 
 export const WeekView = ({ selectedDate, events, onSelectDate }: WeekViewProps) => {

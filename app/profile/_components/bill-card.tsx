@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { BillCategory, BillStatus } from '@prisma/client';
 
 interface BillCardProps {
   bill: {

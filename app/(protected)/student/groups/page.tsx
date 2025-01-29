@@ -19,7 +19,7 @@ const GroupCreationPage = async() => {
 
     return (
         <>
-        {!user? (
+        {!user ? (
                  <>
                     <div className="">
                        <Header />
@@ -27,7 +27,7 @@ const GroupCreationPage = async() => {
                </> ):
                (
                 <>
-                <HeaderAfterLogin />
+                <HeaderAfterLogin user={user} />
                 </>
                )}  
         <SidebarDemo>

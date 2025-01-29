@@ -12,6 +12,10 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    if (!user?.id) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const { rating, comment } = await req.json();
 
     if (!rating || !comment) {
@@ -35,7 +39,7 @@ export async function POST(
         rating,
         comment,
         courseId: params.courseId,
-        userId: user.id,
+        userId: user.id as string,
       },
       include: {
         user: true,

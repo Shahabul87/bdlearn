@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Users, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from 'next/image';
 
 const FEATURED_GROUPS = [
   {
@@ -42,9 +43,11 @@ export const FeaturedGroups = () => {
             className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700"
           >
             <div className="h-48 relative">
-              <img
+              <Image
                 src={group.imageUrl}
                 alt={group.name}
+                width={500}
+                height={300}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />

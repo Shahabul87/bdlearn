@@ -9,7 +9,7 @@ import { Toaster } from "sonner";
 export default async function CalendarPage() {
   const user = await currentUser();
 
-  if (!user) {
+  if (!user?.id) {
     return redirect("/");
   }
 
@@ -20,7 +20,7 @@ export default async function CalendarPage() {
       <SidebarDemo>
         <div className="mt-20 p-6">
           <CalendarErrorBoundary>
-            <CalendarLayout userId={user.id} />
+            <CalendarLayout userId={user.id!} />
           </CalendarErrorBoundary>
         </div>
       </SidebarDemo>

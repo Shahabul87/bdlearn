@@ -19,7 +19,12 @@ export const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
         const data = await response.json();
         // Extract YouTube video ID from URL
         const youtubeId = extractYouTubeId(data.url);
-        setVideoUrl(youtubeId);
+        if (youtubeId) {
+          setVideoUrl(youtubeId ?? "");
+        } else {
+          console.error("Invalid YouTube URL");
+          setVideoUrl("");
+        }
       } catch (error) {
         console.error("Error fetching video:", error);
       } finally {
