@@ -195,6 +195,6 @@ export async function generateMetadata({ params }: { params: { postId: string } 
 
   return {
     title: post?.title || "Blog Post",
-    description: post?.description || "Read this interesting blog post"
+    description: post?.description || "No description available"
   };
 }
