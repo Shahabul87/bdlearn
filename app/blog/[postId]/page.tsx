@@ -14,6 +14,7 @@ import { Clock, Calendar, User as UserIcon, Tag, Eye, EyeOff } from "lucide-reac
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FeaturedImage } from "./_components/featured-image";
+import { Metadata } from "next";
 
 const PostIdPage = async ({params}: {params: { postId: string; }}) => {
   const post = await db.post.findUnique({
@@ -180,3 +181,20 @@ const PostIdPage = async ({params}: {params: { postId: string; }}) => {
 };
 
 export default PostIdPage;
+
+export async function generateMetadata({ params }: { params: { postId: string } }): Promise<Metadata> {
+  const post = await db.post.findUnique({
+    where: {
+      id: params.postId
+    },
+    select: {
+      title: true,
+      description: true
+    }
+  });
+
+  return {
+    title: post?.title || "Blog Post",
+    description: post?.description || "Read this interesting blog post"
+  };
+}
