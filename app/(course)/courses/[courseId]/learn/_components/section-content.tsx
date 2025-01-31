@@ -1,9 +1,7 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { db } from "@/lib/db";
 import { Loader2, Video, BookOpen, FileText, Code } from "lucide-react";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { atomDark, prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -14,49 +12,27 @@ import SectionBlogs from "@/app/[sectionId]/_sectionBlogs/section-blog-component
 
 interface SectionContentProps {
   sectionId: string;
-  initialData: {
-    id: string;
-    title: string;
-    description: string | null;
-    videoUrl: string | null;
-    isFree: boolean;
-    chapterTitle: string;
-    courseTitle: string;
-    videos: any[];
-    blogs: any[];
-    articles: any[];
-    codeExplanations: {
-      id: string;
-      heading: string | null;
-      code: string | null;
-      explanation: string | null;
-    }[];
-  };
+  section: any; // Type this properly based on your data structure
 }
 
-export const SectionContent = ({ sectionId, initialData }: SectionContentProps) => {
-  const [section, setSection] = useState(initialData);
-  const [isLoading, setIsLoading] = useState(false);
-  const [theme] = useState<'light' | 'dark'>('dark');
+const detectLanguage = (code: string) => {
+  if (code.includes('function') || code.includes('const') || code.includes('let')) return 'javascript';
+  if (code.includes('<div') || code.includes('</div>')) return 'markup';
+  if (code.includes('import') || code.includes('from')) return 'typescript';
+  return 'typescript';
+};
 
-  const detectLanguage = (code: string) => {
-    if (code.includes('function') || code.includes('const') || code.includes('let')) return 'javascript';
-    if (code.includes('<div') || code.includes('</div>')) return 'markup';
-    if (code.includes('import') || code.includes('from')) return 'typescript';
-    return 'typescript';
-  };
-
-  if (isLoading) {
+export function SectionContent({ sectionId, section }: SectionContentProps) {
+  if (!section) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="h-8 w-8 animate-spin text-purple-500 dark:text-purple-400" />
+      <div className="h-full flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-secondary" />
       </div>
     );
   }
 
   const hasAdditionalContent = 
     (section.videos?.length > 0) ||
-    (section.blogs?.length > 0) ||
     (section.articles?.length > 0);
 
   return (
@@ -69,15 +45,15 @@ export const SectionContent = ({ sectionId, initialData }: SectionContentProps) 
       )}>
         <SectionHeroPage 
           title={section.title}
-          description={section.description}
+          description={section.type || null}
           videoUrl={section.videoUrl}
           isFree={section.isFree}
-          courseTitle={section.courseTitle}
-          chapterTitle={section.chapterTitle}
+          courseTitle={section.chapter.course.title}
+          chapterTitle={section.chapter.title}
         />
       </div>
 
-      {section.codeExplanations?.length > 0 && (
+      {section.codeExplanations && section.codeExplanations.length > 0 && (
         <div className={cn(
           "rounded-2xl",
           "bg-white/80 dark:bg-gray-800/50",
@@ -94,7 +70,7 @@ export const SectionContent = ({ sectionId, initialData }: SectionContentProps) 
           </div>
 
           <div className="space-y-8">
-            {section.codeExplanations.map((item) => (
+            {section.codeExplanations.map((item: any) => (
               <div
                 key={item.id}
                 className={cn(
@@ -114,11 +90,11 @@ export const SectionContent = ({ sectionId, initialData }: SectionContentProps) 
                   <div className="p-4 bg-gray-50/80 dark:bg-gray-900/80">
                     <SyntaxHighlighter
                       language={detectLanguage(item.code || '')}
-                      style={theme === 'dark' ? atomDark : prism}
+                      style={atomDark}
                       customStyle={{
                         margin: 0,
                         padding: '1rem',
-                        background: theme === 'dark' ? '#1a1b26' : '#f8fafc',
+                        background: 'transparent',
                         fontSize: '0.875rem',
                         lineHeight: '1.5rem',
                         borderRadius: '0.5rem',
@@ -129,9 +105,9 @@ export const SectionContent = ({ sectionId, initialData }: SectionContentProps) 
                       lineNumberStyle={{
                         minWidth: '2.5em',
                         paddingRight: '1em',
-                        color: theme === 'dark' ? '#565f89' : '#94a3b8',
-                        backgroundColor: theme === 'dark' ? '#16161e' : '#f1f5f9',
-                        borderRight: theme === 'dark' ? '1px solid #2a2e3f' : '1px solid #e2e8f0',
+                        color: '#565f89',
+                        backgroundColor: '#f1f5f9',
+                        borderRight: '1px solid #e2e8f0',
                       }}
                     >
                       {item.code || '// No code provided'}
@@ -221,20 +197,6 @@ export const SectionContent = ({ sectionId, initialData }: SectionContentProps) 
               </div>
             )}
             
-            {section.blogs && section.blogs.length > 0 && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-500/10 rounded-lg">
-                    <BookOpen className="h-5 w-5 text-purple-400" />
-                  </div>
-                  <h3 className="text-xl font-medium text-white">Related Blog Posts</h3>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <SectionBlogs blogs={section.blogs} />
-                </div>
-              </div>
-            )}
-
             {section.articles && section.articles.length > 0 && (
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
@@ -265,4 +227,4 @@ export const SectionContent = ({ sectionId, initialData }: SectionContentProps) 
       )}
     </div>
   );
-}; 
+} 

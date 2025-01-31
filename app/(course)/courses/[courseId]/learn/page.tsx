@@ -3,13 +3,17 @@ import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { CourseContentWrapper } from "./_components/course-content-wrapper";
 
-const CourseLearnPage = async ({
-  params,
-  searchParams
-}: {
-  params: { courseId: string }
-  searchParams: { type?: string; sectionId?: string }
-}) => {
+interface CoursePageProps {
+  params: {
+    courseId: string;
+  };
+  searchParams: {
+    type?: string;
+    sectionId?: string;
+  };
+}
+
+export default async function CoursePage({ params, searchParams }: CoursePageProps) {
   const user = await currentUser();
 
   if (!user) {
@@ -71,11 +75,32 @@ const CourseLearnPage = async ({
     return redirect("/");
   }
 
+  // Pre-fetch section data if needed
+  let sectionData = null;
+  if (searchParams.type === 'section' && searchParams.sectionId) {
+    sectionData = await db.section.findUnique({
+      where: { id: searchParams.sectionId },
+      include: {
+        chapter: {
+          include: {
+            course: true
+          }
+        },
+        videos: true,
+        articles: true,
+        codeExplanations: true,
+      }
+    });
+  }
+
   return (
     <div className="flex-1">
-      <CourseContentWrapper course={course} />
+      <CourseContentWrapper 
+        course={course} 
+        initialSectionData={sectionData}
+        initialType={searchParams.type || 'overview'}
+        initialSectionId={searchParams.sectionId || null}
+      />
     </div>
   );
-};
-
-export default CourseLearnPage; 
+} 

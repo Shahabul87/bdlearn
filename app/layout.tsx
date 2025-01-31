@@ -29,6 +29,13 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link 
+          rel="preload" 
+          href="/_next/static/css/app/layout.css" 
+          as="style"
+        />
+      </head>
       <body className={clsx(
         dmSans.className,
         "min-h-screen bg-white/30 dark:bg-gray-900 transition-colors duration-300"

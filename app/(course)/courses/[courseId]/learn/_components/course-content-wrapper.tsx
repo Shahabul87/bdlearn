@@ -5,26 +5,27 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Menu, X, ChevronRight, ChevronLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CourseSidebar } from "./course-sidebar";
-import { CourseContent } from "./course-content";
+import { CourseContentClient } from "./course-content-client";
 import { cn } from "@/lib/utils";
+import { Course, Chapter, Section } from "@prisma/client";
 
 interface CourseContentWrapperProps {
-  course: {
-    id: string;
-    title: string;
-    chapters: {
-      id: string;
-      title: string;
-      sections: {
-        id: string;
-        title: string;
-        codeExplanations: any[];
-      }[];
-    }[];
+  course: Course & {
+    chapters: (Chapter & {
+      sections: Section[];
+    })[];
   };
+  initialSectionData: any;
+  initialType: string;
+  initialSectionId: string | null;
 }
 
-export const CourseContentWrapper = ({ course }: CourseContentWrapperProps) => {
+export const CourseContentWrapper = ({ 
+  course, 
+  initialSectionData,
+  initialType,
+  initialSectionId 
+}: CourseContentWrapperProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -38,17 +39,27 @@ export const CourseContentWrapper = ({ course }: CourseContentWrapperProps) => {
     type: string;
     id: string | null;
   }>({
-    type: searchParams.get('type') || "overview",
-    id: searchParams.get('sectionId') || null
+    type: initialType,
+    id: initialSectionId
   });
 
   const handleContentSelect = (type: string, id: string | null) => {
-    const newParams = new URLSearchParams();
-    newParams.set('type', type);
-    if (id) newParams.set('sectionId', id);
-    
-    router.push(`?${newParams.toString()}`);
+    // Update state first
     setActiveContent({ type, id });
+    
+    // Create new URLSearchParams
+    const params = new URLSearchParams();
+    params.set('type', type);
+    if (id) {
+      params.set('sectionId', id);
+    } else {
+      params.delete('sectionId');
+    }
+    
+    // Use router.push instead of replace to update URL
+    router.push(`${window.location.pathname}?${params.toString()}`, {
+      scroll: false,
+    });
   };
 
   useEffect(() => {
@@ -317,10 +328,11 @@ export const CourseContentWrapper = ({ course }: CourseContentWrapperProps) => {
           )}
         </AnimatePresence>
 
-        <CourseContent
+        <CourseContentClient
           course={course}
           chapters={course.chapters}
           activeContent={activeContent}
+          sectionData={initialSectionData}
         />
       </main>
     </div>

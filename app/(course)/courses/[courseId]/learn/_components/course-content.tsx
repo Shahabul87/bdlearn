@@ -1,34 +1,39 @@
-"use client";
-
-import { Course, Chapter } from "@prisma/client";
+import { Course, Chapter, Section } from "@prisma/client";
 import { SectionContent } from "./section-content";
 import { cn } from "@/lib/utils";
 
 interface CourseContentProps {
-  course: any;
-  chapters: any[];
+  course: Course & {
+    chapters: (Chapter & {
+      sections: Section[];
+    })[];
+  };
+  chapters: (Chapter & {
+    sections: Section[];
+  })[];
   activeContent: {
     type: string;
     id: string | null;
   };
+  sectionData: any; // Add proper typing based on your section data structure
 }
 
-export const CourseContent = ({
+export async function CourseContent({
   course,
   chapters,
-  activeContent
-}: CourseContentProps) => {
+  activeContent,
+  sectionData
+}: CourseContentProps) {
   const activeSection = activeContent.type === "section" && activeContent.id
     ? chapters.flatMap(chapter => 
-        chapter.sections.map((section: { 
-          id: string;
-          title: string;
-          chapterTitle?: string;
-          courseTitle?: string;
-        }) => ({
+        chapter.sections.map(section => ({
           ...section,
           chapterTitle: chapter.title,
-          courseTitle: course.title
+          courseTitle: course.title,
+          description: section.type || null,
+          videoUrl: section.videoUrl || null,
+          isFree: section.isFree,
+          ...sectionData
         }))
       ).find(section => section.id === activeContent.id)
     : null;
@@ -113,10 +118,10 @@ export const CourseContent = ({
         ) : activeContent.type === "section" && activeSection ? (
           <SectionContent 
             sectionId={activeContent.id!}
-            initialData={activeSection}
+            section={sectionData}
           />
         ) : null}
       </div>
     </div>
   );
-}; 
+} 
