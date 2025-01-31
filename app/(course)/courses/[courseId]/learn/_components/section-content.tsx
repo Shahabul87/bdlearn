@@ -9,18 +9,12 @@ import { cn } from "@/lib/utils";
 import SectionHeroPage from "@/app/[sectionId]/_components/section-hero-page";
 import SectionVideos from "@/app/[sectionId]/_sectionVideos/section-video-component";
 import SectionBlogs from "@/app/[sectionId]/_sectionBlogs/section-blog-component";
+import { CodeExplanation } from "./code-explanation";
 
 interface SectionContentProps {
   sectionId: string;
   section: any; // Type this properly based on your data structure
 }
-
-const detectLanguage = (code: string) => {
-  if (code.includes('function') || code.includes('const') || code.includes('let')) return 'javascript';
-  if (code.includes('<div') || code.includes('</div>')) return 'markup';
-  if (code.includes('import') || code.includes('from')) return 'typescript';
-  return 'typescript';
-};
 
 export function SectionContent({ sectionId, section }: SectionContentProps) {
   if (!section) {
@@ -71,96 +65,7 @@ export function SectionContent({ sectionId, section }: SectionContentProps) {
 
           <div className="space-y-8">
             {section.codeExplanations.map((item: any) => (
-              <div
-                key={item.id}
-                className={cn(
-                  "rounded-xl overflow-hidden",
-                  "bg-gray-50/50 dark:bg-gray-900/50",
-                  "border border-gray-200/50 dark:border-gray-700/50"
-                )}
-              >
-                <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                    {item.heading}
-                  </h3>
-                </div>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-gray-200/50 dark:divide-gray-700/50">
-                  {/* Code Column */}
-                  <div className="p-4 bg-gray-50/80 dark:bg-gray-900/80">
-                    <SyntaxHighlighter
-                      language={detectLanguage(item.code || '')}
-                      style={atomDark}
-                      customStyle={{
-                        margin: 0,
-                        padding: '1rem',
-                        background: 'transparent',
-                        fontSize: '0.875rem',
-                        lineHeight: '1.5rem',
-                        borderRadius: '0.5rem',
-                      }}
-                      showLineNumbers
-                      wrapLines
-                      wrapLongLines
-                      lineNumberStyle={{
-                        minWidth: '2.5em',
-                        paddingRight: '1em',
-                        color: '#565f89',
-                        backgroundColor: '#f1f5f9',
-                        borderRight: '1px solid #e2e8f0',
-                      }}
-                    >
-                      {item.code || '// No code provided'}
-                    </SyntaxHighlighter>
-                  </div>
-
-                  {/* Explanation Column */}
-                  <div className={cn(
-                    "p-4 max-h-[500px] overflow-y-auto custom-scrollbar",
-                    "bg-white/50 dark:bg-gray-900/50"
-                  )}>
-                    <ReactMarkdown
-                      className={cn(
-                        "prose prose-gray dark:prose-invert max-w-none",
-                        "text-gray-700 dark:text-gray-300",
-                        "prose-headings:text-gray-900 dark:prose-headings:text-gray-100",
-                        "prose-strong:text-gray-900 dark:prose-strong:text-gray-100",
-                        "prose-code:text-pink-600 dark:prose-code:text-pink-400",
-                        "prose-pre:bg-gray-50 dark:prose-pre:bg-gray-800",
-                        "prose-pre:text-sm prose-pre:leading-relaxed",
-                        "prose-a:text-blue-600 dark:prose-a:text-blue-400",
-                        "prose-blockquote:text-gray-500 dark:prose-blockquote:text-gray-400",
-                        "prose-blockquote:border-l-4 prose-blockquote:border-gray-200 dark:prose-blockquote:border-gray-700"
-                      )}
-                      components={{
-                        code({ className, children, ...props }: React.HTMLProps<HTMLElement>) {
-                          return (
-                            <code
-                              className={cn(
-                                "bg-gray-800",
-                                "text-pink-400",
-                                "rounded px-1.5 py-0.5",
-                                "text-sm",
-                                className
-                              )}
-                              {...props}
-                            >
-                              {children}
-                            </code>
-                          );
-                        },
-                        span: ({ node, ...props }) => {
-                          return <span {...props} style={{ ...props.style }} />;
-                        }
-                      }}
-                      remarkPlugins={[remarkGfm]}
-                      rehypePlugins={[rehypeRaw]}
-                    >
-                      {item.explanation || 'No explanation provided'}
-                    </ReactMarkdown>
-                  </div>
-                </div>
-              </div>
+              <CodeExplanation key={item.id} item={item} />
             ))}
           </div>
         </div>

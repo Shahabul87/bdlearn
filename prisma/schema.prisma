@@ -95,6 +95,8 @@ model User {
   customTabs CustomTab[] // Relation field
 
   reviews CourseReview[]
+
+  createdAt DateTime @default(now())
 }
 
 model Course {

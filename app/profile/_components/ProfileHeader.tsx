@@ -22,7 +22,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ userId, username, avatarU
 
   return (
     <div className={cn(
-      "relative w-full rounded-3xl p-8",
+      "relative w-full  p-8",
       "bg-white/50 dark:bg-gray-900/50",
       "border border-gray-200 dark:border-gray-800",
       "backdrop-blur-sm"

@@ -14,14 +14,12 @@ import { PublicDetails } from './_components/PublicDetails';
 import { User as PrismaUser, ProfileLink } from "@prisma/client";
 
 interface SettingsContentProps {
-  userDetails: (PrismaUser & {
-    profileLinks: ProfileLink[];
-  }) | null;
+  userId: string;
 }
 
-export const SettingsContent = ({ userDetails: initialUserDetails }: SettingsContentProps) => {
-  const [loading, setLoading] = useState(true);
-  const [userDetails, setUserDetails] = useState(initialUserDetails);
+export const SettingsContent = ({ userId }: SettingsContentProps) => {
+  const [userDetails, setUserDetails] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedSettingsTab, setSelectedSettingsTab] = useState("Profile");
   const [selectedProfileSection, setSelectedProfileSection] = useState("Public Details");
 
@@ -40,19 +38,21 @@ export const SettingsContent = ({ userDetails: initialUserDetails }: SettingsCon
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const user = await getUserDetails(initialUserDetails?.id || "");
-        setUserDetails(user);
+        const response = await fetch(`/api/users/${userId}`);
+        if (!response.ok) throw new Error('Failed to fetch user details');
+        const data = await response.json();
+        setUserDetails(data);
       } catch (error) {
-        console.error("Error fetching user details:", error);
+        console.error('Error fetching user details:', error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
     fetchUserDetails();
-  }, [initialUserDetails?.id]);
+  }, [userId]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="animate-spin">
@@ -61,6 +61,8 @@ export const SettingsContent = ({ userDetails: initialUserDetails }: SettingsCon
       </div>
     );
   }
+
+  if (!userDetails) return null;
 
   const renderProfileContent = () => {
     switch (selectedProfileSection) {

@@ -9,21 +9,10 @@ export const ServerSettingsContent = async () => {
 
   if (!user?.id) {
     redirect("/");
-    return null; // stop rendering on redirect
+    return null;
   }
 
-  const userId = user.id;
-
-  const userDetails = await db.user.findUnique({
-    where: {
-      id: userId,
-    },
-    include: {
-      profileLinks: true,
-    },
-  });
-
-  return <SettingsContent userDetails={userDetails} />;
+  return <SettingsContent userId={user.id} />;
 };
 
 export default ServerSettingsContent;
