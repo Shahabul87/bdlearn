@@ -125,13 +125,13 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
       />
 
       <div className="max-w-[1800px] mx-auto px-4 lg:px-8">
-        <div className="mb-5">
+        <div className="mb-10">
           <GradientHeading 
             text="Course Breakdown"
-            gradientFrom="purple-400"
-            gradientVia="cyan-400"
-            gradientTo="emerald-400"
-            iconColor="purple-400"
+            gradientFrom="from-purple-400"
+            gradientVia="via-cyan-400"
+            gradientTo="to-emerald-400"
+            iconColor="text-purple-400"
           />
           
           <div className="pl-16 pr-4">
@@ -146,10 +146,10 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
         <div className="relative">
           <GradientHeading 
             text="Course Learning Outcomes"
-            gradientFrom="rose-400"
-            gradientVia="amber-400"
-            gradientTo="cyan-400"
-            iconColor="rose-400"
+            gradientFrom="from-rose-400"
+            gradientVia="via-amber-400"
+            gradientTo="to-cyan-400"
+            iconColor="text-rose-400"
           />
           
           <div className="pl-16 pr-4">
@@ -164,16 +164,16 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
           </div>
         </div>
         
-        <div className=" mx-auto mt-40">
+        <div className="mx-auto mt-40 mb-5">
           <GradientHeading 
             text="Course Contents"
-            gradientFrom="emerald-400"
-            gradientVia="blue-400"
-            gradientTo="purple-400"
-            iconColor="emerald-400"
+            gradientFrom="from-emerald-400"
+            gradientVia="via-blue-400"
+            gradientTo="to-purple-400"
+            iconColor="text-emerald-400"
           />
         
-          <div className="px-8 min-h-screen">
+          <div className="px-8">
             <CourseContent chapters={chapters} />
           </div>
         </div>
@@ -181,10 +181,10 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
         <div className="mt-2">
           <GradientHeading 
             text="Course Reviews"
-            gradientFrom="blue-400"
-            gradientVia="indigo-400"
-            gradientTo="violet-400"
-            iconColor="blue-400"
+            gradientFrom="from-blue-400"
+            gradientVia="via-indigo-400"
+            gradientTo="to-violet-400"
+            iconColor="text-blue-400"
           />
           
           <div className="pl-16 pr-4 mt-8">
