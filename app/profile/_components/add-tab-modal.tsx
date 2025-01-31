@@ -35,6 +35,8 @@ export const AddTabModal = ({ isOpen, onClose, userId }: AddTabModalProps) => {
       }
 
       toast.success('Tab created successfully');
+      setLabel('');
+      setIcon('');
       onClose();
     } catch (error) {
       toast.error('Failed to create tab');
