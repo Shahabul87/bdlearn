@@ -13,6 +13,7 @@ import { getPostsForHomepage } from "@/actions/get-all-posts";
 import MyPostCard from "@/app/blog/blog-card";
 import HomeHeroSection from "./home-hero-section";
 import { HomeFooter } from "./HomeFooter";
+import { WhatInspiredMe } from "./what-inspired-me";
 
 const Home = async () => {
   const user = await currentUser();

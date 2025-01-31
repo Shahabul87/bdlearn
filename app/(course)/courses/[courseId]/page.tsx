@@ -10,6 +10,7 @@ import { CourseCardsCarousel } from "./course-card-carousel";
 import GradientHeading from "./_components/gradient-heading";
 import { CourseReviews } from "./_components/course-reviews";
 import { EnrollButton } from "./_components/enroll-button";
+import { Metadata } from "next";
 
 type CourseReview = {
   id: string;
@@ -26,6 +27,23 @@ type CourseReview = {
   };
 };
 
+type Props = {
+  params: { courseId: string }
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const course = await db.course.findUnique({
+    where: {
+      id: params.courseId,
+    }
+  });
+
+  return {
+    title: course?.title || "Course Details | SkillHub",
+    description: course?.description || "Learn new skills with our detailed courses"
+  };
+}
+
 const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
   
   const course = await db.course.findUnique({
@@ -33,7 +51,8 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
       id: params.courseId,
     },
     include: {
-      category: true, // Include the category relation
+      category: true,
+      reviews: true,
       chapters: {
         where: {
           isPublished: true,
@@ -42,20 +61,12 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
           position: "asc",
         },
         include: {
-          sections: {
-            where: {
-              isPublished: true,
-            },
-            orderBy: {
-              position: "asc",
-            },
-            include: {
-              videos: true,     // Include all related videos in the section
-              blogs: true,      // Include all related blogs in the section
-              articles: true,   // Include all related articles in the section
-              notes: true,      // Include all related notes in the section
-            },
-          },
+          sections: true,
+        },
+      },
+      _count: {
+        select: {
+          enrollments: true,
         },
       },
     },
@@ -181,7 +192,7 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
           </div>
         </div>
 
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex justify-center mb-5">
           <EnrollButton 
             courseId={params.courseId}
             price={course.price || 0}

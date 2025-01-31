@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { AiFillStar, AiOutlineClockCircle, AiOutlineUser, AiOutlineCheck } from 'react-icons/ai';
-import { Course } from '@prisma/client';
+import { Course, Chapter } from '@prisma/client';
 import { CourseSocialMediaShare } from './course-social-media-sharing';
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -13,7 +13,18 @@ import { Loader2 } from "lucide-react";
 import { useState } from "react";
 
 interface CourseCardProps {
-  course: Course & { category?: { name: string } | null };
+  course: Course & { 
+    category?: { name: string } | null;
+    reviews?: {
+      id: string;
+      rating: number;
+      createdAt: Date;
+    }[];
+    chapters?: Chapter[];
+    _count?: {
+      enrollments: number;
+    };
+  };
   userId?: string;
 }
 
@@ -66,8 +77,26 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
     }
   };
 
+  // Calculate average rating
+  const averageRating = course.reviews?.length 
+    ? (course.reviews.reduce((acc, review) => acc + review.rating, 0) / course.reviews.length).toFixed(1)
+    : "0.0";
+
+  // Get total reviews count
+  const totalReviews = course.reviews?.length || 0;
+
+  // Get total enrollments
+  const totalEnrollments = course._count?.enrollments || 0;
+
+  // Format last updated date
+  const lastUpdated = new Date(course.updatedAt).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen bg-white/10 dark:bg-gradient-to-b dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Hero Section with Large Image */}
       <div className="relative h-[60vh] w-full">
         {/* Background Image with Gradient Overlay */}
@@ -79,7 +108,7 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-gray-900/60 to-gray-900" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-gray-900/50 to-white dark:to-gray-900" />
         </div>
 
         {/* Course Info Overlay */}
@@ -133,16 +162,20 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
             >
               <div className="flex items-center gap-2">
                 <AiFillStar className="text-yellow-500 text-2xl" />
-                <span className="text-2xl font-semibold">4.5</span>
-                <span className="text-white/70">(39,765 ratings)</span>
+                <span className="text-2xl font-semibold">{averageRating}</span>
+                <span className="text-white/70">
+                  ({totalReviews} {totalReviews === 1 ? 'rating' : 'ratings'})
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <AiOutlineUser className="text-purple-400 text-xl" />
-                <span>222,413 enrolled</span>
+                <span>
+                  {totalEnrollments.toLocaleString()} {totalEnrollments === 1 ? 'student' : 'students'} enrolled
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <AiOutlineClockCircle className="text-blue-400 text-xl" />
-                <span>Last updated {new Date(course.updatedAt).toLocaleDateString()}</span>
+                <span>Last updated {lastUpdated}</span>
               </div>
             </motion.div>
           </motion.div>
@@ -159,10 +192,10 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm"
+              className="bg-gray-50/80 dark:bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm"
             >
-              <h2 className="text-2xl font-bold text-white mb-4">About This Course</h2>
-              <p className="text-gray-300 leading-relaxed">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">About This Course</h2>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                 {course.description}
               </p>
             </motion.div>
@@ -172,14 +205,14 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm"
+              className="bg-gray-50/80 dark:bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm"
             >
-              <h2 className="text-2xl font-bold text-white mb-4">What You&apos;ll Learn</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">What You&apos;ll Learn</h2>
               <div className="grid md:grid-cols-2 gap-4">
                 {['Comprehensive curriculum', 'Practical exercises', 'Real-world projects', 'Industry best practices'].map((item, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <AiOutlineCheck className="text-green-400 text-xl mt-1" />
-                    <span className="text-gray-300">{item}</span>
+                    <AiOutlineCheck className="text-green-600 dark:text-green-400 text-xl mt-1" />
+                    <span className="text-gray-600 dark:text-gray-300">{item}</span>
                   </div>
                 ))}
               </div>
@@ -191,7 +224,7 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.7 }}
-            className="bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm h-fit sticky top-4"
+            className="bg-gray-50/80 dark:bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm h-fit sticky top-4"
           >
             <div className="space-y-6">
               <div className="aspect-video relative rounded-lg overflow-hidden">
@@ -235,7 +268,7 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
               </motion.div>
 
               <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-white">Course Features</h3>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Course Features</h3>
                 <ul className="space-y-3">
                   {[
                     'Lifetime Access',
@@ -243,7 +276,7 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
                     'Certificate of Completion',
                     'Downloadable Resources',
                   ].map((feature, index) => (
-                    <li key={index} className="flex items-center gap-3 text-gray-300">
+                    <li key={index} className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
                       <div className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
                       {feature}
                     </li>
@@ -251,7 +284,7 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
                 </ul>
               </div>
 
-              <div className="pt-4 border-t border-gray-700">
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                 <CourseSocialMediaShare courseTitle={course.title} />
               </div>
             </div>

@@ -73,7 +73,6 @@ model User {
   collaboratingMinds Mind[]     @relation("MindCollaborators")
 
   bills         Bill[]
-  courseReviews CourseReview[]
   enrollments   Enrollment[]
 
   // Add calendar settings relation
@@ -94,6 +93,8 @@ model User {
   sharedResources    GroupResource[]     @relation("AuthoredResources")
 
   customTabs CustomTab[] // Relation field
+
+  reviews CourseReview[]
 }
 
 model Course {
@@ -907,14 +908,16 @@ enum RecurringType {
 
 model CourseReview {
   id        String   @id @default(cuid())
-  rating    Int
+  rating    Int      @default(0)
   comment   String   @db.Text
   courseId  String
   userId    String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Relations
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([courseId])
   @@index([userId])

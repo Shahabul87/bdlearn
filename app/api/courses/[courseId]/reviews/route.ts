@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+
 import { currentUser } from "@/lib/auth";
 
 export async function POST(
@@ -8,25 +9,41 @@ export async function POST(
 ) {
   try {
     const user = await currentUser();
-    if (!user) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+    
 
     if (!user?.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+        return new NextResponse("Unauthorized", { status: 401 });
+      }
+
+    const userId = user?.id;
 
     const { rating, comment } = await req.json();
 
-    if (!rating || !comment) {
-      return new NextResponse("Missing required fields", { status: 400 });
+    // Validate input
+    if (!rating || rating < 1 || rating > 5) {
+      return new NextResponse("Invalid rating", { status: 400 });
+    }
+
+    if (!comment || comment.length < 10) {
+      return new NextResponse("Review comment must be at least 10 characters", { status: 400 });
+    }
+
+    // Check if course exists
+    const course = await db.course.findUnique({
+      where: {
+        id: params.courseId,
+      },
+    });
+
+    if (!course) {
+      return new NextResponse("Course not found", { status: 404 });
     }
 
     // Check if user has already reviewed this course
     const existingReview = await db.courseReview.findFirst({
       where: {
         courseId: params.courseId,
-        userId: user.id,
+        userId,
       },
     });
 
@@ -34,25 +51,33 @@ export async function POST(
       return new NextResponse("You have already reviewed this course", { status: 400 });
     }
 
+    // Create the review
     const review = await db.courseReview.create({
       data: {
         rating,
         comment,
         courseId: params.courseId,
-        userId: user.id as string,
+        userId,
       },
       include: {
-        user: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
       },
     });
 
     return NextResponse.json(review);
   } catch (error) {
-    console.error("[COURSE_REVIEW_ERROR]", error);
+    console.error("[COURSE_REVIEW_CREATE]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
 
+// Get all reviews for a course
 export async function GET(
   req: Request,
   { params }: { params: { courseId: string } }
@@ -63,7 +88,13 @@ export async function GET(
         courseId: params.courseId,
       },
       include: {
-        user: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
@@ -72,7 +103,7 @@ export async function GET(
 
     return NextResponse.json(reviews);
   } catch (error) {
-    console.error("[COURSE_REVIEWS_GET_ERROR]", error);
+    console.error("[COURSE_REVIEWS_GET]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 } 

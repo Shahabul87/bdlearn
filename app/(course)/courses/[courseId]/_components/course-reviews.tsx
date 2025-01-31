@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { ReviewCard } from "./review-card";
 
 const formSchema = z.object({
   rating: z.number().min(1).max(5),
@@ -66,10 +67,48 @@ export const CourseReviews = ({ courseId, initialReviews = [] }: CourseReviewsPr
 
   return (
     <div className="max-w-4xl lg:max-w-5xl mx-auto">
-      <div className="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700/50 p-6 shadow-xl rounded-2xl backdrop-blur-sm">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-100 to-gray-300 text-transparent bg-clip-text mb-6">
-          Course Reviews
-        </h2>
+      <div className="bg-white/50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 border border-gray-200/50 dark:border-gray-700/50 p-6 shadow-xl rounded-2xl backdrop-blur-sm">
+        {/* Course Stats */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-gray-100 dark:to-gray-300 text-transparent bg-clip-text">
+            Course Reviews
+          </h2>
+          <div className="mt-2 flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Star className="w-5 h-5 text-amber-500 dark:text-yellow-400 fill-current" />
+              <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                {reviews.length > 0 
+                  ? (reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length).toFixed(1)
+                  : "No ratings yet"
+                }
+              </span>
+            </div>
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              ({reviews.length} {reviews.length === 1 ? "review" : "reviews"})
+            </span>
+          </div>
+        </div>
+
+         {/* Reviews List */}
+         <div className="mt-8 space-y-4 mb-6">
+          <AnimatePresence>
+            {reviews.map((review, index) => (
+              <ReviewCard 
+                key={review.id} 
+                review={review} 
+                index={index}
+              />
+            ))}
+          </AnimatePresence>
+          
+          {reviews.length === 0 && (
+            <div className="text-center py-6">
+              <p className="text-gray-500 dark:text-gray-400">
+                No reviews yet. Be the first to review this course!
+              </p>
+            </div>
+          )}
+        </div>
 
         {/* Review Form */}
         <Form {...form}>
@@ -87,7 +126,7 @@ export const CourseReviews = ({ courseId, initialReviews = [] }: CourseReviewsPr
                   }}
                   className={cn(
                     "p-1 rounded-full transition-colors",
-                    selectedRating >= rating ? "text-yellow-400" : "text-gray-500"
+                    selectedRating >= rating ? "text-amber-500 dark:text-yellow-400" : "text-gray-300 dark:text-gray-500"
                   )}
                 >
                   <Star className="w-8 h-8" fill={selectedRating >= rating ? "currentColor" : "none"} />
@@ -104,7 +143,7 @@ export const CourseReviews = ({ courseId, initialReviews = [] }: CourseReviewsPr
                     <Textarea
                       disabled={isSubmitting}
                       placeholder="Share your thoughts about this course..."
-                      className="bg-gray-800/50 border-gray-700 focus:border-gray-600 text-gray-100 resize-none h-32"
+                      className="bg-gray-50/80 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus:border-gray-300 dark:focus:border-gray-600 text-gray-900 dark:text-gray-100 resize-none h-32"
                       {...field}
                     />
                   </FormControl>
@@ -116,7 +155,7 @@ export const CourseReviews = ({ courseId, initialReviews = [] }: CourseReviewsPr
             <Button
               disabled={isSubmitting}
               type="submit"
-              className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
+              className="w-full bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white"
             >
               {isSubmitting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -127,47 +166,7 @@ export const CourseReviews = ({ courseId, initialReviews = [] }: CourseReviewsPr
           </form>
         </Form>
 
-        {/* Reviews List */}
-        <div className="mt-8 space-y-4">
-          <AnimatePresence>
-            {reviews.map((review: any, index: number) => (
-              <motion.div
-                key={review.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ delay: index * 0.1 }}
-                className="p-4 bg-gray-800/50 rounded-xl border border-gray-700/50"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-gray-700">
-                      <User className="w-4 h-4 text-gray-300" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-200">{review.user.name}</p>
-                      <div className="flex items-center gap-1 mt-1">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={cn(
-                              "w-4 h-4",
-                              i < review.rating ? "text-yellow-400 fill-current" : "text-gray-500"
-                            )}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <span className="text-sm text-gray-400">
-                    {new Date(review.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-                <p className="mt-3 text-gray-300">{review.comment}</p>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+       
       </div>
     </div>
   );

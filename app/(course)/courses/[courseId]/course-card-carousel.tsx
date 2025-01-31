@@ -13,14 +13,14 @@ interface CourseContentProps {
   })[] | undefined;
 }
 
-// Add an array of gradient colors for different chapters
+// Update the gradient colors array for better light mode contrast
 const chapterGradients = [
-  "from-purple-500/20 to-purple-900/20 border-purple-500/30",
-  "from-blue-500/20 to-blue-900/20 border-blue-500/30",
-  "from-cyan-500/20 to-cyan-900/20 border-cyan-500/30",
-  "from-emerald-500/20 to-emerald-900/20 border-emerald-500/30",
-  "from-rose-500/20 to-rose-900/20 border-rose-500/30",
-  "from-amber-500/20 to-amber-900/20 border-amber-500/30",
+  "from-purple-500/10 to-purple-900/10 dark:from-purple-500/20 dark:to-purple-900/20 border-purple-500/20 dark:border-purple-500/30",
+  "from-blue-500/10 to-blue-900/10 dark:from-blue-500/20 dark:to-blue-900/20 border-blue-500/20 dark:border-blue-500/30",
+  "from-cyan-500/10 to-cyan-900/10 dark:from-cyan-500/20 dark:to-cyan-900/20 border-cyan-500/20 dark:border-cyan-500/30",
+  "from-emerald-500/10 to-emerald-900/10 dark:from-emerald-500/20 dark:to-emerald-900/20 border-emerald-500/20 dark:border-emerald-500/30",
+  "from-rose-500/10 to-rose-900/10 dark:from-rose-500/20 dark:to-rose-900/20 border-rose-500/20 dark:border-rose-500/30",
+  "from-amber-500/10 to-amber-900/10 dark:from-amber-500/20 dark:to-amber-900/20 border-amber-500/20 dark:border-amber-500/30",
 ];
 
 export const CourseCardsCarousel: React.FC<CourseContentProps> = ({ chapters }) => {
@@ -129,12 +129,12 @@ const ChapterPreview: React.FC<{
     : "No description available.";
 
   const colors = [
-    "text-purple-400 bg-purple-500/20 border-purple-500/30",
-    "text-blue-400 bg-blue-500/20 border-blue-500/30",
-    "text-cyan-400 bg-cyan-500/20 border-cyan-500/30",
-    "text-emerald-400 bg-emerald-500/20 border-emerald-500/30",
-    "text-rose-400 bg-rose-500/20 border-rose-500/30",
-    "text-amber-400 bg-amber-500/20 border-amber-500/30",
+    "text-purple-600 dark:text-purple-400 bg-purple-500/10 dark:bg-purple-500/20 border-purple-500/20 dark:border-purple-500/30",
+    "text-blue-600 dark:text-blue-400 bg-blue-500/10 dark:bg-blue-500/20 border-blue-500/20 dark:border-blue-500/30",
+    "text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 dark:bg-cyan-500/20 border-cyan-500/20 dark:border-cyan-500/30",
+    "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/20 border-emerald-500/20 dark:border-emerald-500/30",
+    "text-rose-600 dark:text-rose-400 bg-rose-500/10 dark:bg-rose-500/20 border-rose-500/20 dark:border-rose-500/30",
+    "text-amber-600 dark:text-amber-400 bg-amber-500/10 dark:bg-amber-500/20 border-amber-500/20 dark:border-amber-500/30",
   ];
 
   const currentColor = colors[colorIndex];
@@ -150,12 +150,12 @@ const ChapterPreview: React.FC<{
       </div>
 
       {/* Title */}
-      <h3 className="font-bold text-3xl mb-4 text-white/90 line-clamp-2">
+      <h3 className="font-bold text-3xl mb-4 text-gray-800 dark:text-white/90 line-clamp-2">
         {title}
       </h3>
 
       {/* Description */}
-      <p className="text-white/70 line-clamp-4 text-base flex-grow leading-relaxed">
+      <p className="text-gray-600 dark:text-white/70 line-clamp-4 text-base flex-grow leading-relaxed">
         {cleanDescription}
       </p>
 
@@ -172,7 +172,7 @@ const ChapterPreview: React.FC<{
       </motion.button>
 
       {/* Additional Info */}
-      <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between text-sm text-white/60">
+      <div className="mt-4 pt-4 border-t border-gray-400/10 dark:border-white/10 flex items-center justify-between text-sm text-gray-500 dark:text-white/60">
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4" />
           <span>Multiple Lessons</span>

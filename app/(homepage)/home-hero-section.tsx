@@ -87,7 +87,7 @@ export default function HomeHeroSection() {
       className="relative overflow-hidden bg-white dark:bg-gray-900 min-h-[calc(100vh-80px)] flex items-center justify-center sm:py-24 pt-24 sm:pt-0"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div className="text-center">
+        <div className="text-center lg:mt-12">
           <motion.h1 
             className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6"
             initial="hidden"
@@ -135,7 +135,7 @@ export default function HomeHeroSection() {
           <motion.div
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
-            className="mt-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
+            className="mt-20 lg:mt-24 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
           >
             {features.map((feature, index) => (
               <motion.div
