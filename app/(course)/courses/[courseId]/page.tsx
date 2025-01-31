@@ -125,7 +125,7 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
       />
 
       <div className="max-w-[1800px] mx-auto px-4 lg:px-8">
-        <div className="mb-10">
+        <div className="mb-5">
           <GradientHeading 
             text="Course Breakdown"
             gradientFrom="purple-400"
