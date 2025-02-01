@@ -49,8 +49,14 @@ const ChapterIdPage = async ({
 
 
   if (!chapter) {
-    return redirect("/")
+    console.error("Chapter not found");
+    return redirect("/");
   }
+  // console.log("Chapter data:", {
+  //   courseId: params.courseId,
+  //   chapterId: params.chapterId,
+  //   chapter
+  // });
 
   const requiredFields = [
     chapter.title,
@@ -127,12 +133,10 @@ const ChapterIdPage = async ({
                       "w-full p-4 sm:p-6",
                       "bg-white/40 dark:bg-gray-800/60",
                       "border border-gray-200 dark:border-gray-700/50",
-                      "rounded-xl backdrop-blur-sm"
+                      "rounded-xl backdrop-blur-sm" 
                     )}>
-                      <div className="space-y-2 mb-5">
-                        <h1 className="text-xl sm:text-2xl font-semibold bg-gradient-to-r from-purple-600 to-cyan-600 dark:from-purple-400 dark:to-cyan-400 bg-clip-text text-transparent">
-                          Chapter Creation
-                        </h1>
+                      <div className="space-y-2 mb-5 max-w-[300px]">
+                        <h1 className="text-xl sm:text-2xl font-semibold bg-gradient-to-r from-purple-600 to-cyan-600 dark:from-purple-400 dark:to-cyan-400 bg-clip-text text-transparent whitespace-nowrap">Chapter Creation</h1>
                         <span className="text-sm text-gray-600 dark:text-gray-400">
                           Complete all fields{" "}
                           <span className="text-purple-600 dark:text-purple-400 font-medium">

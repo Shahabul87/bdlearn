@@ -147,8 +147,8 @@ const SectionIdPage = async ({
                     "border border-gray-200 dark:border-gray-700/50",
                     "rounded-xl backdrop-blur-sm"
                   )}>
-                    <div className="flex flex-col gap-y-2 mb-4 sm:mb-0">
-                      <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                    <div className="flex flex-col gap-y-2 mb-4 sm:mb-0 max-w-[300px]">
+                      <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent whitespace-nowrap">
                         Section Creation
                       </h1>
                       <span className="text-sm text-cyan-600 dark:text-cyan-400 font-medium tracking-wide">

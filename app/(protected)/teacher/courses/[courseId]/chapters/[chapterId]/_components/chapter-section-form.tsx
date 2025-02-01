@@ -57,12 +57,21 @@ export const ChaptersSectionForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post(`/api/courses/${courseId}/chapters/${chapterId}/sections`, values);
+      console.log("Submitting section:", values);
+      
+      const response = await axios.post(
+        `/api/courses/${courseId}/chapters/${chapterId}/sections`, 
+        values
+      );
+      
+      console.log("Section creation response:", response.data);
+      
       toast.success("Section created");
       setIsCreating(false);
       form.reset();
       router.refresh();
-    } catch {
+    } catch (error) {
+      console.error("Section creation error:", error);
       toast.error("Something went wrong");
     }
   };
