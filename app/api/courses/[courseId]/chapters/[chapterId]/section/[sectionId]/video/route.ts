@@ -8,7 +8,7 @@ export async function POST(
 ) {
   try {
     const user = await currentUser();
-    const { title, description, url, duration, clarityRating, position } = await req.json();
+    const { title, description, url, duration, rating } = await req.json();
 
     // Check if the user is authenticated
     if (!user?.id) {
@@ -51,7 +51,7 @@ export async function POST(
 
 
     // Validate required fields for video creation
-    if (!title || !url || !duration || !clarityRating || !position) {
+    if (!title || !url || !duration || !rating) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
@@ -62,10 +62,11 @@ export async function POST(
         description,
         url,
         duration,
-        clarityRating,
-        position,
+        rating: parseInt(rating),
+        position: 0,
         sectionId: params.sectionId, // Link video to the section
         userId: user.id, // Associate video with the current user
+        isPublished: true,
       },
     });
 
@@ -88,7 +89,7 @@ export async function PATCH(
 ) {
   try {
     const user = await currentUser();
-    const { videoId, title, description, url, duration, clarityRating, position, category, isPublished } = await req.json();
+    const { videoId, title, description, url, duration, rating, position, category, isPublished } = await req.json();
 
     // Check if the user is authenticated
     if (!user?.id) {
@@ -132,7 +133,7 @@ export async function PATCH(
         description,
         url,
         duration: duration ?? null,
-        clarityRating: clarityRating ?? null,
+        rating: rating ?? null,
         position,
         isPublished: isPublished ?? false,
       },

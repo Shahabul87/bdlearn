@@ -14,7 +14,17 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button"; // Assuming you have a Button component
 
 interface VideoSectionListProps {
-  items: Video[]; // Make sure this matches the Prisma Video type
+  items: {
+    id: string;
+    title: string;
+    description: string | null;
+    url: string | null;
+    duration: number | null;
+    rating: number | null;  // Updated from clarityRating
+    position: number;
+    isPublished: boolean;
+    sectionId: string;
+  }[];
   sectionId: string;
   onReorder: (updateData: { id: string; position: number }[]) => void;
   onEdit: (id: string) => void;
@@ -36,7 +46,17 @@ export const VideoSectionList = ({
   onDelete,
 }: VideoSectionListProps) => {
   const [isMounted, setIsMounted] = useState(false);
-  const [videos, setVideos] = useState<Video[]>([]);
+  const [videos, setVideos] = useState<{
+    id: string;
+    title: string;
+    description: string | null;
+    url: string | null;
+    duration: number | null;
+    rating: number | null;  // Updated from clarityRating
+    position: number;
+    isPublished: boolean;
+    sectionId: string;
+  }[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [videoToDelete, setVideoToDelete] = useState<string | null>(null);
 
@@ -97,52 +117,55 @@ export const VideoSectionList = ({
                 <Draggable key={video.id} draggableId={video.id} index={index}>
                   {(provided) => (
                     <div
-                      className={cn(
-                        "flex items-center gap-x-2 bg-slate-200 border-slate-200 border text-slate-700 rounded-md mb-4 text-sm",
-                        video.isPublished && "bg-sky-100 border-sky-200 text-sky-700"
-                      )}
-                      ref={provided.innerRef}
                       {...provided.draggableProps}
+                      ref={provided.innerRef}
+                      className={cn(
+                        "mb-4 p-4 rounded-lg",
+                        "border border-gray-200 dark:border-gray-700/50",
+                        "bg-white/50 dark:bg-gray-800/40",
+                        "hover:bg-gray-50 dark:hover:bg-gray-800/60",
+                        "transition-all duration-200",
+                        "backdrop-blur-sm"
+                      )}
                     >
-                      <div
-                        className="px-2 py-3 border-r border-r-slate-200 hover:bg-slate-300 rounded-l-md transition"
-                        {...provided.dragHandleProps}
-                      >
-                        <Grip className="h-5 w-5" />
-                      </div>
-                      <div className="flex flex-col">
-                        {/* Link to the video URL */}
-                        {video.url ? (
-                          <a
-                            href={video.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-semibold text-blue-500 hover:underline"
-                          >
+                      <div className="flex items-center gap-x-2">
+                        <div
+                          {...provided.dragHandleProps}
+                          className={cn(
+                            "p-2 rounded-lg",
+                            "hover:bg-gray-100 dark:hover:bg-gray-700/50",
+                            "transition-colors"
+                          )}
+                        >
+                          <Grip className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-base font-medium text-gray-900 dark:text-gray-100">
                             {video.title}
-                          </a>
-                        ) : (
-                          <span className="font-semibold">{video.title}</span>
-                        )}
-                        <span className="text-xs text-gray-500">
-                          Duration: {video.duration !== null ? formatDuration(video.duration) : "Unknown"} | Clarity: {video.clarityRating}/5
-                        </span>
-                      </div>
-                      <div className="ml-auto pr-2 flex items-center gap-x-2">
-                        <span
-                          className="flex items-center justify-between cursor-pointer hover:opacity-75 transition"
-                          onClick={() => onEdit(video.id)}
-                        >
-                          <Pencil className="w-4 h-4 cursor-pointer hover:opacity-75 transition mr-1" />{" "}
-                          Edit
-                        </span>
-                        <span
-                          className="flex items-center justify-between cursor-pointer hover:opacity-75 transition text-red-600"
-                          onClick={() => confirmDelete(video.id)}
-                        >
-                          <Trash className="w-4 h-4 cursor-pointer hover:opacity-75 transition mr-1" />{" "}
-                          Delete
-                        </span>
+                          </p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            {video.description}
+                          </p>
+                          <span className="text-xs text-gray-500">
+                            Duration: {video.duration !== null ? formatDuration(video.duration) : "Unknown"} | Rating: {video.rating}/5
+                          </span>
+                        </div>
+                        <div className="ml-auto pr-2 flex items-center gap-x-2">
+                          <span
+                            className="flex items-center justify-between cursor-pointer hover:opacity-75 transition"
+                            onClick={() => onEdit(video.id)}
+                          >
+                            <Pencil className="w-4 h-4 cursor-pointer hover:opacity-75 transition mr-1" />{" "}
+                            Edit
+                          </span>
+                          <span
+                            className="flex items-center justify-between cursor-pointer hover:opacity-75 transition text-red-600"
+                            onClick={() => confirmDelete(video.id)}
+                          >
+                            <Trash className="w-4 h-4 cursor-pointer hover:opacity-75 transition mr-1" />{" "}
+                            Delete
+                          </span>
+                        </div>
                       </div>
                     </div>
                   )}
