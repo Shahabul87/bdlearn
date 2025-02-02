@@ -60,11 +60,15 @@ export const CategoryForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/courses/${courseId}`, values);
+      console.log("Submitting category:", values);
+      const response = await axios.patch(`/api/courses/${courseId}`, values);
+      console.log("Response:", response.data);
+      
       toast.success("Category updated");
       setIsEditing(false);
       router.refresh();
-    } catch {
+    } catch (error) {
+      console.error("Category update error:", error);
       toast.error("Something went wrong");
     }
   }

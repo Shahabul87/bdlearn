@@ -19,6 +19,7 @@ import { SidebarDemo } from "@/components/ui/sidebar-demo";
 import { ImageFormCombined } from "./_components/image-upload-form-combined";
 import ConditionalHeader from "@/app/(homepage)/user-header";
 import { cn } from "@/lib/utils";
+import { CourseImageUpload } from "./_components/course-image-upload";
 
 
 
@@ -52,7 +53,7 @@ const CourseIdPage = async ({params}:{params:{courseId:string}})=> {
     },
   });
 
-  //console.log(course)
+  console.log(course)
 
    const categories = await db.category.findMany({
     orderBy: {
@@ -155,7 +156,10 @@ const CourseIdPage = async ({params}:{params:{courseId:string}})=> {
                           value: category.id,
                         }))}
                       />
-                      <ImageFormCombined initialData={course} courseId={course.id} />
+                      <CourseImageUpload 
+                        courseId={params.courseId}
+                        initialImage={course.imageUrl}
+                      />
                     </div>
                   </div>
                 </div>

@@ -42,33 +42,41 @@ export async function DELETE(
 
 
 export async function PATCH(
-    req: Request,
-    { params }: { params: { courseId: string } }
-  ) {
-    try {
-      const user = await currentUser();
-      const { courseId } = params;
-      const values = await req.json();
-  
-      if (!user?.id) {
-        return new NextResponse("Unauthorized", { status: 401 });
-      }
+  req: Request,
+  { params }: { params: { courseId: string } }
+) {
+  try {
+    const session = await auth();
+    const values = await req.json();
 
-      const userId = user?.id;
-  
-      const course = await db.course.update({
-        where: {
-          id: courseId,
-          userId
-        },
-        data: {
-          ...values,
-        }
-      });
-  
-      return NextResponse.json(course);
-    } catch (error) {
-      console.log("[COURSE_ID]", error);
-      return new NextResponse("Internal Error", { status: 500 });
+    console.log("Updating course:", {
+      courseId: params.courseId,
+      userId: session?.user?.id,
+      values
+    });
+
+    if (!session?.user?.id) {
+      return new NextResponse("Unauthorized", { status: 401 });
     }
+
+    const course = await db.course.update({
+      where: {
+        id: params.courseId,
+        userId: session.user.id
+      },
+      data: {
+        ...values,
+        // Ensure price is properly typed as a number
+        ...(values.price !== undefined && {
+          price: Number(values.price)
+        })
+      }
+    });
+
+    console.log("Updated course:", course);
+    return NextResponse.json(course);
+  } catch (error) {
+    console.error("[COURSE_UPDATE]", error);
+    return new NextResponse("Internal Error", { status: 500 });
   }
+}

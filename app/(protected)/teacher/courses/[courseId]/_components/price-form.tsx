@@ -53,11 +53,16 @@ export const PriceForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/courses/${courseId}`, values);
+      console.log("Submitting price:", values);
+      
+      const response = await axios.patch(`/api/courses/${courseId}`, values);
+      console.log("Price update response:", response.data);
+      
       toast.success("Price updated");
       setIsEditing(false);
       router.refresh();
-    } catch {
+    } catch (error) {
+      console.error("Price update error:", error);
       toast.error("Something went wrong");
     }
   }

@@ -111,6 +111,7 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
   // console.log("Course ID:", params.courseId);
   // console.log("User:", user);
   // console.log("Course:", course);
+  // console.log("Course image URL:", course.imageUrl);
 
   return (
     <>
@@ -198,6 +199,10 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
             price={course.price || 0}
             userId={user?.id}
           />
+        </div>
+
+        <div className="course-description">
+          {course.cleanDescription || "No description available"}
         </div>
       </div>
 

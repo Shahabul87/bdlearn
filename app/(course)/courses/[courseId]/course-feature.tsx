@@ -31,6 +31,7 @@ interface CourseCardProps {
 export const CourseCard = ({ course, userId }: CourseCardProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  console.log(course.imageUrl)
 
   const handleEnroll = async () => {
     try {
@@ -196,7 +197,7 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
             >
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">About This Course</h2>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                {course.description}
+                {course.cleanDescription}
               </p>
             </motion.div>
 

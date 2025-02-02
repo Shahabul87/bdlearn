@@ -74,7 +74,13 @@ export const DescriptionForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/courses/${courseId}`, values);
+      const cleanDescription = cleanHtml(values.description);
+      
+      await axios.patch(`/api/courses/${courseId}`, {
+        description: values.description,
+        cleanDescription: cleanDescription
+      });
+      
       toast.success("Course description updated");
       setIsEditing(false);
       router.refresh();

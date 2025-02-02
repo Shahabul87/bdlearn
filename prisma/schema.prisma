@@ -102,7 +102,8 @@ model User {
 model Course {
   id          String    @id @default(uuid())
   title       String    @db.Text
-  description String?   @db.Text
+  description String?   // HTML version
+  cleanDescription String? // Clean text version
   imageUrl    String?   @db.Text
   price       Float?
   isPublished Boolean   @default(false)
