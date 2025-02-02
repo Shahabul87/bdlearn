@@ -35,7 +35,7 @@ interface VideoSectionFormProps {
         title: string;
         description: string | null;
         url: string | null;
-        clarityRating: number | null;
+        rating: number | null;
       }[];
     }[];
   };
@@ -103,12 +103,20 @@ export const VideoSectionForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post(`/api/courses/${courseId}/chapters/${chapterId}/sections/${sectionId}/videos`, values);
+      console.log("Submitting video:", values);
+      
+      const response = await axios.post(
+        `/api/courses/${courseId}/chapters/${chapterId}/sections/${sectionId}/videos`,
+        values
+      );
+
+      console.log("Video creation response:", response.data);
       toast.success("Video added successfully");
       form.reset();
       router.refresh();
-    } catch {
-      toast.error("Something went wrong");
+    } catch (error: any) {
+      console.error("Video creation error:", error);
+      toast.error(error.response?.data || "Failed to add video");
     }
   };
 
@@ -418,7 +426,7 @@ export const VideoSectionForm = ({
                       "pt-2 border-t",
                       "border-gray-200 dark:border-gray-700/50"
                     )}>
-                      <RatingStars rating={video.clarityRating} />
+                      <RatingStars rating={video.rating} />
                       <div className={cn(
                         "p-1.5 rounded-md",
                         "bg-blue-50 dark:bg-blue-500/10",

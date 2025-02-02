@@ -55,12 +55,23 @@ export const SectionAccessForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}/sections/${sectionId}`, values);
+      console.log("Updating section access:", {
+        sectionId,
+        values
+      });
+      
+      const response = await axios.patch(
+        `/api/courses/${courseId}/chapters/${chapterId}/sections/${sectionId}`, 
+        values
+      );
+
+      console.log("Section access update response:", response.data);
       toast.success("Section access updated");
       setIsEditing(false);
       router.refresh();
-    } catch {
-      toast.error("Something went wrong");
+    } catch (error: any) {
+      console.error("Section access update error:", error);
+      toast.error(error.response?.data || "Failed to update section access");
     }
   };
 

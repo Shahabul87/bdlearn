@@ -115,12 +115,20 @@ export const BlogSectionForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post(`/api/courses/${courseId}/chapters/${chapterId}/sections/${sectionId}/blogs`, values);
+      console.log("Submitting blog:", values);
+      
+      const response = await axios.post(
+        `/api/courses/${courseId}/chapters/${chapterId}/sections/${sectionId}/blogs`,
+        values
+      );
+
+      console.log("Blog creation response:", response.data);
       toast.success("Blog added successfully");
       form.reset();
       router.refresh();
-    } catch {
-      toast.error("Something went wrong");
+    } catch (error: any) {
+      console.error("Blog creation error:", error);
+      toast.error(error.response?.data || "Failed to add blog");
     }
   };
 

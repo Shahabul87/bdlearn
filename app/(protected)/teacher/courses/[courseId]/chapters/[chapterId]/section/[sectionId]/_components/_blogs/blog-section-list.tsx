@@ -2,6 +2,7 @@
 
 import { Blog } from "@prisma/client"; // Import Blog type from Prisma
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 
 import {
   DragDropContext,
@@ -33,34 +34,40 @@ export const BlogSectionList = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [blogToDelete, setBlogToDelete] = useState<string | null>(null);
 
-  // Filter blogs by the provided sectionId
-  const filteredBlogs = items.filter((blog) => blog.sectionId === sectionId);
-
   useEffect(() => {
     setIsMounted(true);
-    setBlogs(
-      [...filteredBlogs].sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-    );
-  }, [filteredBlogs]);
+    // Filter blogs by sectionId and sort by position
+    const filteredAndSortedBlogs = items
+      .filter(blog => blog.sectionId === sectionId)
+      .sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+    setBlogs(filteredAndSortedBlogs);
+  }, [items, sectionId]);
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
-    const reorderedBlogs = Array.from(blogs);
-    const [movedBlog] = reorderedBlogs.splice(result.source.index, 1);
-    reorderedBlogs.splice(result.destination.index, 0, movedBlog);
+    try {
+      const items = Array.from(blogs);
+      const [reorderedItem] = items.splice(result.source.index, 1);
+      items.splice(result.destination.index, 0, reorderedItem);
 
-    const updatedBlogs = reorderedBlogs.map((blog, index) => ({
-      ...blog,
-      position: index,
-    }));
-    setBlogs(updatedBlogs);
+      const updatedBlogs = items.map((item, index) => ({
+        ...item,
+        position: index,
+      }));
 
-    const bulkUpdateData = updatedBlogs.map((blog) => ({
-      id: blog.id,
-      position: blog.position,
-    }));
-    onReorder(bulkUpdateData);
+      setBlogs(updatedBlogs);
+
+      const bulkUpdateData = updatedBlogs.map((blog) => ({
+        id: blog.id,
+        position: blog.position,
+      }));
+
+      onReorder(bulkUpdateData);
+    } catch (error) {
+      console.error("Error reordering blogs:", error);
+      toast.error("Failed to reorder blogs");
+    }
   };
 
   const confirmDelete = (id: string) => {

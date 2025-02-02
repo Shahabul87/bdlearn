@@ -53,7 +53,7 @@ const CourseIdPage = async ({params}:{params:{courseId:string}})=> {
     },
   });
 
-  console.log(course)
+  //console.log(course)
 
    const categories = await db.category.findMany({
     orderBy: {

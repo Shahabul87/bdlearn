@@ -215,7 +215,7 @@ model Video {
   youtubeUrl    String?  @db.Text
   url           String?  @db.Text
   duration      Int?
-  clarityRating Int?
+  rating        Int?     // Changed to match the blog model pattern
   position      Int
   isPublished   Boolean  @default(false)
   sectionId     String
@@ -231,11 +231,12 @@ model Video {
 }
 
 model Blog {
-  id          String    @id @default(uuid())
+  id          String    @id @default(cuid())
   title       String
   url         String    @db.VarChar(255)
   author      String?
   description String?   @db.Text
+  rating      Int?      // Add this field
   publishedAt DateTime?
   position    Int?
   sectionId   String?
