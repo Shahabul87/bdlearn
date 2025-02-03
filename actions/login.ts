@@ -100,19 +100,11 @@ export const login = async (
           }
         });
 
-        try {
-          await signIn("credentials", {
-            email,
-            password,
-            redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
-          });
-          return { success: "Logged in!" };
-        } catch (error: any) {
-          if (error?.message?.includes("NEXT_REDIRECT")) {
-            return { success: "Logged in!" };
-          }
-          throw error;
-        }
+        return signIn("credentials", {
+          email,
+          password,
+          redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+        });
       } else {
         try {
           console.log("Generating 2FA token for:", existingUser.email);
@@ -132,19 +124,11 @@ export const login = async (
       }
     }
 
-    try {
-      await signIn("credentials", {
-        email,
-        password,
-        redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
-      });
-      return { success: "Logged in!" };
-    } catch (error: any) {
-      if (error?.message?.includes("NEXT_REDIRECT")) {
-        return { success: "Logged in!" };
-      }
-      throw error;
-    }
+    return signIn("credentials", {
+      email,
+      password,
+      redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+    });
   } catch (error) {
     console.error("Login error:", error);
     if (error instanceof AuthError) {
