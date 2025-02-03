@@ -16,7 +16,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'skillhub',
+  title: 'bdgenai',
   description: 'Learn with Shahabul Alam',
 }
 

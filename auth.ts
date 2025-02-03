@@ -6,9 +6,9 @@ import { db } from "@/lib/db";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
-import { getAccountByUserId } from "./data/account";
+import { getAccountByUserId } from "@/data/account";
 
-export const { handlers: { GET, POST }, auth, signIn, signOut } = NextAuth({
+export const { handlers: { GET, POST }, auth, signIn, signOut, } = NextAuth({
   pages: {
     signIn: "/auth/login",
     error: "/auth/error",
@@ -54,11 +54,8 @@ export const { handlers: { GET, POST }, auth, signIn, signOut } = NextAuth({
 
       if (session.user) {
         session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;
-      }
-
-      if (session.user) {
-        session.user.name = token.name as string;
-        session.user.email = token.email as string;
+        session.user.name = token.name ?? "";
+        session.user.email = token.email ?? "";
         session.user.isOAuth = token.isOAuth as boolean;
       }
       //console.log(session)

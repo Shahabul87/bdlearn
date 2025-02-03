@@ -72,15 +72,18 @@ export const NewPasswordForm = () => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-300 text-lg">New Password</FormLabel>
+                  <FormLabel className="text-gray-700 dark:text-gray-300 text-lg">New Password</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       disabled={isPending}
                       placeholder="******"
                       type="password"
-                      className="w-full h-14 bg-transparent border-2 border-gray-700/50 rounded-xl text-gray-100 text-lg
-                        focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300"
+                      className="w-full h-14 bg-transparent border-2 border-gray-700/50 dark:border-gray-700/50 
+                        rounded-xl text-gray-900 dark:text-gray-100 text-lg
+                        focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 
+                        transition-all duration-300
+                        placeholder:text-gray-500 dark:placeholder:text-gray-500"
                     />
                   </FormControl>
                   <FormMessage className="text-red-400" />

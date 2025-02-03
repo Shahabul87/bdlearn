@@ -52,7 +52,7 @@ export const ResetForm = () => {
         <h2 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
           Forgot Password?
         </h2>
-        <p className="mt-4 text-lg text-gray-400 font-medium">
+        <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 font-medium">
           Enter your email to reset your password
         </p>
       </div>
@@ -68,15 +68,18 @@ export const ResetForm = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-300 text-lg">Email</FormLabel>
+                  <FormLabel className="text-gray-700 dark:text-gray-300 text-lg">Email</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       disabled={isPending}
                       placeholder="john.doe@example.com"
                       type="email"
-                      className="w-full h-14 bg-transparent border-2 border-gray-700/50 rounded-xl text-gray-100 text-lg
-                        focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300"
+                      className="w-full h-14 bg-transparent border-2 border-gray-700/50 dark:border-gray-700/50 
+                        rounded-xl text-gray-900 dark:text-gray-100 text-lg
+                        focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 
+                        transition-all duration-300
+                        placeholder:text-gray-500 dark:placeholder:text-gray-500"
                     />
                   </FormControl>
                   <FormMessage className="text-red-400" />
@@ -97,7 +100,8 @@ export const ResetForm = () => {
               </Button>
               <Link 
                 href="/auth/login"
-                className="block text-center text-cyan-400 hover:text-cyan-300 transition-colors text-sm"
+                className="block text-center text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 
+                  dark:hover:text-cyan-300 transition-colors text-sm"
               >
                 Back to login
               </Link>

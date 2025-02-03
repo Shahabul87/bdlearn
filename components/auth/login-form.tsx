@@ -9,6 +9,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
+import { toast } from "react-hot-toast";
 
 import { LoginSchema } from "@/schemas";
 import { Input } from "@/components/ui/input";
@@ -43,30 +44,47 @@ export const LoginForm = () => {
     defaultValues: {
       email: "",
       password: "",
+      code: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-    setError("");
-    setSuccess("");
-    
-    startTransition(() => {
-      login(values, callbackUrl)
-        .then((data) => {
-          if (data?.error) {
-            form.reset();
-            setError(data.error);
-          }
-          if (data?.success) {
-            form.reset();
-            setSuccess(data.success);
-          }
-          if (data?.twoFactor) {
-            setShowTwoFactor(true);
-          }
-        })
-        .catch(() => setError("Something went wrong"));
-    });
+  const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
+    try {
+      setError("");
+      setSuccess("");
+      
+      console.log("Submitting login form with values:", values);
+      
+      startTransition(() => {
+        login(values, callbackUrl)
+          .then((data) => {
+            console.log("Login response:", data);
+            if (data?.error) {
+              form.reset();
+              setError(data.error);
+            }
+            if (data?.success) {
+              form.reset();
+              setSuccess(data.success);
+            }
+            if (data?.twoFactor) {
+              setShowTwoFactor(true);
+              toast.success("Check your email for the 2FA code!");
+            }
+          })
+          .catch((error) => {
+            // Ignore NEXT_REDIRECT error as it's expected
+            if (error?.message?.includes("NEXT_REDIRECT")) {
+              return;
+            }
+            console.error("Login error:", error);
+            setError("Something went wrong");
+          });
+      });
+    } catch (error) {
+      console.error("Form submission error:", error);
+      setError("An unexpected error occurred");
+    }
   };
 
   return (
@@ -91,48 +109,82 @@ export const LoginForm = () => {
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-8 w-full"
             >
-              <div className="space-y-6 w-full min-w-[320px]">
+              {showTwoFactor ? (
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="code"
                   render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel className="text-gray-300 text-lg">Email</FormLabel>
+                    <FormItem>
+                      <FormLabel>Two Factor Code</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           disabled={isPending}
-                          placeholder="john.doe@example.com"
-                          type="email"
-                          className="w-full h-14 bg-transparent border-2 border-gray-700/50 rounded-xl text-gray-100 text-lg
-                            focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300"
+                          placeholder="123456"
+                          type="text"
+                          className="w-full h-14 bg-transparent border-2 border-gray-700/50 dark:border-gray-700/50 
+                            rounded-xl text-gray-900 dark:text-gray-100 text-lg
+                            focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 
+                            transition-all duration-300
+                            placeholder:text-gray-500 dark:placeholder:text-gray-500"
                         />
                       </FormControl>
-                      <FormMessage className="text-red-400" />
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel className="text-gray-300 text-lg">Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isPending}
-                          placeholder="******"
-                          type="password"
-                          className="w-full h-14 bg-transparent border-2 border-gray-700/50 rounded-xl text-gray-100 text-lg
-                            focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300"
-                        />
-                      </FormControl>
-                      <FormMessage className="text-red-400" />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              ) : (
+                <>
+                  <div className="space-y-6 w-full min-w-[320px]">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="text-gray-700 dark:text-gray-300 text-lg">Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              disabled={isPending}
+                              placeholder="john.doe@example.com"
+                              type="email"
+                              className="w-full h-14 bg-transparent border-2 border-gray-700/50 dark:border-gray-700/50 
+                                rounded-xl text-gray-900 dark:text-gray-100 text-lg
+                                focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 
+                                transition-all duration-300
+                                placeholder:text-gray-500 dark:placeholder:text-gray-500"
+                            />
+                          </FormControl>
+                          <FormMessage className="text-red-400" />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel className="text-gray-700 dark:text-gray-300 text-lg">Password</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              disabled={isPending}
+                              placeholder="******"
+                              type="password"
+                              className="w-full h-14 bg-transparent border-2 border-gray-700/50 dark:border-gray-700/50 
+                                rounded-xl text-gray-900 dark:text-gray-100 text-lg
+                                focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 
+                                transition-all duration-300
+                                placeholder:text-gray-500 dark:placeholder:text-gray-500"
+                            />
+                          </FormControl>
+                          <FormMessage className="text-red-400" />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </>
+              )}
               <FormError message={error || urlError} />
               <FormSuccess message={success} />
               <div className="flex justify-end">

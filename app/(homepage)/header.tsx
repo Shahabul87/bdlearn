@@ -38,7 +38,7 @@ export const Header = () => {
           <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
             <BookOpen className="h-6 w-6 text-purple-500" />
             <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text">
-              LearnHub
+              bdGenAI
             </span>
           </Link>
 

@@ -45,12 +45,13 @@ export const NewVerificationForm = () => {
         <h2 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
           Verifying Your Email
         </h2>
-        <p className="mt-4 text-lg text-gray-400 font-medium">
+        <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 font-medium">
           Please wait while we confirm your email address
         </p>
       </div>
 
-      <div className="max-w-md mx-auto bg-gray-800/50 p-8 rounded-2xl border border-gray-700/50">
+      <div className="max-w-md mx-auto bg-white/50 dark:bg-gray-800/50 p-8 rounded-2xl 
+        border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm">
         <div className="flex flex-col items-center justify-center space-y-6">
           {!success && !error && (
             <div className="p-4">
@@ -63,7 +64,7 @@ export const NewVerificationForm = () => {
           )}
           <Link 
             href="/auth/login"
-            className="text-cyan-400 hover:text-cyan-300 transition-colors text-sm"
+            className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 dark:hover:text-cyan-300 transition-colors text-sm"
           >
             Back to login
           </Link>

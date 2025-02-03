@@ -49,7 +49,7 @@ export const HeaderAfterLogin = ({ user }: HeaderAfterLoginProps) => {
           <Link href="/" className="flex items-center space-x-2 pl-12 md:pl-0">
             <BookOpen className="h-4 w-4 sm:h-6 sm:w-6 text-purple-500" />
             <span className="text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text">
-              LearnHub
+              bdGenAI
             </span>
           </Link>
 
