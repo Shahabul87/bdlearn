@@ -3,9 +3,7 @@
  * These routes do not require authentication
  * @type {string[]}
  */
-
-
-export const publicRoutes: string[] = [
+export const publicRoutes = [
   "/",
   "/auth/new-verification",
   "/searchbar",
@@ -23,8 +21,6 @@ export const publicRoutes: string[] = [
    
 
 ];
-
-// 
 
 /**
  * An array of routes that are used for authentication
@@ -44,10 +40,28 @@ export const authRoutes: string[] = [
  * Routes that start with this prefix are used for API authentication purposes
  * @type {string}
  */
-export const apiAuthPrefix: string = "/api/auth";
+export const apiAuthPrefix = "/api/auth";
+
+/**
+ * Returns the default redirect path after logging in based on user role
+ * @param role - The user's role (ADMIN or USER)
+ * @returns {string} The redirect path
+ */
+const getDefaultRedirect = (role?: string): string => {
+  if (role === "ADMIN") return "/dashboard/admin";
+  return "/user";
+};
 
 /**
  * The default redirect path after logging in
  * @type {string}
  */
-export const DEFAULT_LOGIN_REDIRECT: string = "/user";
+export const DEFAULT_LOGIN_REDIRECT = "/user";
+
+/**
+ * Get redirect URL based on role
+ * @param role - The user's role
+ */
+export const getRedirectUrl = (role?: string) => {
+  return getDefaultRedirect(role);
+};

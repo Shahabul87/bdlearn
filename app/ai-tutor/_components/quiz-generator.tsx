@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { 
-  CheckCircle2,
-  XCircle,
+  Brain, 
+  CheckCircle2, 
+  Clock, 
+  HelpCircle,
+  RotateCcw, 
+  Settings,
   Timer,
-  AlertCircle,
-  ArrowRight,
-  RotateCcw,
-  Award,
-  HelpCircle
+  XCircle 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -21,237 +21,109 @@ interface Question {
   text: string;
   options: string[];
   correctAnswer: number;
-  explanation: string;
-  difficulty: "easy" | "medium" | "hard";
-  points: number;
 }
 
+// Add props interface
 interface QuizGeneratorProps {
   subject: string;
   topic: string;
 }
 
-export const QuizGenerator = ({
-  subject,
-  topic
-}: QuizGeneratorProps) => {
-  const [questions, setQuestions] = useState<Question[]>([]);
+export const QuizGenerator = ({ subject, topic }: QuizGeneratorProps) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [showExplanation, setShowExplanation] = useState(false);
+  const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(30);
-  const [quizStarted, setQuizStarted] = useState(false);
-  const [quizCompleted, setQuizCompleted] = useState(false);
 
-  // Mock questions - replace with AI-generated questions
-  const mockQuestions: Question[] = [
+  const dummyQuestions: Question[] = [
     {
       id: "1",
-      text: "What is the primary purpose of React's useEffect hook?",
-      options: [
-        "To handle side effects in functional components",
-        "To create new components",
-        "To style components",
-        "To handle routing"
-      ],
-      correctAnswer: 0,
-      explanation: "useEffect is used to perform side effects in functional components, such as data fetching, subscriptions, or manually changing the DOM.",
-      difficulty: "medium",
-      points: 10
+      text: "What is the capital of France?",
+      options: ["London", "Berlin", "Paris", "Madrid"],
+      correctAnswer: 2,
     },
     // Add more questions...
   ];
 
-  const startQuiz = () => {
-    setQuestions(mockQuestions);
-    setQuizStarted(true);
-    setScore(0);
-    setCurrentQuestion(0);
-    setSelectedAnswer(null);
-    setQuizCompleted(false);
-  };
-
-  const handleAnswerSelect = (index: number) => {
-    if (selectedAnswer !== null) return;
-    setSelectedAnswer(index);
-    
-    if (index === questions[currentQuestion].correctAnswer) {
-      setScore(prev => prev + questions[currentQuestion].points);
-    }
-  };
-
-  const nextQuestion = () => {
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(prev => prev + 1);
-      setSelectedAnswer(null);
-      setShowExplanation(false);
-    } else {
-      setQuizCompleted(true);
-    }
-  };
-
   return (
-    <div className="space-y-6">
-      {!quizStarted ? (
-        <div className={cn(
-          "bg-white/50 dark:bg-gray-800/50",
-          "border border-gray-200 dark:border-gray-700",
-          "rounded-xl p-6 text-center"
-        )}>
-          <HelpCircle className="w-12 h-12 mx-auto mb-4 text-purple-500" />
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            Ready to Test Your Knowledge?
-          </h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
-            This quiz will test your understanding of {topic} in {subject}
-          </p>
-          <Button
-            onClick={startQuiz}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">{subject} Quiz - {topic}</h2>
+        <Button variant="outline" size="icon">
+          <Settings className="w-4 h-4" />
+        </Button>
+      </div>
+
+      <motion.div
+        className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        {/* Timer and Progress */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2">
+            <Timer className="w-4 h-4 text-purple-500" />
+            <span className="font-medium">{timeLeft}s</span>
+          </div>
+          <Progress value={(currentQuestion / dummyQuestions.length) * 100} className="w-1/3" />
+        </div>
+
+        {/* Question */}
+        <div className="mb-8">
+          <h3 className="text-lg font-medium mb-4">
+            {dummyQuestions[currentQuestion].text}
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {dummyQuestions[currentQuestion].options.map((option, index) => (
+              <Button
+                key={index}
+                onClick={() => setSelectedAnswer(index)}
+                className={cn(
+                  "justify-start h-auto p-4 text-left",
+                  selectedAnswer === index && "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
+                )}
+                variant="outline"
+              >
+                <span className="mr-2">{String.fromCharCode(65 + index)}.</span>
+                {option}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center justify-between">
+          <Button variant="ghost" className="text-gray-500">
+            <HelpCircle className="w-4 h-4 mr-2" />
+            Hint
+          </Button>
+          <Button 
+            onClick={() => setIsAnswered(true)}
+            className="bg-purple-600 hover:bg-purple-700"
           >
-            Start Quiz
+            Check Answer
           </Button>
         </div>
-      ) : (
-        <div className={cn(
-          "bg-white/50 dark:bg-gray-800/50",
-          "border border-gray-200 dark:border-gray-700",
-          "rounded-xl p-4 sm:p-6"
-        )}>
-          {!quizCompleted ? (
-            <>
-              {/* Quiz Header */}
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    Question {currentQuestion + 1} of {questions.length}
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
-                    {questions[currentQuestion].points} points
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Timer className="w-4 h-4 text-gray-500" />
-                  <span className="text-gray-700 dark:text-gray-300">
-                    {timeLeft}s
-                  </span>
-                </div>
-              </div>
+      </motion.div>
 
-              {/* Progress Bar */}
-              <Progress 
-                value={(currentQuestion / questions.length) * 100}
-                className="mb-6"
-              />
-
-              {/* Question */}
-              <div className="mb-6">
-                <h4 className="text-lg text-gray-900 dark:text-gray-100 mb-4">
-                  {questions[currentQuestion].text}
-                </h4>
-                <div className="space-y-3">
-                  {questions[currentQuestion].options.map((option, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleAnswerSelect(index)}
-                      disabled={selectedAnswer !== null}
-                      className={cn(
-                        "w-full p-4 rounded-lg text-left transition-all",
-                        "border-2",
-                        selectedAnswer === null
-                          ? "border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500"
-                          : selectedAnswer === index
-                            ? index === questions[currentQuestion].correctAnswer
-                              ? "border-green-500 bg-green-50 dark:bg-green-500/10"
-                              : "border-red-500 bg-red-50 dark:bg-red-500/10"
-                            : index === questions[currentQuestion].correctAnswer
-                              ? "border-green-500 bg-green-50 dark:bg-green-500/10"
-                              : "border-gray-200 dark:border-gray-700"
-                      )}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className={cn(
-                          "text-gray-900 dark:text-gray-100",
-                          selectedAnswer !== null && index === questions[currentQuestion].correctAnswer && "text-green-700 dark:text-green-300"
-                        )}>
-                          {option}
-                        </span>
-                        {selectedAnswer !== null && (
-                          index === questions[currentQuestion].correctAnswer ? (
-                            <CheckCircle2 className="w-5 h-5 text-green-500" />
-                          ) : selectedAnswer === index ? (
-                            <XCircle className="w-5 h-5 text-red-500" />
-                          ) : null
-                        )}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Explanation */}
-              {selectedAnswer !== null && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={cn(
-                    "p-4 rounded-lg mb-6",
-                    "bg-gray-50 dark:bg-gray-800/50",
-                    "border border-gray-200 dark:border-gray-700"
-                  )}
-                >
-                  <div className="flex items-start gap-3">
-                    <AlertCircle className="w-5 h-5 text-purple-500 mt-0.5" />
-                    <div>
-                      <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
-                        Explanation
-                      </h5>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        {questions[currentQuestion].explanation}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Actions */}
-              <div className="flex justify-end">
-                <Button
-                  onClick={nextQuestion}
-                  disabled={selectedAnswer === null}
-                  className="bg-purple-600 hover:bg-purple-700 text-white"
-                >
-                  {currentQuestion === questions.length - 1 ? "Finish" : "Next"}
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
-            </>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-8"
-            >
-              <Award className="w-16 h-16 mx-auto mb-4 text-purple-500" />
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                Quiz Completed!
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-6">
-                You scored {score} out of {questions.reduce((acc, q) => acc + q.points, 0)} points
-              </p>
-              <Button
-                onClick={startQuiz}
-                variant="outline"
-                className="mx-auto"
-              >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Try Again
-              </Button>
-            </motion.div>
-          )}
+      {/* Score Card */}
+      <motion.div
+        className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold">Current Score</h3>
+            <p className="text-3xl font-bold text-purple-600">{score}/{dummyQuestions.length}</p>
+          </div>
+          <Button variant="outline" className="gap-2">
+            <RotateCcw className="w-4 h-4" />
+            Restart Quiz
+          </Button>
         </div>
-      )}
+      </motion.div>
     </div>
   );
 };

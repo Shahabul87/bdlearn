@@ -19,6 +19,9 @@ import {
 } from 'lucide-react';
 import { LogoutButton } from '@/components/auth/logout-button';
 import { MobileMenuButton } from './components/mobile-menu-button';
+import { currentUser } from '@/lib/auth';
+import { NotificationsPopover } from './_components/notifications-popover';
+import { MessagesPopover } from './_components/messages-popover';
 
 interface HeaderAfterLoginProps {
   user: {
@@ -26,6 +29,7 @@ interface HeaderAfterLoginProps {
     name?: string | null;
     email?: string | null;
     image?: string | null;
+    role?: string | null;
   };
 }
 
@@ -33,6 +37,8 @@ export const HeaderAfterLogin = ({ user }: HeaderAfterLoginProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const { theme, setTheme } = useTheme();
+
+  const dashboardLink = user?.role === "ADMIN" ? "/dashboard/admin" : "/user";
 
   useEffect(() => {
     setIsMounted(true);
@@ -84,15 +90,9 @@ export const HeaderAfterLogin = ({ user }: HeaderAfterLoginProps) => {
               )}
             </button>
 
-            {/* Notifications */}
-            <button className="p-2 rounded-lg dark:bg-gray-800 bg-gray-100 dark:hover:bg-gray-700 hover:bg-gray-200 transition-colors dark:text-white text-gray-900">
-              <Bell className="w-5 h-5" />
-            </button>
+            <NotificationsPopover />
 
-            {/* Messages */}
-            <button className="p-2 rounded-lg dark:bg-gray-800 bg-gray-100 dark:hover:bg-gray-700 hover:bg-gray-200 transition-colors dark:text-white text-gray-900">
-              <MessageSquare className="w-5 h-5" />
-            </button>
+            <MessagesPopover />
 
             {/* User Menu */}
             <div className="relative hidden md:block">
@@ -115,7 +115,7 @@ export const HeaderAfterLogin = ({ user }: HeaderAfterLoginProps) => {
                   >
                     <div className="py-2">
                       <Link
-                        href="/user"
+                        href={dashboardLink}
                         className="flex items-center px-4 py-2 dark:text-gray-300 text-gray-700 dark:hover:bg-gray-800 hover:bg-gray-100"
                       >
                         <LayoutDashboard className="w-4 h-4 mr-2" />

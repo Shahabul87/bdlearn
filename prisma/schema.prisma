@@ -97,6 +97,11 @@ model User {
   reviews CourseReview[]
 
   createdAt DateTime @default(now())
+
+  // Add these new relations
+  notifications      Notification[]
+  sentMessages      Message[]      @relation("SentMessages")
+  receivedMessages  Message[]      @relation("ReceivedMessages")
 }
 
 model Course {
@@ -1167,4 +1172,36 @@ model CustomTab {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+// Add these models to your schema
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      String   // "info" | "success" | "warning" | "error"
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  // Sender
+  senderId  String
+  sender    User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  
+  // Recipient
+  recipientId String
+  recipient   User     @relation("ReceivedMessages", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([senderId])
+  @@index([recipientId])
 }

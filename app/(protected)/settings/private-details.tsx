@@ -88,7 +88,7 @@ export const PrivateDetailsSettingsPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className={cn(
-            "rounded-2xl shadow-xl",
+            "rounded-2xl",
             "bg-white dark:bg-gray-900",
             "border border-gray-200 dark:border-gray-700"
           )}
@@ -247,43 +247,47 @@ export const PrivateDetailsSettingsPage = () => {
                 )}>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Account Preferences</h3>
                   <div className="grid gap-6 md:grid-cols-2">
-                    <FormField
-                      control={form.control}
-                      name="role"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-700 dark:text-gray-300">Account Role</FormLabel>
-                          <Select
-                            disabled={isPending}
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger className={cn(
-                                "bg-white dark:bg-gray-900/50",
-                                "border-gray-200 dark:border-gray-700",
-                                "text-gray-900 dark:text-white"
-                              )}>
-                                <SelectValue placeholder="Select a role" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-                              {Object.values(UserRole).map((role) => (
-                                <SelectItem 
-                                  key={role} 
-                                  value={role}
-                                  className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                                >
-                                  {role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    {/* Only show Role selection for admin users */}
+                    {user?.role === "ADMIN" && (
+                      <FormField
+                        control={form.control}
+                        name="role"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700 dark:text-gray-300">Account Role</FormLabel>
+                            <Select
+                              disabled={isPending}
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger className={cn(
+                                  "bg-white dark:bg-gray-900/50",
+                                  "border-gray-200 dark:border-gray-700",
+                                  "text-gray-900 dark:text-white"
+                                )}>
+                                  <SelectValue placeholder="Select a role" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                                {Object.values(UserRole).map((role) => (
+                                  <SelectItem 
+                                    key={role} 
+                                    value={role}
+                                    className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                                  >
+                                    {role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
 
+                    {/* 2FA toggle remains visible for all non-OAuth users */}
                     {user?.isOAuth === false && (
                       <FormField
                         control={form.control}

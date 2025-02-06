@@ -17,7 +17,10 @@ import {
   Target,
   LineChart,
   Library,
-  HelpCircle
+  HelpCircle,
+  Calendar,
+  Network,
+  Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatInterface } from "./chat-interface";
@@ -28,8 +31,14 @@ import { SettingsDialog } from "./settings-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { QuizGenerator } from "./quiz-generator";
 import { cn } from "@/lib/utils";
+import { StudyScheduler } from "./study-scheduler";
+import { NotesManager } from "./notes-manager";
+import { GoalSetting } from "./goal-setting";
+import { SkillTree } from "./skill-tree";
+import { PeerLearning } from "./peer-learning";
+import { AIFeedback } from "./ai-feedback";
 
-type View = "chat" | "quiz" | "progress" | "resources";
+type View = "chat" | "quiz" | "progress" | "resources" | "schedule" | "notes" | "goals" | "skills" | "peers" | "feedback";
 
 interface NavItem {
   id: View;
@@ -47,11 +56,29 @@ export const AiTutorContent = () => {
     { id: "chat", label: "AI Chat", icon: MessageSquare },
     { id: "quiz", label: "Practice Quiz", icon: Brain },
     { id: "progress", label: "Progress", icon: LineChart },
-    { id: "resources", label: "Resources", icon: Library }
+    { id: "resources", label: "Resources", icon: Library },
+    { id: "schedule", label: "Schedule", icon: Calendar },
+    { id: "notes", label: "Notes", icon: FileText },
+    { id: "goals", label: "Goals", icon: Target },
+    { id: "skills", label: "Skill Tree", icon: Network },
+    { id: "peers", label: "Peer Learning", icon: Users },
+    { id: "feedback", label: "AI Feedback", icon: Sparkles }
   ];
 
   const renderContent = () => {
     switch (currentView) {
+      case "peers":
+        return <PeerLearning />;
+      case "feedback":
+        return <AIFeedback />;
+      case "skills":
+        return <SkillTree />;
+      case "goals":
+        return <GoalSetting />;
+      case "notes":
+        return <NotesManager />;
+      case "schedule":
+        return <StudyScheduler />;
       case "quiz":
         return <QuizGenerator subject={selectedSubject} topic="Selected Topic" />;
       case "chat":
@@ -131,6 +158,13 @@ export const AiTutorContent = () => {
                 </>
               )}
             </Button>
+            <Button
+              onClick={() => setCurrentView("schedule")}
+              variant={currentView === "schedule" ? "default" : "ghost"}
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Schedule
+            </Button>
           </div>
         </div>
 
@@ -142,53 +176,20 @@ export const AiTutorContent = () => {
             <div className={cn(
               "bg-white/50 dark:bg-gray-800/50",
               "border border-gray-200 dark:border-gray-700",
-              "rounded-xl p-4",
-              "backdrop-blur-sm"
+              "p-4 rounded-xl backdrop-blur-sm"
             )}>
-              <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
-                Quick Actions
-              </h3>
               <div className="space-y-2">
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start",
-                    currentView === "chat"
-                      ? "bg-purple-50 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400"
-                      : "text-gray-700 dark:text-gray-300"
-                  )}
-                  onClick={() => setCurrentView("chat")}
-                >
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Chat with Tutor
-                </Button>
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start",
-                    currentView === "resources"
-                      ? "bg-purple-50 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400"
-                      : "text-gray-700 dark:text-gray-300"
-                  )}
-                  onClick={() => setCurrentView("resources")}
-                >
-                  <Library className="w-4 h-4 mr-2" />
-                  Resources
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-gray-700 dark:text-gray-300"
-                >
-                  <Brain className="w-4 h-4 mr-2" />
-                  Practice Quiz
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-gray-700 dark:text-gray-300"
-                >
-                  <Book className="w-4 h-4 mr-2" />
-                  Study Notes
-                </Button>
+                {navItems.map((item) => (
+                  <Button
+                    key={item.id}
+                    onClick={() => setCurrentView(item.id)}
+                    variant={currentView === item.id ? "default" : "ghost"}
+                    className="w-full justify-start"
+                  >
+                    <item.icon className="w-4 h-4 mr-2" />
+                    {item.label}
+                  </Button>
+                ))}
               </div>
             </div>
 
