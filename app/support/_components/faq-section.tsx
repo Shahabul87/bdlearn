@@ -6,6 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { cn } from "@/lib/utils";
 
 const faqs = [
   {
@@ -34,17 +35,39 @@ const faqs = [
 export const FAQSection = () => {
   return (
     <div className="max-w-3xl mx-auto">
-      <Accordion type="single" collapsible className="space-y-4">
+      <Accordion type="single" collapsible className="space-y-3 sm:space-y-4">
         {faqs.map((faq, index) => (
           <AccordionItem 
             key={index} 
             value={`item-${index}`}
-            className="bg-gray-900/50 border border-gray-700/50 rounded-lg px-4"
+            className={cn(
+              "rounded-xl",
+              "bg-white/50 dark:bg-gray-800/50",
+              "border border-gray-200 dark:border-gray-700",
+              "px-4 sm:px-6",
+              "data-[state=open]:bg-gray-50/80 dark:data-[state=open]:bg-gray-800/80",
+              "transition-all duration-200"
+            )}
           >
-            <AccordionTrigger className="text-gray-200 hover:text-purple-400">
+            <AccordionTrigger 
+              className={cn(
+                "text-sm sm:text-base font-medium",
+                "text-gray-900 dark:text-gray-100",
+                "hover:text-purple-600 dark:hover:text-purple-400",
+                "py-4 sm:py-5",
+                "[&[data-state=open]>svg]:text-purple-600 dark:[&[data-state=open]>svg]:text-purple-400"
+              )}
+            >
               {faq.question}
             </AccordionTrigger>
-            <AccordionContent className="text-gray-400">
+            <AccordionContent 
+              className={cn(
+                "text-xs sm:text-sm",
+                "text-gray-600 dark:text-gray-300",
+                "pb-4 sm:pb-5",
+                "leading-relaxed"
+              )}
+            >
               {faq.answer}
             </AccordionContent>
           </AccordionItem>

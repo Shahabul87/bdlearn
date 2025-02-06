@@ -92,18 +92,18 @@ export const IdeasContent = ({ userId }: { userId: string }) => {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       {/* Header */}
-      <div className="flex justify-between items-center bg-white/50 dark:bg-gray-900/50 p-6 rounded-xl border border-gray-200 dark:border-gray-800">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/50 dark:bg-gray-900/50 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800 backdrop-blur-sm">
         <div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 text-transparent bg-clip-text">
+          <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 text-transparent bg-clip-text">
             My Ideas
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 mt-1">
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
             Share and collaborate on innovative ideas
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
           <Button
             variant="outline"
             size="sm"
@@ -115,7 +115,7 @@ export const IdeasContent = ({ userId }: { userId: string }) => {
           </Button>
           <Button 
             onClick={() => setIsNewIdeaOpen(true)}
-            className="bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white font-medium shadow-lg shadow-purple-600/20"
+            className="bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white font-medium shadow-lg shadow-purple-600/20 dark:shadow-purple-500/20"
           >
             <Plus className="w-4 h-4 mr-2" />
             New Idea
@@ -124,18 +124,18 @@ export const IdeasContent = ({ userId }: { userId: string }) => {
       </div>
 
       {/* Search and Sort */}
-      <div className="flex gap-4 flex-wrap items-center bg-white/30 dark:bg-gray-900/30 p-4 rounded-lg">
+      <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center bg-white/30 dark:bg-gray-900/30 p-4 rounded-lg backdrop-blur-sm">
         <Input
           placeholder="Search ideas..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="max-w-xs bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-200 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-purple-500 transition-colors"
+          className="flex-1 max-w-full sm:max-w-xs bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-200 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-purple-500 transition-colors"
           icon={<Search className="w-4 h-4 text-gray-400" />}
         />
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-          className="bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-200 rounded-md px-4 py-2 focus:border-purple-500 transition-colors cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+          className="w-full sm:w-auto bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-200 rounded-md px-4 py-2 focus:border-purple-500 transition-colors cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
         >
           <option value="recent">Most Recent</option>
           <option value="popular">Most Popular</option>
@@ -145,25 +145,33 @@ export const IdeasContent = ({ userId }: { userId: string }) => {
 
       {/* Content */}
       {sortedIdeas.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {sortedIdeas.map((idea) => (
-            <IdeaCard 
-              key={idea.id} 
-              idea={idea}
-              onEdit={() => {}}
-              onDelete={() => {}}
-              onShare={() => {}}
-            />
+            <motion.div
+              key={idea.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <IdeaCard 
+                idea={idea}
+                onEdit={() => {}}
+                onDelete={() => {}}
+                onShare={() => {}}
+              />
+            </motion.div>
           ))}
         </div>
       ) : (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="col-span-full text-center py-16 bg-white/30 dark:bg-gray-900/30 rounded-xl border border-gray-200 dark:border-gray-800"
+          className="col-span-full text-center py-12 sm:py-16 bg-white/30 dark:bg-gray-900/30 rounded-xl border border-gray-200 dark:border-gray-800 backdrop-blur-sm"
         >
-          <Lightbulb className="w-16 h-16 mx-auto mb-4 text-purple-500 dark:text-purple-400 opacity-50" />
-          <p className="text-gray-600 dark:text-gray-300 text-lg mb-4">No ideas found. Start by creating your first idea!</p>
+          <Lightbulb className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 text-purple-500 dark:text-purple-400 opacity-50" />
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-4">
+            No ideas found. Start by creating your first idea!
+          </p>
           <Button 
             variant="outline" 
             className="border-purple-500/50 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 font-medium"

@@ -22,14 +22,15 @@ export const BillFilterDialog = ({ open, onClose }: BillFilterDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className={cn(
-        "max-w-md w-full",
+        "max-w-md w-[95%] sm:w-full mx-auto",
+        "p-4 sm:p-6",
         "bg-white/95 dark:bg-gray-900/95",
         "border border-gray-200 dark:border-gray-800"
       )}>
         <button
           onClick={onClose}
           className={cn(
-            "absolute right-4 top-4 rounded-sm opacity-70 transition-opacity",
+            "absolute right-3 sm:right-4 top-3 sm:top-4 rounded-sm opacity-70 transition-opacity",
             "hover:opacity-100 focus:outline-none",
             "focus:ring-2 focus:ring-purple-400",
             "focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900",
@@ -42,16 +43,17 @@ export const BillFilterDialog = ({ open, onClose }: BillFilterDialogProps) => {
         </button>
 
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 text-transparent bg-clip-text">
+          <DialogTitle className="text-lg sm:text-xl font-semibold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 text-transparent bg-clip-text">
             Filter Bills
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-4 sm:space-y-6 py-4">
           <div className="space-y-2">
-            <Label className="text-gray-700 dark:text-gray-200">Status</Label>
+            <Label className="text-sm text-gray-700 dark:text-gray-200">Status</Label>
             <Select>
               <SelectTrigger className={cn(
+                "h-9 sm:h-10 text-sm",
                 "bg-white/50 dark:bg-gray-800",
                 "border-gray-200 dark:border-gray-700",
                 "text-gray-900 dark:text-gray-200"
@@ -69,9 +71,10 @@ export const BillFilterDialog = ({ open, onClose }: BillFilterDialogProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-gray-700 dark:text-gray-200">Category</Label>
+            <Label className="text-sm text-gray-700 dark:text-gray-200">Category</Label>
             <Select>
               <SelectTrigger className={cn(
+                "h-9 sm:h-10 text-sm",
                 "bg-white/50 dark:bg-gray-800",
                 "border-gray-200 dark:border-gray-700",
                 "text-gray-900 dark:text-gray-200"
@@ -94,9 +97,10 @@ export const BillFilterDialog = ({ open, onClose }: BillFilterDialogProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-gray-700 dark:text-gray-200">Auto-pay</Label>
+            <Label className="text-sm text-gray-700 dark:text-gray-200">Auto-pay</Label>
             <Select>
               <SelectTrigger className={cn(
+                "h-9 sm:h-10 text-sm",
                 "bg-white/50 dark:bg-gray-800",
                 "border-gray-200 dark:border-gray-700",
                 "text-gray-900 dark:text-gray-200"
@@ -111,11 +115,13 @@ export const BillFilterDialog = ({ open, onClose }: BillFilterDialogProps) => {
             </Select>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-4">
             <Button
               variant="outline"
+              size="sm"
               onClick={onClose}
               className={cn(
+                "w-full sm:w-auto h-9 sm:h-10",
                 "border-gray-200 dark:border-gray-600",
                 "bg-white/50 dark:bg-gray-800/50",
                 "text-gray-700 dark:text-gray-200",
@@ -127,7 +133,9 @@ export const BillFilterDialog = ({ open, onClose }: BillFilterDialogProps) => {
             </Button>
             <Button
               variant="outline"
+              size="sm"
               className={cn(
+                "w-full sm:w-auto h-9 sm:h-10",
                 "border-purple-500/50",
                 "bg-purple-50/50 dark:bg-purple-500/5",
                 "text-purple-600 dark:text-purple-300",
@@ -137,8 +145,9 @@ export const BillFilterDialog = ({ open, onClose }: BillFilterDialogProps) => {
               Reset Filters
             </Button>
             <Button
+              size="sm"
               onClick={onClose}
-              className="bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white"
+              className="w-full sm:w-auto h-9 sm:h-10 bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white"
             >
               Apply Filters
             </Button>

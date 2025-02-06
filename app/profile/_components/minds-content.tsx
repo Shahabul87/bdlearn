@@ -115,50 +115,53 @@ export const MindsContent = ({ userId }: { userId: string }) => {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex justify-between items-center bg-white/50 dark:bg-gray-900/50 p-6 rounded-xl border border-gray-200 dark:border-gray-800">
+    <div className="space-y-6">
+      {/* Header - Made responsive */}
+      <div className="flex flex-col sm:flex-row justify-between gap-4 items-start sm:items-center bg-white/50 dark:bg-gray-900/50 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
         <div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 text-transparent bg-clip-text">
+          <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 text-transparent bg-clip-text">
             Mind Maps
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 mt-1">
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
             Organize and visualize your thoughts
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
           <Button
             variant="outline"
             size="sm"
-            className="border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+            className="flex-1 sm:flex-none border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
             onClick={() => setIsFilterOpen(true)}
           >
-            <Filter className="w-4 h-4 mr-2" />
-            Filters
+            <Filter className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Filters</span>
           </Button>
           <Button 
             onClick={() => setIsNewMindOpen(true)}
-            className="bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white font-medium shadow-lg shadow-purple-600/20"
+            className="flex-1 sm:flex-none bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white font-medium shadow-lg shadow-purple-600/20"
           >
-            <Plus className="w-4 h-4 mr-2" />
-            New Mind Map
+            <Plus className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">New Mind Map</span>
+            <span className="sm:hidden">New</span>
           </Button>
         </div>
       </div>
 
-      {/* Search and Sort */}
-      <div className="flex gap-4 flex-wrap items-center bg-white/30 dark:bg-gray-900/30 p-4 rounded-lg">
-        <Input
-          placeholder="Search mind maps..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="max-w-xs bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-200 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-purple-500 transition-colors"
-          icon={<Search className="w-4 h-4 text-gray-400" />}
-        />
+      {/* Search and Sort - Made responsive */}
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center bg-white/30 dark:bg-gray-900/30 p-3 sm:p-4 rounded-lg">
+        <div className="flex-1">
+          <Input
+            placeholder="Search mind maps..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-200 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-purple-500 transition-colors"
+            icon={<Search className="w-4 h-4 text-gray-400" />}
+          />
+        </div>
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-          className="bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-200 rounded-md px-4 py-2 focus:border-purple-500 transition-colors cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+          className="w-full sm:w-auto bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-200 rounded-md px-4 py-2 focus:border-purple-500 transition-colors cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
         >
           <option value="recent">Most Recent</option>
           <option value="popular">Most Popular</option>
@@ -166,9 +169,9 @@ export const MindsContent = ({ userId }: { userId: string }) => {
         </select>
       </div>
 
-      {/* Content */}
+      {/* Content Grid - Made responsive */}
       {sortedMinds.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {sortedMinds.map((mind) => (
             <MindCard 
               key={mind.id} 
@@ -183,10 +186,10 @@ export const MindsContent = ({ userId }: { userId: string }) => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="col-span-full text-center py-16 bg-white/30 dark:bg-gray-900/30 rounded-xl border border-gray-200 dark:border-gray-800"
+          className="col-span-full text-center py-8 sm:py-16 px-4 bg-white/30 dark:bg-gray-900/30 rounded-xl border border-gray-200 dark:border-gray-800"
         >
-          <Brain className="w-16 h-16 mx-auto mb-4 text-purple-500 dark:text-purple-400 opacity-50" />
-          <p className="text-gray-600 dark:text-gray-300 text-lg mb-4">
+          <Brain className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 text-purple-500 dark:text-purple-400 opacity-50" />
+          <p className="text-gray-600 dark:text-gray-300 text-base sm:text-lg mb-4">
             No mind maps found. Start by creating your first mind map!
           </p>
           <Button 
@@ -194,6 +197,7 @@ export const MindsContent = ({ userId }: { userId: string }) => {
             className="border-purple-500/50 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 font-medium"
             onClick={() => setIsNewMindOpen(true)}
           >
+            <Plus className="w-4 h-4 mr-2" />
             Create Your First Mind Map
           </Button>
         </motion.div>

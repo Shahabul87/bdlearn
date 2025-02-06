@@ -100,15 +100,15 @@ export const BillDetailsDialog = ({ bill, onClose, onUpdate }: BillDetailsDialog
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className={cn(
-        "max-w-2xl w-full",
+        "max-w-2xl w-[95%] sm:w-full mx-auto",
+        "p-4 sm:p-6",
         "bg-white/95 dark:bg-gray-900/95",
-        "border border-gray-200 dark:border-gray-800",
-        "overflow-y-auto max-h-[85vh]"
+        "border border-gray-200 dark:border-gray-800"
       )}>
         <button
           onClick={onClose}
           className={cn(
-            "absolute right-4 top-4 rounded-sm opacity-70 transition-opacity",
+            "absolute right-3 sm:right-4 top-3 sm:top-4 rounded-sm opacity-70 transition-opacity",
             "hover:opacity-100 focus:outline-none",
             "focus:ring-2 focus:ring-purple-400",
             "focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900",
@@ -121,20 +121,20 @@ export const BillDetailsDialog = ({ bill, onClose, onUpdate }: BillDetailsDialog
         </button>
 
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 text-transparent bg-clip-text">
+          <DialogTitle className="text-lg sm:text-xl font-semibold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 text-transparent bg-clip-text">
             Bill Details
           </DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="details" className="w-full">
-          <TabsList className="bg-gray-100 dark:bg-gray-800">
-            <TabsTrigger value="details" className="text-gray-800 dark:text-gray-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 dark:data-[state=active]:bg-gray-700 dark:data-[state=active]:text-gray-100">
+          <TabsList className="bg-gray-100 dark:bg-gray-800 w-full flex overflow-x-auto no-scrollbar">
+            <TabsTrigger value="details" className="flex-1 text-xs sm:text-sm text-gray-800 dark:text-gray-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 dark:data-[state=active]:bg-gray-700 dark:data-[state=active]:text-gray-100">
               Details
             </TabsTrigger>
-            <TabsTrigger value="history" className="text-gray-700 dark:text-gray-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 dark:data-[state=active]:bg-gray-700 dark:data-[state=active]:text-gray-100">
+            <TabsTrigger value="history" className="flex-1 text-xs sm:text-sm text-gray-700 dark:text-gray-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 dark:data-[state=active]:bg-gray-700 dark:data-[state=active]:text-gray-100">
               Payment History
             </TabsTrigger>
-            <TabsTrigger value="attachments" className="text-gray-700 dark:text-gray-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 dark:data-[state=active]:bg-gray-700 dark:data-[state=active]:text-gray-100">
+            <TabsTrigger value="attachments" className="flex-1 text-xs sm:text-sm text-gray-700 dark:text-gray-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 dark:data-[state=active]:bg-gray-700 dark:data-[state=active]:text-gray-100">
               Attachments
             </TabsTrigger>
           </TabsList>
@@ -142,10 +142,10 @@ export const BillDetailsDialog = ({ bill, onClose, onUpdate }: BillDetailsDialog
           <TabsContent value="details" className="mt-4">
             <div className="space-y-4">
               {/* Status and Actions */}
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row justify-between gap-3 sm:items-center">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className={cn(
-                    "px-3 py-1 rounded-full text-sm font-medium",
+                    "px-2.5 py-1 rounded-full text-xs sm:text-sm font-medium",
                     bill.status === "PAID" && "bg-green-500/10 text-green-700 dark:text-green-400",
                     bill.status === "UNPAID" && "bg-amber-500/10 text-amber-700 dark:text-amber-400",
                     bill.status === "OVERDUE" && "bg-red-500/10 text-red-700 dark:text-red-400"
@@ -153,18 +153,20 @@ export const BillDetailsDialog = ({ bill, onClose, onUpdate }: BillDetailsDialog
                     {bill.status}
                   </span>
                   {bill.autoPayEnabled && (
-                    <span className="bg-purple-500/10 text-purple-700 dark:text-purple-400 px-3 py-1 rounded-full text-sm font-medium">
+                    <span className="bg-purple-500/10 text-purple-700 dark:text-purple-400 px-2.5 py-1 rounded-full text-xs sm:text-sm font-medium">
                       Auto-pay Enabled
                     </span>
                   )}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   {!isEditing ? (
                     <>
                       <Button
                         variant="outline"
+                        size="sm"
                         onClick={() => setIsEditing(true)}
                         className={cn(
+                          "w-full sm:w-auto h-9 sm:h-10",
                           "border-gray-200 dark:border-gray-700",
                           "text-gray-700 dark:text-gray-200",
                           "hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -174,8 +176,9 @@ export const BillDetailsDialog = ({ bill, onClose, onUpdate }: BillDetailsDialog
                       </Button>
                       {bill.status !== "PAID" && (
                         <Button
+                          size="sm"
                           onClick={() => setShowPaymentConfirm(true)}
-                          className="bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white"
+                          className="w-full sm:w-auto h-9 sm:h-10 bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white"
                         >
                           Pay Now
                         </Button>
@@ -185,8 +188,10 @@ export const BillDetailsDialog = ({ bill, onClose, onUpdate }: BillDetailsDialog
                     <>
                       <Button
                         variant="outline"
+                        size="sm"
                         onClick={() => setIsEditing(false)}
                         className={cn(
+                          "w-full sm:w-auto h-9 sm:h-10",
                           "border-gray-200 dark:border-gray-700",
                           "text-gray-700 dark:text-gray-200",
                           "hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -195,9 +200,10 @@ export const BillDetailsDialog = ({ bill, onClose, onUpdate }: BillDetailsDialog
                         Cancel
                       </Button>
                       <Button
+                        size="sm"
                         onClick={handleUpdate}
                         disabled={isSubmitting}
-                        className="bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white"
+                        className="w-full sm:w-auto h-9 sm:h-10 bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white"
                       >
                         Save Changes
                       </Button>
@@ -207,45 +213,46 @@ export const BillDetailsDialog = ({ bill, onClose, onUpdate }: BillDetailsDialog
               </div>
 
               {/* Basic Details */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-gray-400">Title</Label>
+                  <Label className="text-sm text-gray-700 dark:text-gray-400">Title</Label>
                   {isEditing ? (
                     <Input
                       value={formData.title}
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                       className={cn(
+                        "h-9 sm:h-10 text-sm",
                         "bg-white/50 dark:bg-gray-800",
                         "border-gray-200 dark:border-gray-700",
                         "text-gray-900 dark:text-gray-200"
                       )}
                     />
                   ) : (
-                    <p className="text-gray-800 dark:text-gray-200">{bill.title}</p>
+                    <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200">{bill.title}</p>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-gray-400">Amount</Label>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-200">
+                  <Label className="text-sm text-gray-700 dark:text-gray-400">Amount</Label>
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-200">
                     {bill.currency} {bill.amount.toFixed(2)}
                   </p>
                 </div>
               </div>
 
               {/* Dates */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-gray-400">Due Date</Label>
-                  <div className="flex items-center gap-2 text-gray-800 dark:text-gray-200">
-                    <Calendar className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                  <Label className="text-sm text-gray-700 dark:text-gray-400">Due Date</Label>
+                  <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-800 dark:text-gray-200">
+                    <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600 dark:text-purple-400" />
                     {format(new Date(bill.dueDate), 'MMM d, yyyy')}
                   </div>
                 </div>
                 {bill.lastPaidDate && (
                   <div className="space-y-2">
-                    <Label className="text-gray-700 dark:text-gray-400">Last Paid</Label>
-                    <div className="flex items-center gap-2 text-gray-800 dark:text-gray-200">
-                      <Clock className="w-4 h-4 text-green-400" />
+                    <Label className="text-sm text-gray-700 dark:text-gray-400">Last Paid</Label>
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-800 dark:text-gray-200">
+                      <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-400" />
                       {format(new Date(bill.lastPaidDate), 'MMM d, yyyy')}
                     </div>
                   </div>
@@ -255,14 +262,14 @@ export const BillDetailsDialog = ({ bill, onClose, onUpdate }: BillDetailsDialog
               {/* Provider Details */}
               <div className="space-y-4">
                 <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Provider Information</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200">
-                    <Building className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-700 dark:text-gray-200">
+                    <Building className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600 dark:text-purple-400" />
                     {bill.provider}
                   </div>
                   {bill.website && (
-                    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200">
-                      <Link className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-700 dark:text-gray-200">
+                      <Link className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600 dark:text-purple-400" />
                       <a href={bill.website} target="_blank" rel="noopener noreferrer" 
                         className="hover:text-purple-600 dark:hover:text-purple-400">
                         Visit Website
@@ -270,8 +277,8 @@ export const BillDetailsDialog = ({ bill, onClose, onUpdate }: BillDetailsDialog
                     </div>
                   )}
                   {bill.supportContact && (
-                    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200">
-                      <Phone className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-700 dark:text-gray-200">
+                      <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600 dark:text-purple-400" />
                       {bill.supportContact}
                     </div>
                   )}
@@ -281,12 +288,12 @@ export const BillDetailsDialog = ({ bill, onClose, onUpdate }: BillDetailsDialog
               {/* Notifications */}
               <div className="space-y-4">
                 <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Notifications</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200">
-                    <Bell className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-700 dark:text-gray-200">
+                    <Bell className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600 dark:text-purple-400" />
                     Notify {bill.notifyBefore} days before due date
                   </div>
-                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-700 dark:text-gray-200">
                     {bill.notifyEmail && "Email"} {bill.notifyEmail && bill.notifySMS && "•"} {bill.notifySMS && "SMS"}
                   </div>
                 </div>
@@ -302,11 +309,11 @@ export const BillDetailsDialog = ({ bill, onClose, onUpdate }: BillDetailsDialog
                     >
                       <div>
                         <p className="text-gray-900 dark:text-gray-100">{format(new Date(payment.paymentDate), 'MMM d, yyyy')}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Reference: {payment.reference}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">Reference: {payment.reference}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-gray-900 dark:text-gray-100">{bill.currency} {payment.amount.toFixed(2)}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{payment.method}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">{payment.method}</p>
                       </div>
                     </div>
                   ))
@@ -327,10 +334,10 @@ export const BillDetailsDialog = ({ bill, onClose, onUpdate }: BillDetailsDialog
                       className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
                     >
                       <div className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                        <FileText className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                         <div>
                           <p className="text-gray-900 dark:text-gray-100">{attachment.name}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{attachment.type}</p>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">{attachment.type}</p>
                         </div>
                       </div>
                       <Button
@@ -363,11 +370,11 @@ export const BillDetailsDialog = ({ bill, onClose, onUpdate }: BillDetailsDialog
                   >
                     <div>
                       <p className="text-gray-900 dark:text-gray-100">{format(new Date(payment.paymentDate), 'MMM d, yyyy')}</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Reference: {payment.reference}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Reference: {payment.reference}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-gray-900 dark:text-gray-100">{bill.currency} {payment.amount.toFixed(2)}</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{payment.method}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">{payment.method}</p>
                     </div>
                   </div>
                 ))
@@ -389,10 +396,10 @@ export const BillDetailsDialog = ({ bill, onClose, onUpdate }: BillDetailsDialog
                     className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
                   >
                     <div className="flex items-center gap-3">
-                      <FileText className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                      <FileText className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                       <div>
                         <p className="text-gray-900 dark:text-gray-100">{attachment.name}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{attachment.type}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">{attachment.type}</p>
                       </div>
                     </div>
                     <Button

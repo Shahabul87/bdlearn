@@ -48,11 +48,12 @@ const Home = async () => {
                 key={course.id}
                 id={course.id}
                 title={course.title}
-                description={course.description || ""}
+                description={course.cleanDescription || ""}
                 imageUrl={course.imageUrl!}
                 chaptersLength={course.chapters?.length || 0}
                 price={course.price!}
                 category={course?.category?.name || ""}
+
               />
             ))}
           </div>

@@ -19,7 +19,7 @@ export const ScrollableTabs = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative flex items-center">
       <button 
         onClick={scrollLeft}
         className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full 
@@ -32,103 +32,59 @@ export const ScrollableTabs = () => {
         <ChevronLeft className="w-4 h-4 dark:text-gray-400 text-gray-600" />
       </button>
 
-      <TabsList className="flex items-center justify-start gap-1 p-1 
-        dark:bg-slate-100/10 bg-slate-100/80
-        dark:border-slate-200/10 border-slate-300
-        rounded-lg border mb-8 backdrop-blur-sm
-        overflow-x-auto no-scrollbar w-full
-        scroll-smooth"
-      >
-        <div className="flex items-center gap-1 min-w-max px-8">
+      <div className="flex-1 overflow-x-auto">
+        <div className="flex space-x-4">
+        
           <TabsTrigger 
             value="courses"
-            className="px-4 py-2 text-sm font-medium whitespace-nowrap
-              dark:text-slate-300 text-slate-700
-              dark:data-[state=active]:bg-slate-200/10 data-[state=active]:bg-white
-              dark:data-[state=active]:text-indigo-300 data-[state=active]:text-indigo-700
-              dark:hover:text-indigo-200 hover:text-indigo-600 transition-colors"
+            className="px-4 py-2 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
           >
-            My Courses
+            Courses
           </TabsTrigger>
-
           <TabsTrigger 
             value="posts"
-            className="px-4 py-2 text-sm font-medium whitespace-nowrap
-              dark:text-slate-300 text-slate-700
-              dark:data-[state=active]:bg-slate-200/10 data-[state=active]:bg-white
-              dark:data-[state=active]:text-indigo-300 data-[state=active]:text-indigo-700
-              dark:hover:text-indigo-200 hover:text-indigo-600 transition-colors"
+            className="px-4 py-2 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
           >
-            My Posts
+            Posts
           </TabsTrigger>
-
           <TabsTrigger 
             value="social"
-            className="px-4 py-2 text-sm font-medium whitespace-nowrap
-              dark:text-slate-300 text-slate-700
-              dark:data-[state=active]:bg-slate-200/10 data-[state=active]:bg-white
-              dark:data-[state=active]:text-indigo-300 data-[state=active]:text-indigo-700
-              dark:hover:text-indigo-200 hover:text-indigo-600 transition-colors"
+            className="px-4 py-2 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
           >
             Social Links
           </TabsTrigger>
-
           <TabsTrigger 
             value="videos"
-            className="px-4 py-2 text-sm font-medium whitespace-nowrap
-              dark:text-slate-300 text-slate-700
-              dark:data-[state=active]:bg-slate-200/10 data-[state=active]:bg-white
-              dark:data-[state=active]:text-indigo-300 data-[state=active]:text-indigo-700
-              dark:hover:text-indigo-200 hover:text-indigo-600 transition-colors"
+            className="px-4 py-2 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
           >
             Favorite Videos
           </TabsTrigger>
-
           <TabsTrigger 
             value="audios"
-            className="px-4 py-2 text-sm font-medium whitespace-nowrap
-              dark:text-slate-300 text-slate-700
-              dark:data-[state=active]:bg-slate-200/10 data-[state=active]:bg-white
-              dark:data-[state=active]:text-indigo-300 data-[state=active]:text-indigo-700
-              dark:hover:text-indigo-200 hover:text-indigo-600 transition-colors"
+            className="px-4 py-2 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
           >
             Favorite Audios
           </TabsTrigger>
-
           <TabsTrigger 
             value="blogs"
-            className="px-4 py-2 text-sm font-medium whitespace-nowrap
-              dark:text-slate-300 text-slate-700
-              dark:data-[state=active]:bg-slate-200/10 data-[state=active]:bg-white
-              dark:data-[state=active]:text-indigo-300 data-[state=active]:text-indigo-700
-              dark:hover:text-indigo-200 hover:text-indigo-600 transition-colors"
+            className="px-4 py-2 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
           >
             Favorite Blogs
           </TabsTrigger>
-
           <TabsTrigger 
             value="articles"
-            className="px-4 py-2 text-sm font-medium whitespace-nowrap
-              dark:text-slate-300 text-slate-700
-              dark:data-[state=active]:bg-slate-200/10 data-[state=active]:bg-white
-              dark:data-[state=active]:text-indigo-300 data-[state=active]:text-indigo-700
-              dark:hover:text-indigo-200 hover:text-indigo-600 transition-colors"
+            className="px-4 py-2 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
           >
             Favorite Articles
           </TabsTrigger>
-
           <TabsTrigger 
             value="subscriptions"
-            className="px-4 py-2 text-sm font-medium whitespace-nowrap
-              dark:text-slate-300 text-slate-700
-              dark:data-[state=active]:bg-slate-200/10 data-[state=active]:bg-white
-              dark:data-[state=active]:text-indigo-300 data-[state=active]:text-indigo-700
-              dark:hover:text-indigo-200 hover:text-indigo-600 transition-colors"
+            className="px-4 py-2 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
           >
             Subscriptions
           </TabsTrigger>
         </div>
-      </TabsList>
+      </div>
 
       <button 
         onClick={scrollRight}

@@ -10,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 interface ResourceFiltersProps {
   categories: string[];
@@ -29,30 +30,59 @@ export const ResourceFilters = ({
   onTypeChange,
 }: ResourceFiltersProps) => {
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex flex-col xs:flex-row gap-2 sm:gap-4 w-full xs:w-auto">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="bg-gray-800 border-gray-700 text-gray-300">
-            Category: {selectedCategory || "All"}
-            <ChevronDown className="w-4 h-4 ml-2" />
+          <Button 
+            variant="outline" 
+            size="sm"
+            className={cn(
+              "w-full xs:w-auto h-9 sm:h-10",
+              "bg-white dark:bg-gray-800",
+              "border-gray-200 dark:border-gray-700",
+              "text-gray-700 dark:text-gray-300",
+              "hover:bg-gray-100 dark:hover:bg-gray-700/50"
+            )}
+          >
+            <span className="text-xs sm:text-sm">Category: {selectedCategory || "All"}</span>
+            <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1 sm:ml-2 opacity-50" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-gray-800 border-gray-700">
+        <DropdownMenuContent 
+          align="start"
+          className={cn(
+            "w-[200px]",
+            "bg-white dark:bg-gray-800",
+            "border-gray-200 dark:border-gray-700"
+          )}
+        >
           <DropdownMenuItem 
             onClick={() => onCategoryChange("")}
-            className="text-gray-300 hover:text-white focus:text-white focus:bg-gray-700"
+            className={cn(
+              "text-sm",
+              "text-gray-700 dark:text-gray-300",
+              "hover:text-gray-900 dark:hover:text-white",
+              "focus:text-gray-900 dark:focus:text-white",
+              "hover:bg-gray-100 dark:hover:bg-gray-700"
+            )}
           >
             <span>All Categories</span>
-            {selectedCategory === "" && <Check className="w-4 h-4 ml-2" />}
+            {selectedCategory === "" && <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-2" />}
           </DropdownMenuItem>
           {categories.map((category) => (
             <DropdownMenuItem
               key={category}
               onClick={() => onCategoryChange(category)}
-              className="text-gray-300 hover:text-white focus:text-white focus:bg-gray-700"
+              className={cn(
+                "text-sm",
+                "text-gray-700 dark:text-gray-300",
+                "hover:text-gray-900 dark:hover:text-white",
+                "focus:text-gray-900 dark:focus:text-white",
+                "hover:bg-gray-100 dark:hover:bg-gray-700"
+              )}
             >
               <span>{category}</span>
-              {selectedCategory === category && <Check className="w-4 h-4 ml-2" />}
+              {selectedCategory === category && <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-2" />}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
@@ -60,27 +90,56 @@ export const ResourceFilters = ({
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="bg-gray-800 border-gray-700 text-gray-300">
-            Type: {selectedType || "All"}
-            <ChevronDown className="w-4 h-4 ml-2" />
+          <Button 
+            variant="outline"
+            size="sm"
+            className={cn(
+              "w-full xs:w-auto h-9 sm:h-10",
+              "bg-white dark:bg-gray-800",
+              "border-gray-200 dark:border-gray-700",
+              "text-gray-700 dark:text-gray-300",
+              "hover:bg-gray-100 dark:hover:bg-gray-700/50"
+            )}
+          >
+            <span className="text-xs sm:text-sm">Type: {selectedType || "All"}</span>
+            <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1 sm:ml-2 opacity-50" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-gray-800 border-gray-700">
+        <DropdownMenuContent 
+          align="start"
+          className={cn(
+            "w-[200px]",
+            "bg-white dark:bg-gray-800",
+            "border-gray-200 dark:border-gray-700"
+          )}
+        >
           <DropdownMenuItem 
             onClick={() => onTypeChange("")}
-            className="text-gray-300 hover:text-white focus:text-white focus:bg-gray-700"
+            className={cn(
+              "text-sm",
+              "text-gray-700 dark:text-gray-300",
+              "hover:text-gray-900 dark:hover:text-white",
+              "focus:text-gray-900 dark:focus:text-white",
+              "hover:bg-gray-100 dark:hover:bg-gray-700"
+            )}
           >
             <span>All Types</span>
-            {selectedType === "" && <Check className="w-4 h-4 ml-2" />}
+            {selectedType === "" && <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-2" />}
           </DropdownMenuItem>
           {types.map((type) => (
             <DropdownMenuItem
               key={type}
               onClick={() => onTypeChange(type)}
-              className="text-gray-300 hover:text-white focus:text-white focus:bg-gray-700"
+              className={cn(
+                "text-sm",
+                "text-gray-700 dark:text-gray-300",
+                "hover:text-gray-900 dark:hover:text-white",
+                "focus:text-gray-900 dark:focus:text-white",
+                "hover:bg-gray-100 dark:hover:bg-gray-700"
+              )}
             >
               <span>{type}</span>
-              {selectedType === type && <Check className="w-4 h-4 ml-2" />}
+              {selectedType === type && <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-2" />}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

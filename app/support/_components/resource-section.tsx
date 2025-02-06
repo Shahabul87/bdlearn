@@ -8,6 +8,7 @@ import {
   Link as LinkIcon,
   ExternalLink
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const resources = [
   {
@@ -36,35 +37,70 @@ const resources = [
 
 export const ResourceSection = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
       {resources.map((resource, index) => (
-        <motion.div
+        <motion.a
           key={resource.title}
+          href={resource.link}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: index * 0.1 }}
-          className="group relative overflow-hidden rounded-lg bg-gray-900/50 border border-gray-700/50 p-6 hover:bg-gray-900/70 transition-all"
+          className={cn(
+            "group relative overflow-hidden rounded-xl",
+            "bg-white/50 hover:bg-white/80 dark:bg-gray-800/50 dark:hover:bg-gray-800/80",
+            "border border-gray-200 dark:border-gray-700",
+            "p-4 sm:p-6",
+            "transition-all duration-200"
+          )}
         >
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-lg bg-purple-500/10">
-              <resource.icon className="w-6 h-6 text-purple-400" />
+          <div className="flex items-start gap-3 sm:gap-4">
+            <div className={cn(
+              "p-2.5 sm:p-3 rounded-lg",
+              "bg-purple-50 dark:bg-purple-500/10",
+              "group-hover:bg-purple-100 dark:group-hover:bg-purple-500/20",
+              "transition-colors"
+            )}>
+              <resource.icon className={cn(
+                "w-5 h-5 sm:w-6 sm:h-6",
+                "text-purple-600 dark:text-purple-400",
+                "group-hover:text-purple-700 dark:group-hover:text-purple-300",
+                "transition-colors"
+              )} />
             </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-200 group-hover:text-purple-400 transition-colors">
+            <div className="flex-1 min-w-0">
+              <h3 className={cn(
+                "text-base sm:text-lg font-semibold",
+                "text-gray-900 dark:text-gray-100",
+                "group-hover:text-purple-600 dark:group-hover:text-purple-400",
+                "transition-colors",
+                "line-clamp-1 mb-1"
+              )}>
                 {resource.title}
               </h3>
-              <p className="text-sm text-gray-400">
+              <p className={cn(
+                "text-sm",
+                "text-gray-600 dark:text-gray-300",
+                "line-clamp-2 mb-3"
+              )}>
                 {resource.description}
               </p>
+
+              <div className={cn(
+                "flex items-center text-sm",
+                "text-purple-600 dark:text-purple-400",
+                "group-hover:text-purple-700 dark:group-hover:text-purple-300"
+              )}>
+                <LinkIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
+                <span className="text-xs sm:text-sm">View Resource</span>
+                <ExternalLink className={cn(
+                  "w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5 sm:ml-2",
+                  "opacity-0 group-hover:opacity-100",
+                  "transition-opacity"
+                )} />
+              </div>
             </div>
           </div>
-
-          <div className="mt-4 flex items-center text-sm text-purple-400 group-hover:text-purple-300">
-            <LinkIcon className="w-4 h-4 mr-2" />
-            <span>View Resource</span>
-            <ExternalLink className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </div>
-        </motion.div>
+        </motion.a>
       ))}
     </div>
   );

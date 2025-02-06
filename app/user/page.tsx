@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useRef } from "react";
 import { TabsWrapper } from './_components/TabsWrapper';
+import { NavigationArrows } from "./_components/NavigationArrows";
 
 type Props = {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -81,135 +82,149 @@ const User = async ({ searchParams }: Props) => {
   const currentTab = searchParams?.tab?.toString() || 'courses';
 
   return (
-        <>
-       
-        <div>
-            <ConditionalHeader user={user} />
-        </div>
-          <SidebarDemo >
-             <TabsWrapper 
-               defaultValue={currentTab} 
-               className="w-full p-4 mt-20"
-             >
-              <ScrollableTabs />
+    <div className="min-h-screen flex flex-col">
+      <ConditionalHeader user={user} />
+      
+      {/* Main Content */}
+      <SidebarDemo>
+        <TabsWrapper 
+          defaultValue={currentTab} 
+          className="w-full"
+        >
+          {/* Tabs Navigation Bar */}
+          <div className="sticky top-16 z-30 w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+            <div className="max-w-screen-2xl mx-auto relative">
+              <NavigationArrows />
+              
+              {/* Tabs List with proper overflow handling */}
+              <div className="overflow-x-auto scrollbar-hide mx-8 md:mx-0"> {/* Added padding for arrow buttons */}
+                <TabsList className="w-full h-14 bg-transparent justify-start flex-nowrap min-w-max px-2">
+                  <ScrollableTabs />
+                </TabsList>
+              </div>
+            </div>
+          </div>
 
-              <TabsContent value="courses" className="mt-8 sm:mt-12">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 p-2 sm:px-8">
-                  {userData?.courses.map((course) => (
-                    <MyCourseCard key={course.id} course={course} />
-                  ))}
-                </div>
-              </TabsContent>
+          {/* Content Container with Padding for Sticky Header */}
+          <div className="pt-[56px]"> {/* Height of the tabs (h-14 = 56px) */}
+            <TabsContent value="courses">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 p-2 sm:px-8">
+                {userData?.courses.map((course) => (
+                  <MyCourseCard key={course.id} course={course} />
+                ))}
+              </div>
+            </TabsContent>
 
-              <TabsContent value="posts" className="mt-8 sm:mt-12">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 p-2 sm:px-8">
-                  {userData?.posts.map((post) => (
-                    <MyPostCard 
-                      key={post.id} 
-                      post={{
-                        ...post, 
-                        content: post.description || '',
-                        imageUrl: post.imageUrl || undefined,
-                        user: {
-                          ...post.user,
-                          name: post.user.name || '',
-                          image: post.user.image || '/placeholder.jpg'
-                        },
-                        imageSections: post.imageSections.map(img => ({
-                          id: img.id,
-                          url: img.imageUrl,
-                          postId: img.postId
-                        }))
-                      }} 
-                    />
-                  ))}
-                </div>
-              </TabsContent>
+            <TabsContent value="posts">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 p-2 sm:px-8">
+                {userData?.posts.map((post) => (
+                  <MyPostCard 
+                    key={post.id} 
+                    post={{
+                      ...post, 
+                      content: post.description || '',
+                      imageUrl: post.imageUrl || undefined,
+                      user: {
+                        ...post.user,
+                        name: post.user.name || '',
+                        image: post.user.image || '/placeholder.jpg'
+                      },
+                      imageSections: post.imageSections.map(img => ({
+                        id: img.id,
+                        url: img.imageUrl,
+                        postId: img.postId
+                      }))
+                    }} 
+                  />
+                ))}
+              </div>
+            </TabsContent>
 
-              <TabsContent value="social" className="mt-8 sm:mt-12">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 p-2 sm:px-8">
-                  {userData?.profileLinks?.map((profileLink) => (
-                    <MySocialMediaCard 
-                      key={profileLink.id} 
-                      profileLink={profileLink} 
-                    />
-                  ))}
-                </div>
-              </TabsContent>
+            <TabsContent value="social">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 p-2 sm:px-8">
+                {userData?.profileLinks?.map((profileLink) => (
+                  <MySocialMediaCard 
+                    key={profileLink.id} 
+                    profileLink={profileLink} 
+                  />
+                ))}
+              </div>
+            </TabsContent>
 
-              <TabsContent value="videos" className="mt-8 sm:mt-12">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 p-2 sm:px-8">
-                  {userData?.favoriteVideos?.map((video) => (
-                    <MyFavoriteVideoCard key={video.id} video={video} />
-                  ))}
-                </div>
-              </TabsContent>
+            <TabsContent value="videos">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 p-2 sm:px-8">
+                {userData?.favoriteVideos?.map((video) => (
+                  <MyFavoriteVideoCard key={video.id} video={video} />
+                ))}
+              </div>
+            </TabsContent>
 
-              <TabsContent value="audios" className="mt-8 sm:mt-12">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 p-2 sm:px-8">
-                  {userData?.favoriteAudios?.map((audio) => (
-                    <MyFavoriteAudioCard key={audio.id} audio={audio} />
-                  ))}
-                </div>
-              </TabsContent>
+            <TabsContent value="audios">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 p-2 sm:px-8">
+                {userData?.favoriteAudios?.map((audio) => (
+                  <MyFavoriteAudioCard key={audio.id} audio={audio} />
+                ))}
+              </div>
+            </TabsContent>
 
-              <TabsContent value="blogs" className="mt-8 sm:mt-12">
-                <div className="p-2 sm:px-8">
-                  <MyFavoriteBlogCard blogs={userData?.favoriteBlogs || []} />
-                </div>
-              </TabsContent>
+            <TabsContent value="blogs">
+              <div className="p-2 sm:px-8">
+                <MyFavoriteBlogCard blogs={userData?.favoriteBlogs || []} />
+              </div>
+            </TabsContent>
 
-              <TabsContent value="articles" className="mt-8 sm:mt-12">
-                <div className="p-2 sm:px-8">
-                  <MyFavoriteArticleCard articles={userData?.favoriteArticles || []} />
-                </div>
-              </TabsContent>
+            <TabsContent value="articles">
+              <div className="p-2 sm:px-8">
+                <MyFavoriteArticleCard articles={userData?.favoriteArticles || []} />
+              </div>
+            </TabsContent>
 
-              <TabsContent value="subscriptions" className="mt-8 sm:mt-12">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-2 sm:px-8">
-                  {userData?.subscriptions?.map((subscription, index) => {
-                    // Calculate total amount from all subscriptions
-                    const totalAmount = userData.subscriptions.reduce((acc, curr) => {
-                      return acc + (Number(curr.amount) || 0);
-                    }, 0);
+            <TabsContent value="subscriptions">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-2 sm:px-8">
+                {userData?.subscriptions?.map((subscription, index) => {
+                  // Calculate total amount from all subscriptions
+                  const totalAmount = userData.subscriptions.reduce((acc, curr) => {
+                    return acc + (Number(curr.amount) || 0);
+                  }, 0);
 
+                
+
+                  // Count active subscriptions
+                  const activeSubscriptions = userData.subscriptions.filter(sub => {
+                    const endDate = new Date(sub.endOfSubscription);
+                    const now = new Date();
+                 
                   
+                    return endDate.getTime() > now.getTime();
+                  }).length;
 
-                    // Count active subscriptions
-                    const activeSubscriptions = userData.subscriptions.filter(sub => {
-                      const endDate = new Date(sub.endOfSubscription);
-                      const now = new Date();
-                   
-                      
-                      return endDate.getTime() > now.getTime();
-                    }).length;
+                
 
-                    
-
-                    return (
-                      <MySubscriptionCard 
-                        key={subscription.id} 
-                        subscription={{
-                          ...subscription,
-                          position: subscription.position ?? undefined,
-                          category: subscription.category ?? undefined,
-                          dateOfSubscription: new Date(subscription.dateOfSubscription),
-                          endOfSubscription: new Date(subscription.endOfSubscription),
-                          amount: Number(subscription.amount),
-                        }}
-                        isFirstCard={index === 0}
-                        totalSubscriptions={activeSubscriptions}
-                        totalAmount={totalAmount}
-                      />
-                    );
-                  })}
-                </div>
-              </TabsContent>
-            </TabsWrapper>
-          </SidebarDemo >
-          <Footer />
-        </>
-    )
+                  return (
+                    <MySubscriptionCard 
+                      key={subscription.id} 
+                      subscription={{
+                        ...subscription,
+                        position: subscription.position ?? undefined,
+                        category: subscription.category ?? undefined,
+                        dateOfSubscription: new Date(subscription.dateOfSubscription),
+                        endOfSubscription: new Date(subscription.endOfSubscription),
+                        amount: Number(subscription.amount),
+                      }}
+                      isFirstCard={index === 0}
+                      totalSubscriptions={activeSubscriptions}
+                      totalAmount={totalAmount}
+                    />
+                  );
+                })}
+              </div>
+            </TabsContent>
+          </div>
+        </TabsWrapper>
+      </SidebarDemo>
+      <Footer />
+    </div>
+  )
 }
 
 

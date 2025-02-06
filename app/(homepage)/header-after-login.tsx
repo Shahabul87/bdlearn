@@ -18,6 +18,7 @@ import {
   LayoutDashboard,
 } from 'lucide-react';
 import { LogoutButton } from '@/components/auth/logout-button';
+import { MobileMenuButton } from './components/mobile-menu-button';
 
 interface HeaderAfterLoginProps {
   user: {
@@ -146,71 +147,11 @@ export const HeaderAfterLogin = ({ user }: HeaderAfterLoginProps) => {
               </AnimatePresence>
             </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="p-2 md:hidden rounded-lg dark:bg-gray-800/80 bg-gray-100/80 dark:hover:bg-gray-700 hover:bg-gray-200 transition-colors dark:text-white text-gray-900"
-            >
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            {/* Replace Mobile Menu Button with new component */}
+            <MobileMenuButton isOpen={isOpen} setIsOpen={setIsOpen} />
           </div>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 0 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="md:hidden absolute top-full left-0 right-0 w-full"
-          >
-            <div className="px-4 py-3 dark:bg-gray-900/95 bg-white/95 backdrop-blur-sm dark:border-gray-800 border-gray-200 border-b shadow-lg">
-              <nav className="flex flex-col items-center space-y-3">
-                <Link href="/features" className="w-full text-center dark:text-gray-300 text-gray-600 dark:hover:text-white hover:text-gray-900">
-                  Features
-                </Link>
-                <Link href="/discover" className="w-full text-center dark:text-gray-300 text-gray-600 dark:hover:text-white hover:text-gray-900">
-                  Discover
-                </Link>
-                <Link href="/about" className="w-full text-center dark:text-gray-300 text-gray-600 dark:hover:text-white hover:text-gray-900">
-                  About
-                </Link>
-                <Link href="/blog" className="w-full text-center dark:text-gray-300 text-gray-600 dark:hover:text-white hover:text-gray-900">
-                  Blog
-                </Link>
-                <div className="w-full pt-3 dark:border-gray-800 border-gray-200 border-t">
-                  <Link 
-                    href="/user" 
-                    className="flex items-center px-4 py-2 dark:text-gray-300 text-gray-600 dark:hover:text-white hover:text-gray-900"
-                  >
-                    <LayoutDashboard className="w-4 h-4 mr-2" />
-                    <span>Dashboard</span>
-                  </Link>
-                  <Link 
-                    href="/profile" 
-                    className="flex items-center px-4 py-2 dark:text-gray-300 text-gray-600 dark:hover:text-white hover:text-gray-900"
-                  >
-                    <User className="w-4 h-4 mr-2" />
-                    <span>Profile</span>
-                  </Link>
-                  <Link href="/settings" className="flex items-center px-4 py-2 dark:text-gray-300 text-gray-600 dark:hover:text-white hover:text-gray-900">
-                    <Settings className="w-4 h-4 mr-2" />
-                    <span>Settings</span>
-                  </Link>
-                  <LogoutButton className="w-full">
-                    <div className="flex items-center px-4 py-2 dark:text-gray-300 text-gray-600 dark:hover:text-white hover:text-gray-900">
-                      <LogOut className="w-4 h-4 mr-2" />
-                      <span>Logout</span>
-                    </div>
-                  </LogoutButton>
-                </div>
-              </nav>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </header>
   );
 };

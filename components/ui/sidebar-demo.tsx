@@ -28,6 +28,7 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { cn } from "@/lib/utils";
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
+import { ChevronRight } from "lucide-react";
 
 interface SidebarDemoProps {
   children: React.ReactNode;
@@ -76,8 +77,6 @@ export function SidebarDemo({ children }: SidebarDemoProps) {
       title: "Dashboard",
       icon: <IconDashboard className="w-5 h-5" />,
       submenu: [
-        { label: "Student Dashboard", href: "/dashboard/student" },
-        { label: "Teacher Dashboard", href: "/dashboard/teacher" },
         { label: "Admin Dashboard", href: "/dashboard/admin" },
       ],
     },
@@ -169,9 +168,13 @@ export function SidebarDemo({ children }: SidebarDemoProps) {
           className="fixed top-4 left-4 z-50 p-2 rounded-lg 
             dark:bg-gray-800 dark:text-gray-200 dark:hover:text-white dark:hover:bg-gray-700
             bg-white text-gray-700 hover:text-gray-900 hover:bg-gray-100
-            transition-colors md:hidden shadow-lg border dark:border-gray-700 border-gray-200"
+            transition-colors md:hidden  border dark:border-gray-700 border-gray-200"
         >
-          {open ? <IconX className="w-6 h-6" /> : <IconMenu2 className="w-6 h-6" />}
+          {open ? (
+            <IconX className="w-6 h-6" />
+          ) : (
+            <ChevronRight className="w-4 h-4" />
+          )}
         </button>
       )}
 
