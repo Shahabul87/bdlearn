@@ -84,7 +84,7 @@ export default function HomeHeroSection() {
   return (
     <div 
       ref={sectionRef} 
-      className="relative overflow-hidden bg-white dark:bg-gray-900 min-h-[calc(100vh-80px)] flex items-center justify-center pt-16 md:pt-0"
+      className="relative overflow-hidden bg-white dark:bg-gray-900 min-h-[calc(100vh-80px)] flex items-center justify-center pt-16"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-8 md:py-0">
         <div className="flex flex-col items-center justify-center space-y-8 md:space-y-12">

@@ -10,6 +10,7 @@ import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { toast } from "react-hot-toast";
+import { signIn } from "next-auth/react";
 
 import { LoginSchema } from "@/schemas";
 import { Input } from "@/components/ui/input";
@@ -26,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { login } from "@/actions/login";
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 
 export const LoginForm = () => {
   const searchParams = useSearchParams();
@@ -209,28 +211,37 @@ export const LoginForm = () => {
         </div>
 
         {/* Right side - OAuth */}
-        <div className="flex flex-col justify-center space-y-8 md:pl-12">
-          <p className="text-center text-gray-400 font-medium text-lg">or</p>
-          <div className="space-y-6 w-full">
+        <div className="flex flex-col gap-4">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-gray-300 dark:border-gray-700" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white dark:bg-gray-900 px-2 text-gray-600 dark:text-gray-400">
+                Or continue with
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-col gap-3">
             <Button
+              size="lg"
               variant="outline"
-              className="w-full h-14 bg-white hover:bg-gray-50 text-gray-600 rounded-xl
-                flex items-center justify-center space-x-4 transition-all duration-300 
-                border-2 border-gray-200 hover:border-gray-300"
-              onClick={() => {}}
+              role="button"
+              onClick={() => signIn("google", { callbackUrl: DEFAULT_LOGIN_REDIRECT })}
+              className="w-full border-2 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
             >
-              <FcGoogle className="w-6 h-6" />
-              <span className="text-lg font-medium">Continue with Google</span>
+              <FcGoogle className="h-5 w-5 mr-2" />
+              <span className="text-gray-900 dark:text-gray-100">Sign in with Google</span>
             </Button>
             <Button
+              size="lg"
               variant="outline"
-              className="w-full h-14 bg-[#24292F] hover:bg-[#2c3137] text-white rounded-xl
-                flex items-center justify-center space-x-4 transition-all duration-300 
-                border-none"
-              onClick={() => {}}
+              role="button"
+              onClick={() => signIn("github", { callbackUrl: DEFAULT_LOGIN_REDIRECT })}
+              className="w-full border-2 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
             >
-              <FaGithub className="w-6 h-6" />
-              <span className="text-lg font-medium">Continue with GitHub</span>
+              <FaGithub className="h-5 w-5 mr-2 text-gray-900 dark:text-white" />
+              <span className="text-gray-900 dark:text-gray-100">Sign in with GitHub</span>
             </Button>
           </div>
         </div>
