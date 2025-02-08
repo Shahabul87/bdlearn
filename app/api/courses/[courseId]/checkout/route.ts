@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import Stripe from "stripe";
 import { currentUser } from "@/lib/auth";
+import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
 
@@ -10,14 +11,14 @@ export async function POST(
   try {
     const user = await currentUser();
 
-    if (!user?.id || !user?.email) {
+    if (!user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const course = await db.course.findUnique({
       where: {
         id: params.courseId,
-      },
+      }
     });
 
     if (!course) {
@@ -39,33 +40,31 @@ export async function POST(
     }
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      customer_email: user.email,
-      mode: "payment",
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/student?success=1`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/courses/${course.id}?canceled=1`,
+      mode: "payment",
+      metadata: {
+        courseId: course.id,
+        userId: user.id,
+      },
       line_items: [
         {
           price_data: {
             currency: "USD",
             product_data: {
               name: course.title,
-              description: course.description || "",
+              description: course.description!,
             },
             unit_amount: Math.round(course.price! * 100),
           },
           quantity: 1,
-        },
-      ],
-      metadata: {
-        courseId: course.id,
-        userId: user.id,
-      },
+        }
+      ]
     });
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    console.error("[COURSE_CHECKOUT]", error);
+    console.log("[COURSE_CHECKOUT]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

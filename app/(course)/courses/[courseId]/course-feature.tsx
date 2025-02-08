@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { AiFillStar, AiOutlineClockCircle, AiOutlineUser, AiOutlineCheck } from 'react-icons/ai';
@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
 
 interface CourseCardProps {
   course: Course & { 
@@ -31,7 +30,6 @@ interface CourseCardProps {
 export const CourseCard = ({ course, userId }: CourseCardProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  console.log(course.imageUrl)
 
   const handleEnroll = async () => {
     try {
@@ -77,6 +75,37 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
       setIsLoading(false);
     }
   };
+
+  const onCheckout = async () => {
+    try {
+      setIsLoading(true);
+      console.log("Starting checkout for course:", course.id);
+      
+      const response = await axios.post(`/api/courses/${course.id}/checkout`);
+      console.log("Checkout response:", response.data);
+      
+      window.location.assign(response.data.url);
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast.error("Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Add useEffect to check for successful enrollment
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    
+    if (success === '1') {
+      // Add a small delay to ensure the enrollment is created
+      setTimeout(() => {
+        router.refresh(); // Refresh the page data
+        router.push('/dashboard/student');
+      }, 1000);
+    }
+  }, [router]);
 
   // Calculate average rating
   const averageRating = course.reviews?.length 

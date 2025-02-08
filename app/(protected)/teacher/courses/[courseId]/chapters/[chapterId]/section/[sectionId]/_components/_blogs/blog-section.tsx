@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { Chapter } from "@prisma/client";
+import { DisplayBlogs } from "./display-blogs";
 
 interface BlogSectionFormProps {
   chapter: {
@@ -146,14 +147,7 @@ export const BlogSectionForm = ({
   };
 
   return (
-    <div className={cn(
-      "p-4 mt-4 rounded-xl",
-      "border border-gray-200 dark:border-gray-700/50",
-      "bg-white/50 dark:bg-gray-800/40",
-      "hover:bg-gray-50 dark:hover:bg-gray-800/60",
-      "transition-all duration-200",
-      "backdrop-blur-sm"
-    )}>
+    <div className="relative mt-6 border bg-white dark:bg-gray-800 rounded-md p-4">
       <div className="font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-2">
         <div className="flex items-center gap-x-2">
           <div className={cn(
@@ -328,78 +322,18 @@ export const BlogSectionForm = ({
         </Form>
       )}
 
-      {/* Display added blogs */}
-      {chapter.sections.map((section) => (
-        section.blogs.length > 0 && (
-          <div key={section.id} className="mt-6">
-            <div className="grid grid-cols-1 gap-4">
-              {section.blogs.map((blog) => (
-                <motion.div
-                  key={blog.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  onClick={() => handleBlogClick(blog.url)}
-                  className={cn(
-                    "group p-4 rounded-lg",
-                    "bg-white/50 dark:bg-gray-900/50",
-                    "border border-gray-200 dark:border-gray-700/50",
-                    "hover:bg-gray-50 dark:hover:bg-gray-800/70",
-                    "transition-all duration-300",
-                    "cursor-pointer",
-                    "overflow-hidden"
-                  )}
-                >
-                  <div className="flex flex-col gap-4">
-                    {/* Title and Description */}
-                    <div className="space-y-2">
-                      <h4 className={cn(
-                        "text-sm sm:text-base font-medium",
-                        "text-gray-900 dark:text-gray-200",
-                        "group-hover:text-pink-700 dark:group-hover:text-pink-300",
-                        "transition-colors duration-300",
-                        "line-clamp-1"
-                      )}>
-                        {blog.title}
-                      </h4>
-                      <p className={cn(
-                        "text-sm",
-                        "text-gray-600 dark:text-gray-400",
-                        "group-hover:text-gray-700 dark:group-hover:text-gray-300",
-                        "transition-colors duration-300",
-                        "line-clamp-2 sm:line-clamp-1"
-                      )}>
-                        {blog.description}
-                      </p>
-                    </div>
-
-                    {/* Rating and Link Icon */}
-                    <div className={cn(
-                      "flex items-center justify-between",
-                      "pt-2 border-t",
-                      "border-gray-200 dark:border-gray-700/50"
-                    )}>
-                      <RatingStars rating={blog.rating} />
-                      <div className={cn(
-                        "p-1.5 rounded-md",
-                        "bg-pink-50 dark:bg-pink-500/10",
-                        "group-hover:bg-pink-100 dark:group-hover:bg-pink-500/20",
-                        "transition-colors duration-300"
-                      )}>
-                        <ExternalLink className={cn(
-                          "h-4 w-4",
-                          "text-pink-600 dark:text-pink-400",
-                          "group-hover:text-pink-700 dark:group-hover:text-pink-300",
-                          "transition-colors duration-300"
-                        )} />
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        )
-      ))}
+      {!isCreating && (
+        <div className="mt-6">
+          <DisplayBlogs
+            items={
+              chapter.sections
+                .find(section => section.id === sectionId)?.blogs || []
+            }
+            onEdit={(id) => {}}
+            onDelete={(id) => {}}
+          />
+        </div>
+      )}
     </div>
   );
 };
