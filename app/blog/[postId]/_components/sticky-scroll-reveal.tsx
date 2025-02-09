@@ -88,7 +88,7 @@ export const StickyScroll = ({
               >
                 {item.title}
               </motion.h2>
-              <motion.p
+              <motion.div
                 initial={{
                   opacity: 0,
                 }}
@@ -109,9 +109,8 @@ export const StickyScroll = ({
                 style={{
                   textJustify: "inter-word"
                 }}
-              >
-                {item.description}
-              </motion.p>
+                dangerouslySetInnerHTML={{ __html: item.description }}
+              />
             </div>
           ))}
           <div className="h-40" />

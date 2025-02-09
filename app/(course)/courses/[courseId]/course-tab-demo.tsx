@@ -4,6 +4,8 @@ import { CourseTabs } from "./course-tab";
 import { Chapter } from "@prisma/client";
 import { motion } from "framer-motion";
 import { BookOpen, CheckCircle2 } from "lucide-react";
+import React from 'react';
+import parse from 'html-react-parser';
 
 // Update color schemes for better contrast in both modes
 const cardThemes = [
@@ -111,37 +113,54 @@ const LearningOutcomes = ({
     <p className="text-gray-500 dark:text-white/60 italic">No specific learning outcomes provided.</p>
   );
 
-  const points = outcomes.includes("<p>")
-    ? outcomes.match(/<p>(.*?)<\/p>/g)?.map((item) => item.replace(/<\/?p>/g, "").trim())
-    : outcomes.split(".").map((item) => item.trim()).filter(Boolean);
+  const parseHtmlContent = (htmlString: string) => {
+    return parse(htmlString, {
+      replace: (domNode: any) => {
+        if (domNode.type === 'tag') {
+          switch (domNode.name) {
+            case 'strong':
+            case 'b':
+              return <span className="font-bold">{domNode.children[0].data}</span>;
+            case 'em':
+            case 'i':
+              return <span className="italic">{domNode.children[0].data}</span>;
+            case 'u':
+              return <span className="underline">{domNode.children[0].data}</span>;
+            default:
+              return domNode.children[0]?.data || '';
+          }
+        }
+      }
+    });
+  };
+
+  const points = outcomes.split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0);
 
   return (
     <motion.ul 
-      className="grid gap-3"
+      className="grid gap-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ staggerChildren: 0.1 }}
     >
-      {points?.map((point, index) => (
+      {points.map((point, index) => (
         <motion.li 
           key={index}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: index * 0.1 }}
-          className="flex items-start gap-3 group"
+          className="flex items-start gap-4 group"
         >
-          <span className={`w-6 h-6 rounded-full ${bgColor} border ${borderColor} flex items-center justify-center flex-shrink-0 mt-1`}>
+          <span className={`w-6 h-6 rounded-full ${bgColor} border ${borderColor} flex items-center justify-center flex-shrink-0 mt-1.5`}>
             <span className={`text-sm font-medium ${accentColor}`}>{index + 1}</span>
           </span>
-          <p className="text-lg text-gray-700 dark:text-white/80 leading-relaxed font-medium tracking-wide group-hover:text-gray-900 dark:group-hover:text-white/90 transition-colors duration-300">
-            {point}
+          <p className="text-lg text-gray-700 dark:text-white/80 leading-[1.8] font-medium tracking-wide group-hover:text-gray-900 dark:group-hover:text-white/90 transition-colors duration-300">
+            {parseHtmlContent(point)}
           </p>
         </motion.li>
-      )) || (
-        <li className="text-gray-500 dark:text-white/60 italic">
-          No specific learning outcomes available.
-        </li>
-      )}
+      ))}
     </motion.ul>
   );
 };

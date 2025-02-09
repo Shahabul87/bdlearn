@@ -98,14 +98,20 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
     const urlParams = new URLSearchParams(window.location.search);
     const success = urlParams.get('success');
     
+    if (success === '1' && !userId) {
+      // If success=1 but no userId, redirect to login
+      router.push(`/auth/login?callbackUrl=/dashboard/student?success=1`);
+      return;
+    }
+    
     if (success === '1') {
       // Add a small delay to ensure the enrollment is created
       setTimeout(() => {
-        router.refresh(); // Refresh the page data
+        router.refresh();
         router.push('/dashboard/student');
-      }, 1000);
+      }, 3000);
     }
-  }, [router]);
+  }, [router, userId]);
 
   // Calculate average rating
   const averageRating = course.reviews?.length 

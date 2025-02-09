@@ -5,96 +5,93 @@ import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
 
 export async function POST(req: Request) {
-  const body = await req.text();
-  const signature = headers().get("Stripe-Signature");
-
-  console.log("🔵 Webhook received");
-
-  if (!signature) {
-    console.log("❌ No Stripe signature found");
-    return new NextResponse("No Stripe signature found", { status: 400 });
-  }
-
-  let event: Stripe.Event;
-
   try {
-    event = stripe.webhooks.constructEvent(
+    const body = await req.text();
+    const signature = headers().get("Stripe-Signature");
+
+    console.log("🔵 Webhook received at:", new Date().toISOString());
+    console.log("📝 Request body length:", body.length);
+    console.log("🔑 Webhook Secret exists:", !!process.env.STRIPE_WEBHOOK_SECRET);
+    console.log("🔒 Signature received:", signature?.slice(0, 20) + "...");
+
+    if (!process.env.STRIPE_WEBHOOK_SECRET) {
+      console.error("❌ Missing STRIPE_WEBHOOK_SECRET");
+      throw new Error("Missing STRIPE_WEBHOOK_SECRET");
+    }
+
+    if (!signature) {
+      console.error("❌ No signature in request");
+      throw new Error("No Stripe signature found");
+    }
+
+    const event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      process.env.STRIPE_WEBHOOK_SECRET
     );
     
-    console.log(`✅ Webhook event type: ${event.type}`);
+    console.log(`✅ Webhook event:`, {
+      type: event.type,
+      id: event.id,
+      created: new Date(event.created * 1000).toISOString()
+    });
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
-      
-      // Log all session data
-      console.log("📦 Full session data:", JSON.stringify(session, null, 2));
-      
+      console.log("💳 Checkout session:", {
+        id: session.id,
+        customer: session.customer,
+        metadata: session.metadata,
+        payment_status: session.payment_status,
+        amount_total: session.amount_total,
+        currency: session.currency
+      });
+
       const userId = session.metadata?.userId;
       const courseId = session.metadata?.courseId;
 
-      console.log("🔑 User ID:", userId);
-      console.log("📚 Course ID:", courseId);
-
       if (!userId || !courseId) {
-        console.log("❌ Missing metadata:", session.metadata);
-        return new NextResponse("Missing metadata", { status: 400 });
+        throw new Error(`Missing metadata: userId=${userId}, courseId=${courseId}`);
       }
 
-      try {
-        // Check if user exists
-        const user = await db.user.findUnique({
-          where: { id: userId }
-        });
-
-        if (!user) {
-          console.log("❌ User not found:", userId);
-          return new NextResponse("User not found", { status: 404 });
+      // Create enrollment
+      const enrollment = await db.enrollment.create({
+        data: {
+          userId,
+          courseId,
+        },
+        include: {
+          user: true,
+          course: true
         }
+      });
+      
+      console.log("✅ Created enrollment:", {
+        id: enrollment.id,
+        userId: enrollment.userId,
+        courseId: enrollment.courseId,
+        courseName: enrollment.course.title,
+        userName: enrollment.user.name
+      });
 
-        // Check if course exists
-        const course = await db.course.findUnique({
-          where: { id: courseId }
-        });
-
-        if (!course) {
-          console.log("❌ Course not found:", courseId);
-          return new NextResponse("Course not found", { status: 404 });
-        }
-
-        // Create enrollment
-        const enrollment = await db.enrollment.create({
-          data: {
-            userId,
-            courseId,
-          }
-        });
-        
-        console.log("✅ Enrollment created:", enrollment);
-
-        return NextResponse.json({ 
-          success: true,
-          url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/student?success=1`
-        });
-      } catch (error) {
-        console.error("❌ Enrollment creation error:", error);
-        // Log the full error object
-        console.error("Full error:", JSON.stringify(error, null, 2));
-        return new NextResponse("Failed to create enrollment", { status: 500 });
-      }
+      return NextResponse.json({ 
+        success: true,
+        message: "Enrollment created successfully",
+        enrollmentId: enrollment.id
+      });
     }
 
-    return new NextResponse(null, { status: 200 });
+    return NextResponse.json({ 
+      success: true,
+      message: `Handled ${event.type} event`
+    });
 
   } catch (error: any) {
-    console.error("❌ Webhook error:", error);
-    return new NextResponse(
-      `Webhook Error: ${error.message}`, 
-      { status: 400 }
-    );
+    console.error("❌ Webhook error:", {
+      message: error.message,
+      type: error.type,
+      stack: error.stack?.split('\n')
+    });
+    throw error;
   }
 }
-
-export const runtime = 'edge';

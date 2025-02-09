@@ -7,19 +7,17 @@ import ConditionalHeader from "@/app/(homepage)/user-header";
 
 export default async function StudentDashboard() {
   const user = await currentUser();
-  console.log("Current user:", user?.id);
 
   if (!user?.id) {
-    return redirect("/");
+    // Preserve the success parameter when redirecting to login
+    return redirect("/auth/login?callbackUrl=/dashboard/student?success=1");
   }
 
-  // First check if any enrollments exist
-  const enrollmentCount = await db.enrollment.count({
-    where: {
-      userId: user.id,
-    }
-  });
-  console.log("Total enrollments:", enrollmentCount);
+  // Store the success status in the database if needed
+  if (new URLSearchParams(window.location.search).get('success') === '1') {
+    // Wait a few seconds for the webhook to complete
+    await new Promise(resolve => setTimeout(resolve, 3000));
+  }
 
   // Fetch enrolled courses with progress
   const enrolledCourses = await db.enrollment.findMany({
@@ -35,13 +33,13 @@ export default async function StudentDashboard() {
       }
     }
   });
-  
-  console.log("Enrolled courses:", JSON.stringify(enrolledCourses, null, 2));
 
-  // Simplify the transformation for now
+  console.log("User ID:", user.id);
+  console.log("Enrollment count:", enrolledCourses.length);
+
   const courses = enrolledCourses.map((enrollment) => ({
     ...enrollment.course,
-    progress: 0, // We'll add progress calculation back once basic display works
+    progress: 0,
   }));
 
   return (
@@ -59,6 +57,7 @@ export default async function StudentDashboard() {
           {courses.length === 0 ? (
             <div className="text-center text-muted-foreground mt-10">
               <p>You haven't enrolled in any courses yet.</p>
+              <p className="mt-2">If you just enrolled, please wait a moment for your enrollment to be processed.</p>
             </div>
           ) : (
             <CoursesList items={courses} />

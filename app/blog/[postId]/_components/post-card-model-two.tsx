@@ -3,14 +3,37 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import parse from 'html-react-parser';
 
 interface PostCardModelTwoProps {
   data: any[];
 }
 
 export const PostCardModelTwo = ({ data }: PostCardModelTwoProps) => {
+  const parseHtmlContent = (htmlString: string) => {
+    return parse(htmlString, {
+      replace: (domNode: any) => {
+        if (domNode.type === 'tag') {
+          const content = domNode.children[0]?.data || '';
+          switch (domNode.name) {
+            case 'strong':
+            case 'b':
+              return <span className="font-bold">{content}</span>;
+            case 'em':
+            case 'i':
+              return <span className="italic">{content}</span>;
+            case 'u':
+              return <span className="underline">{content}</span>;
+            default:
+              return content;
+          }
+        }
+      }
+    });
+  };
+
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto space-y-8">
       {data.map((chapter, index) => (
         <motion.div
           key={chapter.id}
@@ -75,7 +98,7 @@ export const PostCardModelTwo = ({ data }: PostCardModelTwoProps) => {
                 "tracking-wide font-light",
                 "text-justify mt-4"
               )}>
-                {chapter.description}
+                {parseHtmlContent(chapter.description)}
               </p>
 
               {/* Decorative Elements */}

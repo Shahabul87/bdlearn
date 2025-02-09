@@ -22,12 +22,12 @@ export default async function BlogLayout({
   return (
    <SessionProvider session={session}>
     {!user ? <Header /> : <HeaderAfterLogin user={user}/>}
-      <div className="relative min-h-screen w-screen">
+      <div className="relative min-h-screen">
         <div className="antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
           <ConfettiProvider />
           <Toaster />
          
-          <main className="w-full min-h-screen p-6 px-10">             
+          <main className="min-h-screen w-full px-0 sm:px-2 md:px-4">             
               {children}
           </main> 
         </div>

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import parse from 'html-react-parser';
 
 interface PostChapterCardProps {
   title: string;
@@ -30,6 +31,28 @@ const PostChapterCard = ({ title, description, imageUrl }: PostChapterCardProps)
     return Math.abs(target - nextPeriod) < Math.abs(target - nextSpace) 
       ? nextPeriod + 1 // Include the period
       : nextSpace;
+  };
+
+  const parseHtmlContent = (htmlString: string) => {
+    return parse(htmlString, {
+      replace: (domNode: any) => {
+        if (domNode.type === 'tag') {
+          const content = domNode.children[0]?.data || '';
+          switch (domNode.name) {
+            case 'strong':
+            case 'b':
+              return <span className="font-bold">{content}</span>;
+            case 'em':
+            case 'i':
+              return <span className="italic">{content}</span>;
+            case 'u':
+              return <span className="underline">{content}</span>;
+            default:
+              return content;
+          }
+        }
+      }
+    });
   };
 
   const actualSplitPoint = findBreakPoint(description || '', splitPoint);
@@ -71,7 +94,7 @@ const PostChapterCard = ({ title, description, imageUrl }: PostChapterCardProps)
                 "text-justify"
               )}
             >
-              {firstHalf}
+              {firstHalf && parseHtmlContent(firstHalf)}
             </motion.p>
           </motion.div>
         </div>
@@ -106,7 +129,7 @@ const PostChapterCard = ({ title, description, imageUrl }: PostChapterCardProps)
               "text-justify"
             )}
           >
-            {secondHalf}
+            {parseHtmlContent(secondHalf)}
           </motion.p>
 
           {/* Decorative Elements */}

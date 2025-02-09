@@ -112,10 +112,10 @@ export const SocialMediaShareButtons = ({ postTitle, currentURL }: SocialMediaSh
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm font-medium text-gray-400 mr-2">Share:</span>
+    <div className="flex md:flex-col items-center gap-3 md:gap-4">
+      <span className="text-sm md:text-xl font-medium text-gray-400 dark:text-gray-300 mr-2 md:mr-4">Share:</span>
       <TooltipProvider>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-4 md:gap-7">
           {shareLinks.map((platform) => {
             const Icon = platform.icon;
             return (
@@ -125,11 +125,16 @@ export const SocialMediaShareButtons = ({ postTitle, currentURL }: SocialMediaSh
                     href={platform.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`p-2 rounded-full transition-all duration-200 ${platform.color} ${platform.hoverBg} border border-gray-700/50`}
+                    className={`p-2 md:p-3 rounded-full transition-all duration-200 
+                      ${platform.color} ${platform.hoverBg} 
+                      border border-gray-700/50 
+                      dark:border-gray-600 
+                      dark:hover:border-gray-500
+                      backdrop-blur-sm`}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-4 h-4 md:w-6 md:h-6" />
                   </motion.a>
                 </TooltipTrigger>
                 <TooltipContent 
@@ -146,12 +151,15 @@ export const SocialMediaShareButtons = ({ postTitle, currentURL }: SocialMediaSh
             <TooltipTrigger asChild>
               <motion.button
                 onClick={copyToClipboard}
-                className={`p-2 rounded-full transition-all duration-200 
+                className={`p-2 md:p-3 rounded-full transition-all duration-200 
                   ${copied 
-                    ? 'text-green-400 hover:text-green-300 hover:bg-green-400/10' 
-                    : 'text-gray-400 hover:text-gray-300 hover:bg-gray-400/10'
+                    ? 'text-green-400 hover:text-green-300 hover:bg-green-400/10 dark:text-green-300 dark:hover:text-green-200' 
+                    : 'text-gray-400 hover:text-gray-300 hover:bg-gray-400/10 dark:text-gray-300 dark:hover:text-gray-200'
                   } 
-                  border border-gray-700/50`}
+                  border border-gray-700/50 
+                  dark:border-gray-600 
+                  dark:hover:border-gray-500
+                  backdrop-blur-sm`}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -164,7 +172,7 @@ export const SocialMediaShareButtons = ({ postTitle, currentURL }: SocialMediaSh
                       exit={{ opacity: 0, scale: 0.5 }}
                       className="flex items-center"
                     >
-                      <Check className="w-4 h-4" />
+                      <Check className="w-4 h-4 md:w-6 md:h-6" />
                     </motion.div>
                   ) : (
                     <motion.div
@@ -174,7 +182,7 @@ export const SocialMediaShareButtons = ({ postTitle, currentURL }: SocialMediaSh
                       exit={{ opacity: 0, scale: 0.5 }}
                       className="flex items-center"
                     >
-                      <Link2 className="w-4 h-4" />
+                      <Link2 className="w-4 h-4 md:w-6 md:h-6" />
                     </motion.div>
                   )}
                 </AnimatePresence>

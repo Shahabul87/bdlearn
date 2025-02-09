@@ -46,14 +46,16 @@ export async function POST(
       metadata: {
         courseId: course.id,
         userId: user.id,
+        userEmail: user.email || '',
       },
+      customer_email: user.email || undefined,
       line_items: [
         {
           price_data: {
             currency: "USD",
             product_data: {
               name: course.title,
-              description: course.description!,
+              description: course.description || "",
             },
             unit_amount: Math.round(course.price! * 100),
           },
