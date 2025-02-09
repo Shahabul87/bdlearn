@@ -122,7 +122,7 @@ const ReadingModes = ({ post }: ReadingModesProps) => {
       {/* Content Area */}
       <div className="flex-1 w-full overflow-hidden">
         <div 
-          className="mx-auto px-2 sm:px-4 md:px-6 py-4 max-w-full"
+          className="mx-auto px-2 sm:px-2 md:px-6 py-4 max-w-full"
           style={{ 
             fontSize: `${fontSize}px`,
             width: "100%"

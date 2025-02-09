@@ -53,7 +53,10 @@ export const CourseTabs = ({
             }}
             onMouseEnter={() => setHovering(true)}
             onMouseLeave={() => setHovering(false)}
-            className={cn("relative px-4 py-2 rounded-full", tabClassName)}
+            className={cn(
+              "relative px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full text-sm sm:text-base", 
+              tabClassName
+            )}
             style={{
               transformStyle: "preserve-3d",
             }}
@@ -63,7 +66,7 @@ export const CourseTabs = ({
                 layoutId="clickedbutton"
                 transition={{ type: "spring", bounce: 0.3, duration: 0.6 }}
                 className={cn(
-                  "absolute inset-0 bg-gray-700 dark:bg-zinc-800 border border-[#94a3b8] rounded-full ",
+                  "absolute inset-0 bg-gray-700 dark:bg-zinc-800 border border-[#94a3b8] rounded-full",
                   activeTabClassName
                 )}
               />
@@ -74,16 +77,14 @@ export const CourseTabs = ({
             </span>
           </button>
         ))}
-       
       </div>
       <TabContent
         tabs={tabs}
         active={active}
         key={active?.value || 'default'}
         hovering={hovering}
-        className={cn("mt-32", contentClassName)}
+        className={cn("mt-8 sm:mt-12 md:mt-16 lg:mt-24", contentClassName)}
       />
-       
     </>
   );
 };
@@ -103,21 +104,24 @@ export const TabContent = ({
     return tab.value === tabs[0].value;
   };
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-auto min-h-[700px] xs:min-h-[600px] sm:min-h-[550px] md:min-h-[500px] lg:min-h-[400px] mb-[400px] xs:mb-[300px] sm:mb-[250px] md:mb-[200px] lg:mb-[150px]">
       {tabs.map((tab, idx) => (
         <motion.div
           key={tab.value}
           layoutId={tab.value}
           style={{
-            scale: 1 - idx * 0.1,
+            scale: idx === 0 ? 1 : 1 - idx * 0.1,
             top: hovering ? idx * -50 : 0,
             zIndex: -idx,
-            opacity: idx < 3 ? 1 - idx * 0.1 : 0,
+            opacity: idx < 3 ? (idx === 0 ? 1 : 1 - idx * 0.1) : 0,
           }}
           animate={{
             y: isActive(tab) ? [0, 40, 0] : 0,
           }}
-          className={cn("w-full h-full absolute top-0 left-0", className)}
+          className={cn(
+            "w-full absolute top-0 left-0 overflow-visible", 
+            className
+          )}
         >
           {tab.content}
         </motion.div>

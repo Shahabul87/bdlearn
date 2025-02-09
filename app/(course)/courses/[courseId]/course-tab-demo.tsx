@@ -51,26 +51,26 @@ export function CourseTabsDemo({ chapters }: CourseTabsDemoProps) {
       title: `Chapter ${index + 1}`,
       value: chapter.title,
       content: (
-        <div className={`w-full overflow-hidden relative h-full rounded-2xl p-8 bg-gradient-to-br ${theme.gradient} border border-gray-200/50 dark:border-gray-800/50 shadow-lg dark:shadow-[inset_0_0_80px_rgba(0,0,0,0.6)] backdrop-blur-xl`}>
+        <div className={`w-full overflow-hidden relative h-full rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 bg-gradient-to-br ${theme.gradient} border border-gray-200/50 dark:border-gray-800/50 shadow-lg dark:shadow-[inset_0_0_80px_rgba(0,0,0,0.6)] backdrop-blur-xl`}>
           {/* Darker overlay - only in dark mode */}
           <div className="absolute inset-0 bg-black/0 dark:bg-black/40 backdrop-blur-xl" />
           
           {/* Content wrapper */}
           <div className="relative z-10">
             {/* Chapter Title */}
-            <div className="flex items-center gap-3 mb-6">
-              <div className={`h-12 w-12 rounded-full ${theme.iconBg} flex items-center justify-center border ${theme.iconBorder}`}>
-                <BookOpen className={`h-6 w-6 ${theme.iconColor}`} />
+            <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+              <div className={`h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 rounded-full ${theme.iconBg} flex items-center justify-center border ${theme.iconBorder}`}>
+                <BookOpen className={`h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 ${theme.iconColor}`} />
               </div>
-              <h2 className={`text-3xl font-bold bg-gradient-to-r ${theme.titleGradient} text-transparent bg-clip-text tracking-tight`}>
+              <h2 className={`text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r ${theme.titleGradient} text-transparent bg-clip-text tracking-tight`}>
                 {chapter.title}
               </h2>
             </div>
 
             {/* Learning Outcomes */}
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-gray-800 dark:text-white/90 mb-4 flex items-center gap-2">
-                <CheckCircle2 className={`h-5 w-5 ${theme.iconColor}`} />
+            <div className="space-y-3 sm:space-y-4">
+              <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800 dark:text-white/90 mb-2 sm:mb-3 md:mb-4 flex items-center gap-2">
+                <CheckCircle2 className={`h-4 w-4 sm:h-5 sm:w-5 ${theme.iconColor}`} />
                 Learning Outcomes
               </h3>
               <LearningOutcomes 
@@ -83,15 +83,15 @@ export function CourseTabsDemo({ chapters }: CourseTabsDemoProps) {
           </div>
 
           {/* Decorative Elements */}
-          <div className={`absolute top-0 right-0 w-1/3 h-1/3 bg-gradient-to-br opacity-10 dark:opacity-5 blur-3xl rounded-full ${theme.gradient}`} />
-          <div className={`absolute bottom-0 left-0 w-1/3 h-1/3 bg-gradient-to-tr opacity-10 dark:opacity-5 blur-3xl rounded-full ${theme.gradient}`} />
+          <div className={`absolute top-0 right-0 w-1/3 h-1/3 bg-gradient-to-br opacity-5 sm:opacity-10 dark:opacity-5 blur-2xl sm:blur-3xl rounded-full ${theme.gradient}`} />
+          <div className={`absolute bottom-0 left-0 w-1/3 h-1/3 bg-gradient-to-tr opacity-5 sm:opacity-10 dark:opacity-5 blur-2xl sm:blur-3xl rounded-full ${theme.gradient}`} />
         </div>
       ),
     };
   });
 
   return (
-    <div className="h-[20rem] md:h-[35rem] [perspective:1000px] relative flex flex-col max-w-5xl mx-auto w-full items-start justify-start">
+    <div className="h-[16rem] sm:h-[18rem] md:h-[25rem] lg:h-[35rem] [perspective:1000px] relative flex flex-col max-w-5xl mx-auto w-full items-start justify-start">
       <CourseTabs tabs={tabs} />
     </div>
   );

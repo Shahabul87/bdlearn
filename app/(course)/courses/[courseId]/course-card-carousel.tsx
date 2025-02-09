@@ -5,11 +5,12 @@ import React, { useState } from "react";
 import { Carousel, Card } from "@/components/cardscarousel/cards-carousel";
 import { Chapter, Section } from "@prisma/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, BookOpen, Clock, ChevronRight, Layers } from "lucide-react";
+import { X, BookOpen, Clock, ChevronRight, Layers, PlayCircle, CheckCircle2 } from "lucide-react";
 
 interface CourseContentProps {
   chapters: (Chapter & {
     sections: Section[];
+    learningOutcomes: string | null;
   })[] | undefined;
 }
 
@@ -110,7 +111,7 @@ const ChapterModal = ({ chapter, onClose }: {
 
         {/* Modal Content */}
         <div className="p-6">
-          <DummyContent description={chapter.description} sections={chapter.sections} />
+          <DummyContent description={chapter.description} sections={chapter.sections} chapter={chapter} />
         </div>
       </motion.div>
     </motion.div>
@@ -190,9 +191,13 @@ const ChapterPreview: React.FC<{
 interface DummyContentProps {
   description: string | null;
   sections: Section[];
+  chapter: Chapter & {
+    sections: Section[];
+    learningOutcomes: string | null;
+  };
 }
 
-const DummyContent: React.FC<DummyContentProps> = ({ description, sections }) => {
+const DummyContent: React.FC<DummyContentProps> = ({ description, sections, chapter }) => {
   // Remove all HTML tags and replace HTML entities like &nbsp;
   const cleanDescription = description
     ? description
@@ -218,25 +223,41 @@ const DummyContent: React.FC<DummyContentProps> = ({ description, sections }) =>
         <ul className="list-disc pl-5 text-neutral-600 dark:text-neutral-400">
           {sections.map((section) => (
             <li key={section.id} className="mb-2">
-              <span className="text-neutral-800 dark:text-neutral-100 font-semibold">
+              <span className="text-neutral-800 dark:text-neutral-100 font-semibold lg:text-[17px]">
                 {section.title}
               </span>
             </li>
           ))}
         </ul>
       </div>
+
+      {/* New Learning Outcomes Section */}
+      {chapter.learningOutcomes && (
+        <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
+          <div className="bg-gradient-to-r from-purple-50/50 to-rose-50/50 dark:from-purple-900/10 dark:to-rose-900/10 rounded-2xl p-6">
+            <h4 className="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <div className="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-lg">
+                <CheckCircle2 className="h-5 w-5 lg:h-6 lg:w-6 text-purple-500" />
+              </div>
+              <span className="bg-gradient-to-r from-purple-600 to-rose-600 dark:from-purple-400 dark:to-rose-400 text-transparent bg-clip-text">
+                Chapter Learning Outcomes
+              </span>
+            </h4>
+            <ul className="list-disc space-y-4 pl-8">
+              {chapter.learningOutcomes.split(',').map((outcome: string, idx: number) => (
+                <li
+                  key={idx}
+                  className="text-[15px] leading-[1.8] tracking-wide lg:text-[17px] text-gray-700 dark:text-gray-200 marker:text-purple-500 pl-2 py-2"
+                  dangerouslySetInnerHTML={{
+                    __html: outcome.trim()
+                  }}
+                />
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
-
-// Dummy data array for the cards (you can replace this with actual data or remove it if it's no longer needed)
-const data = [
-  {
-    category: "Artificial Intelligence",
-    title: "You can do more with AI.",
-    src: "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?q=80&w=3556&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    content: <DummyContent description="AI course description" sections={[]} />, // Example usage
-  },
-  // Add more items as needed
-];
 

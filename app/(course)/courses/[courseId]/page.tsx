@@ -11,6 +11,7 @@ import GradientHeading from "./_components/gradient-heading";
 import { CourseReviews } from "./_components/course-reviews";
 import { EnrollButton } from "./_components/enroll-button";
 import { Metadata } from "next";
+import { CourseOutcomes } from "./_components/course-outcomes";
 
 type CourseReview = {
   id: string;
@@ -124,9 +125,7 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
         course={course} 
         userId={user?.id}
       />
-
-      <div className="max-w-[1800px] mx-auto px-4 lg:px-8">
-        <div className="mb-10">
+      <div className="mb-10">
           <GradientHeading 
             text="Course Breakdown"
             gradientFrom="from-purple-400"
@@ -135,7 +134,7 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
             iconColor="text-purple-400"
           />
           
-          <div className="pl-16 pr-4">
+          <div className="">
             <div className="w-full overflow-hidden">
               <div className="relative">
                 <CourseCardsCarousel chapters={chapters}/>
@@ -143,8 +142,8 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
             </div>
           </div>
         </div>
-
-        <div className="relative">
+        
+        {/* <div className="relative">
           <GradientHeading 
             text="Course Learning Outcomes"
             gradientFrom="from-rose-400"
@@ -153,19 +152,13 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
             iconColor="text-rose-400"
           />
           
-          <div className="pl-16 pr-4">
-            <div className="relative z-10 backdrop-blur-sm">
-              <CourseTabsDemo chapters={chapters}/>
+          <div className="px-8 md:px-16">
+            <div className="">
+              <CourseOutcomes chapters={chapters} />
             </div>
           </div>
-
-          <div className="absolute inset-0 -z-10 overflow-hidden">
-            <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-gradient-to-br from-purple-500/10 via-rose-500/10 to-amber-500/10 blur-3xl rounded-full" />
-            <div className="absolute bottom-1/4 right-1/4 w-1/2 h-1/2 bg-gradient-to-tr from-cyan-500/10 via-blue-500/10 to-purple-500/10 blur-3xl rounded-full" />
-          </div>
-        </div>
-        
-        <div className="mx-auto mt-40 mb-5">
+        </div> */}
+        <div className="mx-auto mt-20 mb-5">
           <GradientHeading 
             text="Course Contents"
             gradientFrom="from-emerald-400"
@@ -179,7 +172,7 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
           </div>
         </div>
 
-        <div className="mt-2">
+        <div className="mt-10">
           <GradientHeading 
             text="Course Reviews"
             gradientFrom="from-blue-400"
@@ -188,24 +181,10 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
             iconColor="text-blue-400"
           />
           
-          <div className="pl-16 pr-4 mt-8">
+          <div className="mt-8">
             <CourseReviews courseId={params.courseId} initialReviews={reviews} />
           </div>
         </div>
-
-        <div className="mt-8 flex justify-center mb-5">
-          <EnrollButton 
-            courseId={params.courseId}
-            price={course.price || 0}
-            userId={user?.id}
-          />
-        </div>
-
-        <div className="course-description">
-          {course.cleanDescription || "No description available"}
-        </div>
-      </div>
-
       
     </section>
     <Footer />

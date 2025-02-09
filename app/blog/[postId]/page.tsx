@@ -2,17 +2,10 @@ import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { currentUser } from '@/lib/auth'
 import { Footer } from "@/app/(homepage)/footer";
-import { GradientDivider } from "@/components/border";
-import Image from "next/image";
-import { SocialMediaShare } from "./_components/social-media-sharing";
 import { PostComment } from "./_components/add-comments";
 import CommentDisplay from "./_components/comment-display";
 import { transformPostChapters } from "./_components/transform-post-chapter";
 import ReadingModes from "./_components/reading-mode";
-import { Heading } from "@/components/heading";
-import { Clock, Calendar, User as UserIcon, Tag, Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { FeaturedImage } from "./_components/featured-image";
 import { Metadata } from "next";
 import { PostHeader } from "./_components/post-header";

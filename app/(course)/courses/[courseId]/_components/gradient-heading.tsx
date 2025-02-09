@@ -19,16 +19,12 @@ const GradientHeading = ({
   iconColor 
 }: GradientHeadingProps) => {
   return (
-    <div className="relative mb-12 mt-10 px-8">
-      <div className="flex items-center gap-3 max-w-[1800px] mx-auto">
-        {/* Decorative line */}
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[50px] h-[2px] bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent" />
-        
-        {/* Content with left padding for the line */}
-        <div className="pl-16">
-          <div className="flex items-center gap-3">
+    <div className="relative mb-4 sm:mb-6 md:mb-6 mt-6 sm:mt-8 md:mt-10 px-4 sm:px-4 md:px-6">
+      <div className="flex items-center gap-2 sm:gap-3 max-w-[1800px] mx-auto">
+        <div className="pl-4 sm:pl-8 md:pl-10 lg:pl-12">
+          <div className="flex items-center gap-2 sm:gap-3">
             <h1 
-              className={`text-4xl lg:text-5xl font-bold bg-gradient-to-r ${gradientFrom} ${gradientVia} ${gradientTo} text-transparent bg-clip-text tracking-tight`}
+              className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r ${gradientFrom} ${gradientVia} ${gradientTo} text-transparent bg-clip-text tracking-tight`}
             >
               {text}
             </h1>
@@ -37,7 +33,7 @@ const GradientHeading = ({
               transition={{ duration: 0.2 }}
               className={`${iconColor}`}
             >
-              <ArrowRight className="w-8 h-8" />
+              <ArrowRight className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
             </motion.div>
           </div>
         </div>

@@ -33,7 +33,7 @@ export const PostCardModelTwo = ({ data }: PostCardModelTwoProps) => {
   };
 
   return (
-    <div className="container mx-auto space-y-8">
+    <div className="lg:max-w-7xl mx-auto space-y-8">
       {data.map((chapter, index) => (
         <motion.div
           key={chapter.id}
