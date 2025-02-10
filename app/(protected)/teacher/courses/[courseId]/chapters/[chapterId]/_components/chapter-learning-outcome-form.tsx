@@ -123,19 +123,21 @@ export const ChapterLearningOutcomeForm = ({
           {!isEditing && (
             <div className="mt-2">
               {!initialData.learningOutcomes ? (
-                <p className="text-sm italic text-gray-600 dark:text-gray-400">
+                <p className="text-sm italic text-slate-600 dark:text-slate-400">
                   No learning outcomes defined yet
                 </p>
               ) : (
                 <div className="space-y-2">
                   <div 
                     className={cn(
-                      "text-gray-700 dark:text-gray-300 font-medium",
+                      "text-slate-800 dark:text-slate-200",
                       "prose prose-sm max-w-none",
-                      "prose-headings:text-gray-900 dark:prose-headings:text-gray-100",
-                      "prose-p:text-gray-700 dark:prose-p:text-gray-300",
-                      "prose-strong:text-gray-900 dark:prose-strong:text-gray-100",
-                      "prose-ul:text-gray-700 dark:prose-ul:text-gray-300"
+                      "prose-headings:text-slate-900 dark:prose-headings:text-slate-100",
+                      "prose-p:text-slate-800 dark:prose-p:text-slate-200",
+                      "prose-strong:text-slate-900 dark:prose-strong:text-white",
+                      "prose-ul:text-slate-800 dark:prose-ul:text-slate-200",
+                      "prose-li:text-slate-800 dark:prose-li:text-slate-200",
+                      "prose-a:text-purple-600 dark:prose-a:text-purple-400"
                     )}
                     dangerouslySetInnerHTML={{ __html: truncatedContent }}
                   />
@@ -207,9 +209,13 @@ export const ChapterLearningOutcomeForm = ({
                         readOnly={isSubmitting}
                         placeholder="List the learning outcomes for this chapter..."
                         className={cn(
-                          "text-gray-900 dark:text-gray-200",
+                          "!text-gray-900 dark:!text-gray-200",
+                          "[&]:text-gray-900 dark:[&]:text-gray-200",
                           "[&_.ql-editor]:min-h-[200px]",
                           "[&_.ql-editor]:text-sm sm:[&_.ql-editor]:text-base",
+                          "[&_.ql-editor]:!text-gray-900 dark:[&_.ql-editor]:!text-gray-200",
+                          "[&_.ql-container]:!bg-white dark:[&_.ql-container]:!bg-gray-900/50",
+                          "[&_.ql-editor]:!bg-white dark:[&_.ql-editor]:!bg-gray-900/50",
                           "[&_.ql-toolbar]:!border-gray-200 dark:[&_.ql-toolbar]:!border-gray-700/50",
                           "[&_.ql-toolbar]:!bg-gray-50 dark:[&_.ql-toolbar]:!bg-gray-800/50",
                           "[&_.ql-container]:!border-gray-200 dark:[&_.ql-container]:!border-gray-700/50",

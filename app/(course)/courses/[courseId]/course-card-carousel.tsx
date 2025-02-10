@@ -6,6 +6,7 @@ import { Carousel, Card } from "@/components/cardscarousel/cards-carousel";
 import { Chapter, Section } from "@prisma/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, BookOpen, Clock, ChevronRight, Layers, PlayCircle, CheckCircle2 } from "lucide-react";
+import parse from 'html-react-parser';
 
 interface CourseContentProps {
   chapters: (Chapter & {
@@ -198,23 +199,22 @@ interface DummyContentProps {
 }
 
 const DummyContent: React.FC<DummyContentProps> = ({ description, sections, chapter }) => {
-  // Remove all HTML tags and replace HTML entities like &nbsp;
-  const cleanDescription = description
-    ? description
-        .replace(/<[^>]*>/g, "")    // Remove all HTML tags
-        .replace(/&nbsp;/g, " ")     // Replace &nbsp; with a space
-    : "No description available for this chapter.";
-
   return (
     <div>
       {/* Display the chapter description */}
       <div className="bg-[#F5F5F7] dark:bg-neutral-800 p-4 md:p-6 rounded-3xl mb-4">
-        <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-lg font-sans max-w-3xl mx-auto">
-          <span className="font-bold text-neutral-700 dark:text-neutral-200">
+        <div className="text-neutral-600 dark:text-neutral-400 text-base md:text-lg font-sans max-w-3xl mx-auto space-y-4">
+          <span className="font-bold text-neutral-700 dark:text-neutral-200 block mb-2">
             Description:
-          </span>{" "}
-          {cleanDescription}
-        </p>
+          </span>
+          {description ? (
+            <div className="prose dark:prose-invert max-w-none">
+              {parse(description)}
+            </div>
+          ) : (
+            "No description available for this chapter."
+          )}
+        </div>
       </div>
 
       {/* Display list of sections as bullet points without duration */}
@@ -244,15 +244,17 @@ const DummyContent: React.FC<DummyContentProps> = ({ description, sections, chap
               </span>
             </h4>
             <ul className="list-disc space-y-4 pl-8">
-              {chapter.learningOutcomes.split(',').map((outcome: string, idx: number) => (
-                <li
-                  key={idx}
-                  className="text-[15px] leading-[1.8] tracking-wide lg:text-[17px] text-gray-700 dark:text-gray-200 marker:text-purple-500 pl-2 py-2"
-                  dangerouslySetInnerHTML={{
-                    __html: outcome.trim()
-                  }}
-                />
-              ))}
+              {chapter.learningOutcomes
+                .split(/(?<=[.!?])\s+/)  // Split on sentence endings
+                .filter(Boolean)  // Remove empty strings
+                .map((outcome: string, idx: number) => (
+                  <li
+                    key={idx}
+                    className="text-[15px] leading-[1.8] tracking-wide lg:text-[17px] text-gray-700 dark:text-gray-200 marker:text-purple-500 pl-2 py-2 break-normal hyphens-none prose dark:prose-invert"
+                  >
+                    {parse(outcome.trim())}
+                  </li>
+                ))}
             </ul>
           </div>
         </div>

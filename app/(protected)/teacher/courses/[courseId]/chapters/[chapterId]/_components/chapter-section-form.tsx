@@ -97,11 +97,18 @@ export const ChaptersSectionForm = ({
 
   const onDelete = async (sectionId: string) => {
     try {
-      await axios.delete(`/api/courses/${courseId}/chapters/${chapterId}/sections/${sectionId}`);
+      console.log("Deleting section:", sectionId);
+      
+      const response = await axios.delete(
+        `/api/courses/${courseId}/chapters/${chapterId}/sections/${sectionId}`
+      );
+      
+      console.log("Delete response:", response.data);
       toast.success("Section deleted");
       router.refresh();
-    } catch {
-      toast.error("Something went wrong");
+    } catch (error: any) {
+      console.error("Delete error:", error.response?.data || error.message);
+      toast.error(error.response?.data?.error || "Failed to delete section");
     }
   };
 
