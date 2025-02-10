@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { LogoutButton } from '@/components/auth/logout-button';
+import { NotificationsPopover } from "../_components/notifications-popover";
+import { MessagesPopover } from "../_components/messages-popover";
 
 interface MobileMenuButtonProps {
   dashboardLink: string;
@@ -49,6 +51,10 @@ export const MobileMenuButton = ({ dashboardLink, isOpen, setIsOpen }: MobileMen
           </SheetHeader>
 
           <div className="flex-1 overflow-y-auto py-4 px-2">
+            <div className="flex items-center gap-4 mb-2">
+              <NotificationsPopover />
+              <MessagesPopover />
+            </div>
             <nav className="space-y-2">
               {[
                 { href: "/features", label: "Features" },

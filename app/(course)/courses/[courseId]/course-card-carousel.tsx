@@ -34,10 +34,10 @@ export const CourseCardsCarousel: React.FC<CourseContentProps> = ({ chapters }) 
     <div 
       key={chapter.id} 
       onClick={() => setSelectedChapter(chapter)}
-      className="w-[400px] h-[500px] cursor-pointer"
+      className="w-[280px] sm:w-[320px] md:w-[360px] lg:w-[400px] h-[400px] sm:h-[450px] md:h-[500px] cursor-pointer"
     >
       <div className={`relative h-full w-full overflow-hidden rounded-2xl bg-gradient-to-br ${chapterGradients[index % chapterGradients.length]} border backdrop-blur-sm shadow-xl transition-all duration-300 hover:scale-[1.02]`}>
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <ChapterPreview 
             title={chapter.title} 
             description={chapter.description}
@@ -51,8 +51,8 @@ export const CourseCardsCarousel: React.FC<CourseContentProps> = ({ chapters }) 
 
   return (
     <div className="relative">
-      <div className="container w-full h-full py-5">
-        <div className="max-w-[1400px] mx-auto">
+      <div className="container w-full h-full py-3 sm:py-5">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
           <Carousel items={cards} />
         </div>
       </div>
@@ -144,43 +144,43 @@ const ChapterPreview: React.FC<{
   return (
     <div className="h-full flex flex-col">
       {/* Chapter Number Badge */}
-      <div className="mb-6">
-        <span className={`px-4 py-2 rounded-full text-sm font-medium border ${currentColor}`}>
-          <Layers className="w-4 h-4 inline-block mr-2" />
+      <div className="mb-4 sm:mb-6">
+        <span className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium border ${currentColor}`}>
+          <Layers className="w-3 h-3 sm:w-4 sm:h-4 inline-block mr-1.5 sm:mr-2" />
           {sectionCount} Sections
         </span>
       </div>
 
       {/* Title */}
-      <h3 className="font-bold text-3xl mb-4 text-gray-800 dark:text-white/90 line-clamp-2">
+      <h3 className="font-bold text-xl sm:text-2xl lg:text-3xl mb-2 sm:mb-4 text-gray-800 dark:text-white/90 line-clamp-2">
         {title}
       </h3>
 
       {/* Description */}
-      <p className="text-gray-600 dark:text-white/70 line-clamp-4 text-base flex-grow leading-relaxed">
+      <p className="text-sm sm:text-base text-gray-600 dark:text-white/70 line-clamp-3 sm:line-clamp-4 flex-grow leading-relaxed">
         {cleanDescription}
       </p>
 
       {/* View Details Button */}
       <motion.button 
-        className={`mt-6 px-6 py-3 rounded-xl font-medium text-base
+        className={`mt-4 sm:mt-6 px-4 sm:px-6 py-2 sm:py-3 rounded-xl text-sm sm:text-base font-medium
                    transition-all duration-300 flex items-center justify-center gap-2
                    group border ${currentColor}`}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
         View Chapter Details
-        <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-300" />
       </motion.button>
 
       {/* Additional Info */}
-      <div className="mt-4 pt-4 border-t border-gray-400/10 dark:border-white/10 flex items-center justify-between text-sm text-gray-500 dark:text-white/60">
-        <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4" />
+      <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-400/10 dark:border-white/10 flex items-center justify-between text-xs sm:text-sm text-gray-500 dark:text-white/60">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
           <span>Multiple Lessons</span>
         </div>
-        <div className="flex items-center gap-2">
-          <BookOpen className="w-4 h-4" />
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <BookOpen className="w-3 h-3 sm:w-4 sm:h-4" />
           <span>Interactive Content</span>
         </div>
       </div>

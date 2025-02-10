@@ -47,14 +47,14 @@ export const CourseContent: React.FC<CourseContentProps> = ({ chapters }) => {
   };
 
   return (
-    <div className="max-w-4xl lg:max-w-5xl mx-auto bg-white/50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 border border-gray-200/50 dark:border-gray-700/50 p-6 shadow-xl rounded-2xl backdrop-blur-sm">
+    <div className="max-w-4xl lg:max-w-5xl mx-auto bg-white/50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 border border-gray-200/50 dark:border-gray-700/50 p-4 sm:p-6 shadow-xl rounded-2xl backdrop-blur-sm">
       {/* Summary Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 pb-4 border-b border-gray-200/50 dark:border-gray-700/50">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8 pb-4 border-b border-gray-200/50 dark:border-gray-700/50">
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-300 dark:to-violet-300 text-transparent bg-clip-text tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-300 dark:to-violet-300 text-transparent bg-clip-text tracking-tight">
             Course Structure
           </h2>
-          <div className="flex items-center gap-4 text-slate-700 dark:text-slate-300">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm sm:text-base text-slate-700 dark:text-slate-300">
             <div className="flex items-center gap-2">
               <BookOpenCheck className="w-4 h-4" />
               <span>{chapters?.length || 0} chapters</span>
@@ -72,8 +72,8 @@ export const CourseContent: React.FC<CourseContentProps> = ({ chapters }) => {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={toggleExpandAll}
-          className="mt-4 md:mt-0 px-4 py-2 rounded-xl bg-white/80 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 
-                     hover:bg-gray-50 dark:hover:bg-gray-750 text-slate-700 dark:text-slate-200 flex items-center gap-2 transition-all duration-200"
+          className="w-full sm:w-auto px-4 py-2 rounded-xl bg-white/80 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 
+                   hover:bg-gray-50 dark:hover:bg-gray-750 text-slate-700 dark:text-slate-200 flex items-center justify-center gap-2 transition-all duration-200"
         >
           {expandAll ? (
             <>
@@ -90,7 +90,7 @@ export const CourseContent: React.FC<CourseContentProps> = ({ chapters }) => {
       </div>
 
       {/* Chapter Loop */}
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {chapters?.map((chapter, index) => (
           <motion.div 
             key={chapter.id}
@@ -102,14 +102,14 @@ export const CourseContent: React.FC<CourseContentProps> = ({ chapters }) => {
             {/* Chapter Header */}
             <motion.div
               className={cn(
-                "flex justify-between items-center p-4 cursor-pointer transition-colors duration-200",
+                "flex justify-between items-center p-3 sm:p-4 cursor-pointer transition-colors duration-200",
                 "hover:bg-gray-50/80 dark:hover:bg-gray-800/50"
               )}
               onClick={() => toggleChapter(index)}
             >
-              <div className="space-y-1">
-                <div className="flex items-center gap-3">
-                  <h3 className="font-bold text-xl text-slate-800 dark:text-slate-100">
+              <div className="space-y-1 flex-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <h3 className="font-bold text-lg sm:text-xl text-slate-800 dark:text-slate-100 truncate">
                     {chapter.title}
                   </h3>
                   {chapter.status === "Published" && (
@@ -119,19 +119,19 @@ export const CourseContent: React.FC<CourseContentProps> = ({ chapters }) => {
                   )}
                 </div>
                 
-                <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-300">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
+                <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span>{chapter.estimatedTime || 'Duration varies'}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Award className="w-4 h-4" />
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span className={getDifficultyColor(chapter.difficulty)}>
                       {chapter.difficulty || 'All Levels'}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="w-4 h-4" />
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span>{chapter.sections?.length || 0} sections</span>
                   </div>
                 </div>
@@ -140,6 +140,7 @@ export const CourseContent: React.FC<CourseContentProps> = ({ chapters }) => {
               <motion.div
                 animate={{ rotate: (expandedChapter === index || expandAll) ? 180 : 0 }}
                 transition={{ duration: 0.2 }}
+                className="ml-4"
               >
                 <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               </motion.div>
@@ -155,7 +156,7 @@ export const CourseContent: React.FC<CourseContentProps> = ({ chapters }) => {
                   transition={{ duration: 0.2 }}
                   className="border-t border-gray-200 dark:border-gray-800"
                 >
-                  <div className="p-4 space-y-2">
+                  <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
                     {chapter.prerequisites && (
                       <div className="mb-4 p-3 rounded-lg bg-indigo-50/80 dark:bg-indigo-500/5 border border-indigo-200 dark:border-indigo-500/20">
                         <div className="flex items-center gap-2 mb-1 font-medium text-indigo-800 dark:text-indigo-300">
@@ -174,13 +175,13 @@ export const CourseContent: React.FC<CourseContentProps> = ({ chapters }) => {
                   </div>
 
                   {chapter.resources && (
-                    <div className="px-4 pb-4">
+                    <div className="px-3 sm:px-4 pb-3 sm:pb-4">
                       <div className="p-3 rounded-lg bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
                         <div className="flex items-center gap-2 mb-2 text-slate-800 dark:text-slate-200">
                           <ExternalLink className="w-4 h-4" />
                           Additional Resources
                         </div>
-                        <div className="text-sm text-slate-700 dark:text-slate-300">
+                        <div className="text-sm text-slate-700 dark:text-slate-300 space-y-1">
                           {JSON.parse(chapter.resources).map((resource: string, i: number) => (
                             <div key={i} className="flex items-center gap-2">
                               <Sparkles className="w-3 h-3" />
