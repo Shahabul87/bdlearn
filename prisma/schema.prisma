@@ -131,6 +131,7 @@ model Course {
 
   reviews     CourseReview[]
   enrollments Enrollment[]
+  whatYouWillLearn String[] @default([])
 
   groups Group[]
 

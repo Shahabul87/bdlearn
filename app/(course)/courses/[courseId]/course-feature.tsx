@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
+import parse from 'html-react-parser';
+import { cn } from '@/lib/utils';
 
 interface CourseCardProps {
   course: Course & { 
@@ -23,12 +25,15 @@ interface CourseCardProps {
     _count?: {
       enrollments: number;
     };
+    whatYouWillLearn?: string[];
   };
   userId?: string;
 }
 
 export const CourseCard = ({ course, userId }: CourseCardProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [showAllObjectives, setShowAllObjectives] = useState(false);
   const router = useRouter();
 
   const handleEnroll = async () => {
@@ -131,6 +136,12 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
     day: 'numeric'
   });
 
+  const displayedObjectives = course.whatYouWillLearn && course.whatYouWillLearn.length > 0
+    ? showAllObjectives 
+      ? course.whatYouWillLearn
+      : course.whatYouWillLearn.slice(0, 10)
+    : ['Comprehensive curriculum', 'Practical exercises', 'Real-world projects', 'Industry best practices'];
+
   return (
     <div className="min-h-screen bg-white/10 dark:bg-gradient-to-b dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Hero Section with Large Image */}
@@ -231,9 +242,23 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
               className="bg-gray-50/80 dark:bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm"
             >
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">About This Course</h2>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                {course.cleanDescription}
-              </p>
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold mb-2">Description</h3>
+                <div className={cn(
+                  "prose prose-gray dark:prose-invert",
+                  !showFullDescription && "line-clamp-3"
+                )}>
+                  {course.cleanDescription && parse(course.cleanDescription)}
+                </div>
+                {course.cleanDescription && course.cleanDescription.length > 200 && (
+                  <button
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                    className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm font-medium mt-2"
+                  >
+                    {showFullDescription ? "Show Less" : "Show More"}
+                  </button>
+                )}
+              </div>
             </motion.div>
 
             {/* What You'll Learn */}
@@ -245,13 +270,21 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
             >
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">What You&apos;ll Learn</h2>
               <div className="grid md:grid-cols-2 gap-4">
-                {['Comprehensive curriculum', 'Practical exercises', 'Real-world projects', 'Industry best practices'].map((item, index) => (
+                {displayedObjectives.map((item, index) => (
                   <div key={index} className="flex items-start gap-3">
                     <AiOutlineCheck className="text-green-600 dark:text-green-400 text-xl mt-1" />
                     <span className="text-gray-600 dark:text-gray-300">{item}</span>
                   </div>
                 ))}
               </div>
+              {course.whatYouWillLearn && course.whatYouWillLearn.length > 10 && (
+                <button
+                  onClick={() => setShowAllObjectives(!showAllObjectives)}
+                  className="mt-4 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm font-medium"
+                >
+                  {showAllObjectives ? "Show Less" : "Show More"}
+                </button>
+              )}
             </motion.div>
           </div>
 

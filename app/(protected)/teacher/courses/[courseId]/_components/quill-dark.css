@@ -1,0 +1,32 @@
+/* Dark mode styles for Quill editor */
+.dark .ql-toolbar {
+  background-color: rgb(31 41 55) !important;
+  border-color: rgb(75 85 99) !important;
+}
+
+.dark .ql-container {
+  background-color: rgb(31 41 55) !important;
+  border-color: rgb(75 85 99) !important;
+  color: rgb(229 231 235) !important;
+}
+
+.dark .ql-editor {
+  color: rgb(229 231 235) !important;
+}
+
+.dark .ql-stroke {
+  stroke: rgb(229 231 235) !important;
+}
+
+.dark .ql-fill {
+  fill: rgb(229 231 235) !important;
+}
+
+.dark .ql-picker {
+  color: rgb(229 231 235) !important;
+}
+
+.dark .ql-picker-options {
+  background-color: rgb(31 41 55) !important;
+  border-color: rgb(75 85 99) !important;
+} 

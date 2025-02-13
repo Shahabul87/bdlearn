@@ -20,6 +20,7 @@ import { ImageFormCombined } from "./_components/image-upload-form-combined";
 import ConditionalHeader from "@/app/(homepage)/user-header";
 import { cn } from "@/lib/utils";
 import { CourseImageUpload } from "./_components/course-image-upload";
+import { WhatYouWillLearnForm } from "./_components/what-you-will-learn-form";
 
 
 
@@ -148,6 +149,10 @@ const CourseIdPage = async ({params}:{params:{courseId:string}})=> {
                     <div className="space-y-4 sm:space-y-6">
                       <TitleForm initialData={course} courseId={course.id} />
                       <DescriptionForm initialData={course} courseId={course.id} />
+                      <WhatYouWillLearnForm
+                        initialData={course}
+                        courseId={course.id}
+                      />
                       <CategoryForm
                         initialData={course}
                         courseId={course.id}
