@@ -76,7 +76,12 @@ export const DescriptionForm = ({
     }
   };
 
-  const toggleEdit = () => setIsEditing((current) => !current);
+  const toggleEdit = () => {
+    if (isEditing) {
+      form.reset({ description: initialData.description || "" }); // Reset form when canceling
+    }
+    setIsEditing((current) => !current);
+  };
 
   const modules = {
     toolbar: [
@@ -86,6 +91,9 @@ export const DescriptionForm = ({
       ['link'],
       ['clean']
     ],
+    clipboard: {
+      matchVisual: false // Prevents unwanted HTML preservation
+    }
   };
 
   const formats = [
@@ -130,17 +138,23 @@ export const DescriptionForm = ({
             <FormField
               control={form.control}
               name="description"
-              render={({ field }) => (
+              render={({ field: { onChange, value, ...field } }) => (
                 <FormItem>
                   <FormControl>
-                    <div className="dark:bg-gray-800 rounded-md">
+                    <div className="rounded-md overflow-hidden">
                       <ReactQuill
                         {...field}
+                        value={value}
+                        onChange={(content: string) => {
+                          onChange(content);
+                          form.trigger("description");
+                        }}
                         modules={modules}
                         formats={formats}
                         theme="snow"
                         disabled={isSubmitting}
-                        className="dark:text-gray-200 bg-white dark:bg-gray-800"
+                        className="prose max-w-none bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-200"
+                        placeholder="Enter course description..."
                       />
                     </div>
                   </FormControl>

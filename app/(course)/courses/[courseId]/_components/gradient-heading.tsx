@@ -19,9 +19,9 @@ const GradientHeading = ({
   iconColor 
 }: GradientHeadingProps) => {
   return (
-    <div className="relative mb-4 sm:mb-6 md:mb-6 mt-6 sm:mt-8 md:mt-10 px-4 sm:px-4 md:px-6">
+    <div className="relative mb-4 sm:mb-6 md:mb-6 mt-6 sm:mt-8 md:mt-10">
       <div className="flex items-center gap-2 sm:gap-3 max-w-[1800px] mx-auto">
-        <div className="pl-4 sm:pl-8 md:pl-10 lg:pl-12">
+        <div className="pl-4 sm:pl-8 md:pl-10 lg:pl-32 xl:pl-48">
           <div className="flex items-center gap-2 sm:gap-3">
             <h1 
               className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r ${gradientFrom} ${gradientVia} ${gradientTo} text-transparent bg-clip-text tracking-tight`}

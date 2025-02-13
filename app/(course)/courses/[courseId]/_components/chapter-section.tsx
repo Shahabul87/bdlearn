@@ -31,7 +31,7 @@ export const ChapterSection = ({ section }: ChapterSectionProps) => {
         <div>
           <Link 
             href={`/${section.id}`}
-            className="font-medium tracking-tight text-slate-900 dark:text-slate-50 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors duration-200"
+            className="font-medium tracking-tight text-slate-900 dark:text-slate-50 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors duration-200 lg:text-lg"
           >
             {section.title}
           </Link>

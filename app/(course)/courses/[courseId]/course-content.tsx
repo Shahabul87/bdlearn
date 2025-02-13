@@ -46,8 +46,16 @@ export const CourseContent: React.FC<CourseContentProps> = ({ chapters }) => {
     }
   };
 
+  const textGradients: { [key: number]: string } = {
+    0: "bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent",
+    1: "bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent",
+    2: "bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent",
+    3: "bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent",
+    4: "bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent"
+  };
+
   return (
-    <div className="max-w-4xl lg:max-w-5xl mx-auto bg-white/50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 border border-gray-200/50 dark:border-gray-700/50 p-4 sm:p-6 shadow-xl rounded-2xl backdrop-blur-sm">
+    <div className="max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto bg-white/50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 border border-gray-200/50 dark:border-gray-700/50 p-4 sm:p-6 shadow-xl rounded-2xl backdrop-blur-sm">
       {/* Summary Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8 pb-4 border-b border-gray-200/50 dark:border-gray-700/50">
         <div className="space-y-2">
@@ -109,7 +117,10 @@ export const CourseContent: React.FC<CourseContentProps> = ({ chapters }) => {
             >
               <div className="space-y-1 flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                  <h3 className="font-bold text-lg sm:text-xl text-slate-800 dark:text-slate-100 truncate">
+                  <h3 className={cn(
+                    "font-bold text-lg sm:text-xl truncate",
+                    textGradients[index % 5]
+                  )}>
                     {chapter.title}
                   </h3>
                   {chapter.status === "Published" && (

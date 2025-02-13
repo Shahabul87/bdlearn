@@ -1,20 +1,24 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { CoursesList } from "@/components/courses-list";
-import { SidebarDemo } from "@/components/ui/sidebar-demo";
 import ConditionalHeader from "@/app/(homepage)/user-header";
+import { CoursesList } from "./_components/courses-list";
+import { LoadingSpinner } from "@/components/loading-spinner";
 
-export default async function StudentDashboard() {
+interface PageProps {
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
+export default async function StudentDashboard({ searchParams }: PageProps) {
   const user = await currentUser();
 
   if (!user?.id) {
-    // Preserve the success parameter when redirecting to login
-    return redirect("/auth/login?callbackUrl=/dashboard/student?success=1");
+    return redirect("/auth/login");
   }
 
-  // Store the success status in the database if needed
-  if (new URLSearchParams(window.location.search).get('success') === '1') {
+  // Check success parameter from searchParams prop
+  if (searchParams.success === '1') {
     // Wait a few seconds for the webhook to complete
     await new Promise(resolve => setTimeout(resolve, 3000));
   }
@@ -22,13 +26,21 @@ export default async function StudentDashboard() {
   // Fetch enrolled courses with progress
   const enrolledCourses = await db.enrollment.findMany({
     where: {
-      userId: user.id,
+      userId: user.id
     },
     include: {
       course: {
         include: {
           category: true,
-          chapters: true,
+          chapters: {
+            include: {
+              userProgress: {
+                where: {
+                  userId: user.id
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -37,33 +49,26 @@ export default async function StudentDashboard() {
   console.log("User ID:", user.id);
   console.log("Enrollment count:", enrolledCourses.length);
 
-  const courses = enrolledCourses.map((enrollment) => ({
-    ...enrollment.course,
-    progress: 0,
-  }));
-
   return (
-    <>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <ConditionalHeader user={user} />
-      <SidebarDemo>
-        <div className="p-6 mt-20">
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold">My Enrolled Courses</h1>
-            <p className="text-muted-foreground">
-              Continue learning from where you left off
-            </p>
-          </div>
-          
-          {courses.length === 0 ? (
-            <div className="text-center text-muted-foreground mt-10">
-              <p>You haven't enrolled in any courses yet.</p>
+      <Suspense fallback={<LoadingSpinner />}>
+        <main className="container mx-auto px-4 py-8">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            My Courses
+          </h1>
+          {enrolledCourses.length === 0 ? (
+            <div className="text-center py-10">
+              <p className="text-gray-600 dark:text-gray-400">
+                You haven&apos;t enrolled in any courses yet.
+              </p>
               <p className="mt-2">If you just enrolled, please wait a moment for your enrollment to be processed.</p>
             </div>
           ) : (
-            <CoursesList items={courses} />
+            <CoursesList courses={enrolledCourses} />
           )}
-        </div>
-      </SidebarDemo>
-    </>
+        </main>
+      </Suspense>
+    </div>
   );
 } 

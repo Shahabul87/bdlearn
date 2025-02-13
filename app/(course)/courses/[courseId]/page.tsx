@@ -125,7 +125,7 @@ const CourseIdPage = async ({params}: {params: { courseId: string; }}) => {
         course={course} 
         userId={user?.id}
       />
-      <div className="mb-10">
+      <div className="mb-10 ">
           <GradientHeading 
             text="Course Breakdown"
             gradientFrom="from-purple-400"

@@ -11,62 +11,85 @@ export async function POST(
   try {
     const user = await currentUser();
 
-    if (!user?.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
+    if (!user || !user.id) {
+      return new Response("Unauthorized", { status: 401 });
     }
 
     const course = await db.course.findUnique({
       where: {
         id: params.courseId,
+        isPublished: true,
       }
     });
 
-    if (!course) {
-      return new NextResponse("Course not found", { status: 404 });
-    }
-
-    // Check if user is already enrolled
-    const existingEnrollment = await db.enrollment.findUnique({
+    const enrollment = await db.enrollment.findUnique({
       where: {
         userId_courseId: {
           userId: user.id,
-          courseId: course.id,
-        },
-      },
+          courseId: params.courseId,
+        }
+      }
     });
 
-    if (existingEnrollment) {
-      return new NextResponse("Already enrolled", { status: 400 });
+    if (enrollment) {
+      return new Response("Already enrolled", { status: 400 });
+    }
+
+    if (!course) {
+      return new Response("Course not found", { status: 404 });
+    }
+
+    const line_items = [
+      {
+        quantity: 1,
+        price_data: {
+          currency: "USD",
+          product_data: {
+            name: course.title,
+            description: course.description!,
+          },
+          unit_amount: Math.round(course.price! * 100),
+        }
+      }
+    ];
+
+    let stripeCustomer = await db.stripeCustomer.findUnique({
+      where: {
+        userId: user.id,
+      },
+      select: {
+        stripeCustomerId: true,
+      }
+    });
+
+    if (!stripeCustomer) {
+      const customer = await stripe.customers.create({
+        email: user.email!,
+      });
+
+      stripeCustomer = await db.stripeCustomer.create({
+        data: {
+          userId: user.id,
+          stripeCustomerId: customer.id,
+        }
+      });
     }
 
     const session = await stripe.checkout.sessions.create({
+      customer: stripeCustomer.stripeCustomerId,
+      line_items,
+      mode: 'payment',
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/student?success=1`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/courses/${course.id}?canceled=1`,
-      mode: "payment",
       metadata: {
         courseId: course.id,
         userId: user.id,
-        userEmail: user.email || '',
       },
-      customer_email: user.email || undefined,
-      line_items: [
-        {
-          price_data: {
-            currency: "USD",
-            product_data: {
-              name: course.title,
-              description: course.description || "",
-            },
-            unit_amount: Math.round(course.price! * 100),
-          },
-          quantity: 1,
-        }
-      ]
     });
 
-    return NextResponse.json({ url: session.url });
+    return Response.json({ url: session.url });
   } catch (error) {
-    console.log("[COURSE_CHECKOUT]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    console.log("[COURSE_ID_CHECKOUT]", error);
+    return new Response("Internal Error", { status: 500 });
   }
 }

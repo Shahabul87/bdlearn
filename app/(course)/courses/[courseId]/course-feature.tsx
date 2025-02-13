@@ -12,6 +12,7 @@ import axios from "axios";
 import { Loader2 } from "lucide-react";
 import parse from 'html-react-parser';
 import { cn } from '@/lib/utils';
+import DOMPurify from 'isomorphic-dompurify';
 
 interface CourseCardProps {
   course: Course & { 
@@ -39,7 +40,8 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
   const handleEnroll = async () => {
     try {
       if (!userId) {
-        router.push("/auth/login");
+        // Store the current URL to redirect back after login
+        router.push(`/auth/login?callbackUrl=/courses/${course.id}`);
         return;
       }
 
@@ -48,34 +50,24 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
       if (!course.price || course.price === 0) {
         try {
           const response = await axios.post(`/api/courses/${course.id}/enroll`);
-          console.log("Free enrollment response:", response.data);
           toast.success("Successfully enrolled in the course!");
           router.refresh();
           router.push("/dashboard/student");
         } catch (error: any) {
-          console.error("Free enrollment error:", error);
           toast.error(error.response?.data || "Failed to enroll in the course");
         }
       } else {
         try {
-          console.log("Initiating payment for course:", course.id);
           const response = await axios.post(`/api/courses/${course.id}/checkout`);
-          console.log("Checkout response:", response.data);
-          
           if (response.data.url) {
-            window.location.href = response.data.url;
-          } else {
-            throw new Error("No checkout URL received");
+            window.location.href = response.data.url; // Stripe checkout URL
           }
-        } catch (error: any) {
-          console.error("Payment error:", error.response?.data);
-          console.error("Full error:", error);
-          toast.error("Failed to initiate payment. Please try again.");
+        } catch (error) {
+          toast.error("Failed to initiate payment");
         }
       }
-    } catch (error: any) {
-      console.error("Enrollment error:", error);
-      toast.error("Something went wrong. Please try again.");
+    } catch (error) {
+      toast.error("Something went wrong");
     } finally {
       setIsLoading(false);
     }
@@ -98,25 +90,14 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
     }
   };
 
-  // Add useEffect to check for successful enrollment
+  // Add useEffect to handle successful payment/enrollment
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const success = urlParams.get('success');
-    
-    if (success === '1' && !userId) {
-      // If success=1 but no userId, redirect to login
-      router.push(`/auth/login?callbackUrl=/dashboard/student?success=1`);
-      return;
+    if (window.location.search.includes('success=1')) {
+      toast.success("Successfully enrolled in the course!");
+      // Use router.push instead of window.location
+      router.push("/dashboard/student");
     }
-    
-    if (success === '1') {
-      // Add a small delay to ensure the enrollment is created
-      setTimeout(() => {
-        router.refresh();
-        router.push('/dashboard/student');
-      }, 3000);
-    }
-  }, [router, userId]);
+  }, [router]);
 
   // Calculate average rating
   const averageRating = course.reviews?.length 
@@ -141,6 +122,9 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
       ? course.whatYouWillLearn
       : course.whatYouWillLearn.slice(0, 10)
     : ['Comprehensive curriculum', 'Practical exercises', 'Real-world projects', 'Industry best practices'];
+
+  // Sanitize and prepare the HTML content
+  const sanitizedDescription = course.description ? DOMPurify.sanitize(course.description) : "";
 
   return (
     <div className="min-h-screen bg-white/10 dark:bg-gradient-to-b dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -244,13 +228,19 @@ export const CourseCard = ({ course, userId }: CourseCardProps) => {
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">About This Course</h2>
               <div className="mt-4">
                 <h3 className="text-lg font-semibold mb-2">Description</h3>
-                <div className={cn(
-                  "prose prose-gray dark:prose-invert",
-                  !showFullDescription && "line-clamp-3"
-                )}>
-                  {course.cleanDescription && parse(course.cleanDescription)}
-                </div>
-                {course.cleanDescription && course.cleanDescription.length > 200 && (
+                <div
+                  className={cn(
+                    "prose prose-gray dark:prose-invert max-w-none",
+                    "prose-headings:font-semibold prose-h1:text-xl prose-h2:text-lg",
+                    "prose-strong:text-gray-900 dark:prose-strong:text-white",
+                    "prose-a:text-purple-600 dark:prose-a:text-purple-400",
+                    "prose-blockquote:border-l-purple-600 dark:prose-blockquote:border-l-purple-400",
+                    "prose-li:marker:text-purple-600 dark:prose-li:marker:text-purple-400",
+                    !showFullDescription && "line-clamp-3"
+                  )}
+                  dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+                />
+                {course.description && course.description.length > 200 && (
                   <button
                     onClick={() => setShowFullDescription(!showFullDescription)}
                     className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm font-medium mt-2"

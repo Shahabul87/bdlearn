@@ -1,97 +1,60 @@
 import Stripe from "stripe";
 import { headers } from "next/headers";
-import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
+import { db } from "@/lib/db";
 
 export async function POST(req: Request) {
+  const body = await req.text();
+  const signature = headers().get("Stripe-Signature") as string;
+
+  let event: Stripe.Event;
+
   try {
-    const body = await req.text();
-    const signature = headers().get("Stripe-Signature");
-
-    console.log("🔵 Webhook received at:", new Date().toISOString());
-    console.log("📝 Request body length:", body.length);
-    console.log("🔑 Webhook Secret exists:", !!process.env.STRIPE_WEBHOOK_SECRET);
-    console.log("🔒 Signature received:", signature?.slice(0, 20) + "...");
-
-    if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      console.error("❌ Missing STRIPE_WEBHOOK_SECRET");
-      throw new Error("Missing STRIPE_WEBHOOK_SECRET");
-    }
-
-    if (!signature) {
-      console.error("❌ No signature in request");
-      throw new Error("No Stripe signature found");
-    }
-
-    const event = stripe.webhooks.constructEvent(
+    event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET
+      process.env.STRIPE_WEBHOOK_SECRET!
     );
-    
-    console.log(`✅ Webhook event:`, {
-      type: event.type,
-      id: event.id,
-      created: new Date(event.created * 1000).toISOString()
-    });
+  } catch (error: any) {
+    return new Response(`Webhook Error: ${error.message}`, { status: 400 });
+  }
 
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object as Stripe.Checkout.Session;
-      console.log("💳 Checkout session:", {
-        id: session.id,
-        customer: session.customer,
-        metadata: session.metadata,
-        payment_status: session.payment_status,
-        amount_total: session.amount_total,
-        currency: session.currency
-      });
+  const session = event.data.object as Stripe.Checkout.Session;
+  const userId = session?.metadata?.userId;
+  const courseId = session?.metadata?.courseId;
 
-      const userId = session.metadata?.userId;
-      const courseId = session.metadata?.courseId;
-
-      if (!userId || !courseId) {
-        throw new Error(`Missing metadata: userId=${userId}, courseId=${courseId}`);
-      }
-
-      // Create enrollment
-      const enrollment = await db.enrollment.create({
-        data: {
-          userId,
-          courseId,
-        },
-        include: {
-          user: true,
-          course: true
-        }
-      });
-      
-      console.log("✅ Created enrollment:", {
-        id: enrollment.id,
-        userId: enrollment.userId,
-        courseId: enrollment.courseId,
-        courseName: enrollment.course.title,
-        userName: enrollment.user.name
-      });
-
-      return NextResponse.json({ 
-        success: true,
-        message: "Enrollment created successfully",
-        enrollmentId: enrollment.id
-      });
+  if (event.type === "checkout.session.completed") {
+    if (!userId || !courseId) {
+      return new Response("Webhook Error: Missing metadata", { status: 400 });
     }
 
-    return NextResponse.json({ 
-      success: true,
-      message: `Handled ${event.type} event`
-    });
+    try {
+      // Check if enrollment already exists
+      const existingEnrollment = await db.enrollment.findUnique({
+        where: {
+          userId_courseId: {
+            userId,
+            courseId,
+          }
+        }
+      });
 
-  } catch (error: any) {
-    console.error("❌ Webhook error:", {
-      message: error.message,
-      type: error.type,
-      stack: error.stack?.split('\n')
-    });
-    throw error;
+      if (!existingEnrollment) {
+        // Create enrollment
+        await db.enrollment.create({
+          data: {
+            userId: userId,
+            courseId: courseId,
+          }
+        });
+      }
+
+      return new Response(null, { status: 200 });
+    } catch (error) {
+      console.log("[WEBHOOK_ERROR]", error);
+      return new Response("Webhook Error: Database error", { status: 500 });
+    }
   }
+
+  return new Response(null, { status: 200 });
 }
