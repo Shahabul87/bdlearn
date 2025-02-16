@@ -94,7 +94,7 @@ export function SidebarDemo({ children }: SidebarDemoProps) {
       title: "Courses",
       icon: <IconBook className="w-5 h-5" />,
       submenu: [
-        { label: "My Courses", href: "/teacher/courses/mycourses" },
+        { label: "My Courses", href: "/dashboard/student" },
         { label: "All Courses", href: "/teacher/courses" },
         { label: "Browse Courses", href: "/teacher/courses" },
         { label: "Create Course", href: "/teacher/create" },

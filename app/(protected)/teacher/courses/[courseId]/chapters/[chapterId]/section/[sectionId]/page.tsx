@@ -17,6 +17,7 @@ import { BlogSectionForm } from "./_components/_blogs/blog-section";
 import { GradientDivider } from "@/components/border";
 import { cn } from "@/lib/utils";
 import { CodeExplanationForm } from "./_components/_explanations/code-explanation-form";
+import type { JSX } from "react";
 
 const SectionIdPage = async ({
   params
