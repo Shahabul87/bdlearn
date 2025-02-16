@@ -33,6 +33,8 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css';
+import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 // Import ReactQuill dynamically with SSR disabled
 const ReactQuill = dynamic(() => import('react-quill'), {
@@ -42,20 +44,36 @@ const ReactQuill = dynamic(() => import('react-quill'), {
 
 interface EditorProps {
   onChange: (value: string) => void;
+  value: string;
   disabled?: boolean;
   placeholder?: string;
-  value?: string;
 }
 
-export const Editor = ({ onChange, disabled, placeholder, value }: EditorProps) => {
+export const Editor = ({ onChange, value, disabled, placeholder }: EditorProps) => {
+  const { theme } = useTheme();
+  
   return (
-    <div className="bg-white">
+    <div className={cn(
+      "bg-white dark:bg-gray-900 transition-colors duration-200",
+      "explanation-editor"
+    )}>
       <ReactQuill
         theme="snow"
         value={value}
         onChange={onChange}
         placeholder={placeholder}
         readOnly={disabled}
+        modules={{
+          toolbar: [
+            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+            ["bold", "italic", "underline", "strike"],
+            [{ list: "ordered" }, { list: "bullet" }],
+            [{ color: [] }, { background: [] }],
+            [{ align: [] }],
+            ["link", "image", "code-block"],
+            ["clean"],
+          ],
+        }}
       />
     </div>
   );

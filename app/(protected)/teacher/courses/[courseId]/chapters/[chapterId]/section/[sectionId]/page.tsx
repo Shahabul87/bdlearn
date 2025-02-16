@@ -193,35 +193,7 @@ const SectionIdPage = async ({
                     sectionId={params.sectionId}
                   />
                 </div>
-
-                <div className={cn(
-                  "p-4 sm:p-6 rounded-xl",
-                  "bg-white/40 dark:bg-gray-800/40",
-                  "border border-gray-200 dark:border-gray-700/50",
-                  "backdrop-blur-sm"
-                )}>
-                  <div className="flex items-center gap-x-3 mb-4">
-                    <div className={cn(
-                      "p-2 w-fit rounded-lg",
-                      "bg-emerald-50 dark:bg-emerald-500/10"
-                    )}>
-                      <Video className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                    </div>
-                    <h2 className="text-lg sm:text-xl font-semibold bg-gradient-to-r from-emerald-600 to-cyan-600 dark:from-emerald-400 dark:to-cyan-400 bg-clip-text text-transparent">
-                      Add Sections Video Link
-                    </h2>
-                  </div>
-                  <SectionYoutubeVideoForm
-                    initialData={section}
-                    courseId={params.courseId}
-                    chapterId={params.chapterId}
-                    sectionId={params.sectionId}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div className={cn(
+                 <div className={cn(
                   "p-4 sm:p-6 rounded-xl",
                   "bg-white/40 dark:bg-gray-800/40",
                   "border border-gray-200 dark:border-gray-700/50",
@@ -246,7 +218,41 @@ const SectionIdPage = async ({
                   />
                 </div>
 
-                <div className="space-y-6">
+               
+              </div>
+
+              <div className="space-y-6">
+               
+                <div className={cn(
+                  "p-4 sm:p-6 rounded-xl",
+                  "bg-white/40 dark:bg-gray-800/40",
+                  "border border-gray-200 dark:border-gray-700/50",
+                  "backdrop-blur-sm"
+                )}>
+                  <div className="flex items-center gap-x-3 mb-4">
+                    <div className={cn(
+                      "p-2 w-fit rounded-lg",
+                      "bg-emerald-50 dark:bg-emerald-500/10"
+                    )}>
+                      <Video className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <h2 className="text-lg sm:text-xl font-semibold bg-gradient-to-r from-emerald-600 to-cyan-600 dark:from-emerald-400 dark:to-cyan-400 bg-clip-text text-transparent">
+                      Add Sections Video Link
+                    </h2>
+                  </div>
+                  <SectionYoutubeVideoForm
+                    initialData={section}
+                    courseId={params.courseId}
+                    chapterId={params.chapterId}
+                    sectionId={params.sectionId}
+                  />
+                </div>
+
+                
+              </div>
+            </div>
+            <div>
+            <div className="space-y-6">
                 <div className="text-center space-y-4 mt-20">
                     <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-cyan-600 to-emerald-600 dark:from-purple-400 dark:via-cyan-400 dark:to-emerald-400 bg-clip-text text-transparent">
                       Add Resources For This Section
@@ -257,6 +263,7 @@ const SectionIdPage = async ({
                     </p>
                   </div>
                   <GradientDivider />
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
                   <div className={cn(
                     "p-4 sm:p-6 rounded-xl",
                     "bg-white/40 dark:bg-gray-800/40",
@@ -306,16 +313,22 @@ const SectionIdPage = async ({
                       sectionId={params.sectionId}
                     />
                   </div>
+                  </div>
                 </div>
-              </div>
+            </div>
+            <div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-cyan-600 to-emerald-600 dark:from-purple-400 dark:via-cyan-400 dark:to-emerald-400 bg-clip-text text-transparent mt-10 p-2 flex items-center justify-center">
+                      Add Code Explanation
+              </h1>
+              <CodeExplanationForm 
+                courseId={params.courseId}
+                chapterId={params.chapterId}
+                sectionId={params.sectionId}
+                initialData={section}
+              />
             </div>
 
-            <CodeExplanationForm 
-              courseId={params.courseId}
-              chapterId={params.chapterId}
-              sectionId={params.sectionId}
-              initialData={section}
-            />
+           
 
             
           </div>

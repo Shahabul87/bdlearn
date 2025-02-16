@@ -8,9 +8,9 @@ export async function POST(
 ) {
   try {
     const session = await auth();
-    const values = await req.json();
+    const { title, description, videoUrl, rating } = await req.json();
 
-    console.log("Received video data:", values);
+    console.log("Received video data:", { title, description, videoUrl });
     console.log("Params:", params);
 
     if (!session?.user?.id) {
@@ -31,10 +31,10 @@ export async function POST(
     // Create the video with proper fields
     const video = await db.video.create({
       data: {
-        title: values.title,
-        url: values.videoUrl,
-        description: values.description,
-        rating: parseInt(values.rating),
+        title,
+        description,
+        url: videoUrl,
+        rating: Number(rating),
         sectionId: params.sectionId,
         userId: session.user.id,
         isPublished: true,
@@ -45,7 +45,7 @@ export async function POST(
     console.log("Created video:", video);
     return NextResponse.json(video);
   } catch (error) {
-    console.error("[VIDEO_CREATE_ERROR]:", error);
+    console.error("[VIDEOS]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

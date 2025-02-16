@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import ConditionalHeader from "@/app/(homepage)/user-header";
 import { CoursesList } from "./_components/courses-list";
 import { LoadingSpinner } from "@/components/loading-spinner";
+import { SidebarDemo } from "@/components/ui/sidebar-demo";
 
 interface PageProps {
   searchParams: { [key: string]: string | string[] | undefined };
@@ -19,8 +20,20 @@ export default async function StudentDashboard({ searchParams }: PageProps) {
 
   // Check success parameter from searchParams prop
   if (searchParams.success === '1') {
-    // Wait a few seconds for the webhook to complete
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    // Wait a bit longer for webhook processing
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    
+    // Verify enrollment after waiting
+    const verifyEnrollment = await db.enrollment.findFirst({
+      where: {
+        userId: user.id,
+        courseId: searchParams.courseId as string
+      }
+    });
+    
+    if (!verifyEnrollment) {
+      console.log("Enrollment verification failed"); // Add logging
+    }
   }
 
   // Fetch enrolled courses with progress
@@ -50,8 +63,9 @@ export default async function StudentDashboard({ searchParams }: PageProps) {
   console.log("Enrollment count:", enrolledCourses.length);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 mt-20">
       <ConditionalHeader user={user} />
+      <SidebarDemo>
       <Suspense fallback={<LoadingSpinner />}>
         <main className="container mx-auto px-4 py-8">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
@@ -69,6 +83,7 @@ export default async function StudentDashboard({ searchParams }: PageProps) {
           )}
         </main>
       </Suspense>
+      </SidebarDemo>
     </div>
   );
 } 

@@ -9,6 +9,13 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import {
   Form,
@@ -16,13 +23,12 @@ import {
   FormField,
   FormItem,
   FormMessage,
-  FormDescription,
+  FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
-import { Chapter } from "@prisma/client";
+
 import { DisplayBlogs } from "./display-blogs";
 
 interface BlogSectionFormProps {
@@ -67,10 +73,15 @@ const formSchema = z.object({
   description: z.string().min(1, {
     message: "Description is required",
   }),
-  rating: z.string().min(1, {
-    message: "Rating is required",
-  }),
 });
+
+const descriptionOptions = [
+  "Comprehensive blog post explaining core concepts with detailed examples",
+  "In-depth analysis of advanced topics with practical implementations",
+  "Step-by-step guide covering fundamental principles and best practices",
+  "Technical deep-dive with code examples and performance considerations",
+  "Practical tutorial with real-world applications and use cases",
+];
 
 const RatingStars = ({ rating }: { rating: number | null | undefined }) => {
   return (
@@ -101,6 +112,11 @@ export const BlogSectionForm = ({
 }: BlogSectionFormProps) => {
   const [isCreating, setIsCreating] = useState(false);
   const router = useRouter();
+  const [hoveredRating, setHoveredRating] = useState(0);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [blogs, setBlogs] = useState(
+    chapter.sections.find(section => section.id === sectionId)?.blogs || []
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -108,25 +124,25 @@ export const BlogSectionForm = ({
       title: "",
       blogUrl: "",
       description: "",
-      rating: "",
     },
   });
 
-  const { isSubmitting, isValid } = form.formState;
+  const { isSubmitting } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log("Submitting blog:", values);
-      
       const response = await axios.post(
         `/api/courses/${courseId}/chapters/${chapterId}/sections/${sectionId}/blogs`,
-        values
+        {
+          ...values,
+          rating: selectedRating,
+        }
       );
-
-      console.log("Blog creation response:", response.data);
+      setBlogs(prevBlogs => [...prevBlogs, response.data]);
       toast.success("Blog added successfully");
       form.reset();
-      router.refresh();
+      setSelectedRating(0);
+      setIsCreating(false);
     } catch (error: any) {
       console.error("Blog creation error:", error);
       toast.error(error.response?.data || "Failed to add blog");
@@ -206,11 +222,18 @@ export const BlogSectionForm = ({
                       {...field}
                       disabled={isSubmitting}
                       placeholder="Blog title"
-                      className="bg-gray-900/50 border-gray-700/50 text-gray-200 focus:ring-pink-500/20 
-                        text-base font-medium placeholder:text-gray-500/80 transition-all duration-200"
+                      className={cn(
+                        "bg-white dark:bg-gray-900/50",
+                        "border-gray-200 dark:border-gray-700/50",
+                        "text-gray-900 dark:text-gray-200",
+                        "placeholder:text-gray-500 dark:placeholder:text-gray-400",
+                        "focus:ring-pink-500/20",
+                        "text-sm sm:text-base font-medium",
+                        "transition-all duration-200"
+                      )}
                     />
                   </FormControl>
-                  <FormMessage className="text-rose-400" />
+                  <FormMessage className="text-rose-500 dark:text-rose-400" />
                 </FormItem>
               )}
             />
@@ -224,17 +247,28 @@ export const BlogSectionForm = ({
                       {...field}
                       disabled={isSubmitting}
                       placeholder="Blog URL"
-                      className="bg-gray-900/50 border-gray-700/50 text-gray-200 focus:ring-pink-500/20 
-                        text-base font-medium placeholder:text-gray-500/80 transition-all duration-200"
+                      className={cn(
+                        "bg-white dark:bg-gray-900/50",
+                        "border-gray-200 dark:border-gray-700/50",
+                        "text-gray-900 dark:text-gray-200",
+                        "placeholder:text-gray-500 dark:placeholder:text-gray-400",
+                        "focus:ring-pink-500/20",
+                        "text-sm sm:text-base font-medium",
+                        "transition-all duration-200"
+                      )}
                     />
                   </FormControl>
                   {field.value && (
-                    <div className="mt-2 p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
+                    <div className={cn(
+                      "mt-2 p-3 rounded-lg",
+                      "bg-gray-50 dark:bg-gray-900/50",
+                      "border border-gray-200/50 dark:border-gray-700/50"
+                    )}>
                       <a 
                         href={field.value}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-x-2 text-pink-300 hover:text-pink-200 transition-colors"
+                        className="flex items-center gap-x-2 text-pink-600 dark:text-pink-300 hover:text-pink-700 dark:hover:text-pink-200 transition-colors"
                       >
                         <LinkIcon className="h-4 w-4" />
                         <span className="text-sm underline decoration-pink-500/30 hover:decoration-pink-500/50">
@@ -243,7 +277,7 @@ export const BlogSectionForm = ({
                       </a>
                     </div>
                   )}
-                  <FormMessage className="text-rose-400" />
+                  <FormMessage className="text-rose-500 dark:text-rose-400" />
                 </FormItem>
               )}
             />
@@ -252,55 +286,57 @@ export const BlogSectionForm = ({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      disabled={isSubmitting}
-                      placeholder="Blog description and key takeaways..."
-                      className="bg-gray-900/50 border-gray-700/50 text-gray-200 focus:ring-pink-500/20 
-                        text-base font-medium placeholder:text-gray-500/80 transition-all duration-200 min-h-[100px]"
-                    />
-                  </FormControl>
-                  <FormMessage className="text-rose-400" />
+                  <FormLabel>Comments</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a comment about the blog explanation " />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {descriptionOptions.map((option, index) => (
+                        <SelectItem key={index} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="rating"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-x-2">
-                        <Star className="h-4 w-4 text-yellow-400" />
-                        <FormDescription className="text-gray-400">
-                          Rate this blog&apos;s explanation (1-5)
-                        </FormDescription>
-                      </div>
-                      <Input
-                        {...field}
-                        type="number"
-                        min="1"
-                        max="5"
-                        disabled={isSubmitting}
-                        placeholder="Rating (1-5)"
-                        className="bg-gray-900/50 border-gray-700/50 text-gray-200 focus:ring-pink-500/20 
-                          text-base font-medium placeholder:text-gray-500/80 transition-all duration-200"
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-rose-400" />
-                </FormItem>
-              )}
-            />
+            <div className="space-y-2">
+              <FormLabel>Blog Rating</FormLabel>
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((rating) => (
+                  <Star
+                    key={rating}
+                    className={cn(
+                      "w-6 h-6 cursor-pointer transition-colors",
+                      rating <= (hoveredRating || selectedRating)
+                        ? "text-yellow-400 fill-yellow-400"
+                        : "text-gray-300 dark:text-gray-600"
+                    )}
+                    onMouseEnter={() => setHoveredRating(rating)}
+                    onMouseLeave={() => setHoveredRating(0)}
+                    onClick={() => setSelectedRating(rating)}
+                  />
+                ))}
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {selectedRating > 0 ? `You rated this blog ${selectedRating} stars` : 'Click to rate this blog'}
+              </p>
+            </div>
             <div className="flex items-center gap-x-2">
               <Button
-                disabled={!isValid || isSubmitting}
+                disabled={isSubmitting || selectedRating === 0 || !form.getValues('title') || !form.getValues('blogUrl') || !form.getValues('description')}
                 type="submit"
                 className={cn(
-                  "bg-pink-500/10 text-pink-300 hover:bg-pink-500/20 hover:text-pink-200 border border-pink-500/20 transition-all duration-200",
-                  !isValid && "opacity-50 cursor-not-allowed"
+                  "bg-pink-500/10 text-pink-300 hover:bg-blue-500/20 hover:text-blue-300 border border-pink-500/20 transition-all duration-200",
+                  (isSubmitting || selectedRating === 0 || !form.getValues('title') || !form.getValues('blogUrl') || !form.getValues('description')) && "opacity-50 cursor-not-allowed"
                 )}
               >
                 {isSubmitting ? (
@@ -325,10 +361,7 @@ export const BlogSectionForm = ({
       {!isCreating && (
         <div className="mt-6">
           <DisplayBlogs
-            items={
-              chapter.sections
-                .find(section => section.id === sectionId)?.blogs || []
-            }
+            items={blogs}
             onEdit={(id) => {}}
             onDelete={(id) => {}}
           />

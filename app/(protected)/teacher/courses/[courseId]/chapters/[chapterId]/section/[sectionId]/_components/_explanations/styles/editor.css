@@ -1,0 +1,55 @@
+/* Light mode */
+.explanation-editor .ql-editor {
+  min-height: 200px;
+  font-size: 0.875rem;
+  color: #374151 !important; /* Default text color */
+}
+
+/* Dark mode */
+.dark .explanation-editor .ql-editor {
+  color: #e5e7eb !important; /* Light text color for dark mode */
+}
+
+.explanation-editor .ql-editor.ql-blank::before {
+  color: #9ca3af !important;
+}
+
+.dark .explanation-editor .ql-editor.ql-blank::before {
+  color: #6b7280 !important;
+}
+
+.explanation-editor .ql-toolbar {
+  border-color: #e5e7eb !important;
+  background-color: #f9fafb;
+}
+
+.dark .explanation-editor .ql-toolbar {
+  border-color: #374151 !important;
+  background-color: #1f2937;
+}
+
+.explanation-editor .ql-container {
+  border-color: #e5e7eb !important;
+  background-color: #ffffff;
+}
+
+.dark .explanation-editor .ql-container {
+  border-color: #374151 !important;
+  background-color: #111827;
+}
+
+.explanation-editor .ql-toolbar .ql-stroke {
+  stroke: #374151;
+}
+
+.dark .explanation-editor .ql-toolbar .ql-stroke {
+  stroke: #e5e7eb;
+}
+
+.explanation-editor .ql-toolbar .ql-fill {
+  fill: #374151;
+}
+
+.dark .explanation-editor .ql-toolbar .ql-fill {
+  fill: #e5e7eb;
+} 

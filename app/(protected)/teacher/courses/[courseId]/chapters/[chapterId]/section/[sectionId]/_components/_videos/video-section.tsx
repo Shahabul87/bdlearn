@@ -17,12 +17,20 @@ import {
   FormItem,
   FormMessage,
   FormDescription,
+  FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { Chapter } from "@prisma/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface VideoSectionFormProps {
   chapter: {
@@ -44,18 +52,23 @@ interface VideoSectionFormProps {
   sectionId: string;
 }
 
+const descriptionOptions = [
+  "This video provides a comprehensive explanation of core concepts with clear examples",
+  "Complex topics are broken down into easily digestible segments with practical demonstrations",
+  "Step-by-step tutorial that guides through implementation with best practices",
+  "In-depth analysis of advanced concepts with real-world applications",
+  "Fundamental principles explained through interactive examples and use cases",
+];
+
 const formSchema = z.object({
   title: z.string().min(1, {
     message: "Title is required",
   }),
-  videoUrl: z.string().min(1, {
-    message: "Video URL is required",
-  }),
   description: z.string().min(1, {
     message: "Description is required",
   }),
-  rating: z.string().min(1, {
-    message: "Rating is required",
+  videoUrl: z.string().min(1, {
+    message: "Video URL is required",
   }),
 });
 
@@ -88,6 +101,8 @@ export const VideoSectionForm = ({
 }: VideoSectionFormProps) => {
   const [isCreating, setIsCreating] = useState(false);
   const router = useRouter();
+  const [hoveredRating, setHoveredRating] = useState(0);
+  const [selectedRating, setSelectedRating] = useState(0);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -95,7 +110,6 @@ export const VideoSectionForm = ({
       title: "",
       videoUrl: "",
       description: "",
-      rating: "",
     },
   });
 
@@ -107,7 +121,10 @@ export const VideoSectionForm = ({
       
       const response = await axios.post(
         `/api/courses/${courseId}/chapters/${chapterId}/sections/${sectionId}/videos`,
-        values
+        {
+          ...values,
+          rating: selectedRating,
+        }
       );
 
       console.log("Video creation response:", response.data);
@@ -280,64 +297,51 @@ export const VideoSectionForm = ({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      disabled={isSubmitting}
-                      placeholder="Video description and key points..."
-                      className={cn(
-                        "bg-white dark:bg-gray-900/50",
-                        "border-gray-200 dark:border-gray-700/50",
-                        "text-gray-900 dark:text-gray-200",
-                        "placeholder:text-gray-500 dark:placeholder:text-gray-400",
-                        "focus:ring-blue-500/20",
-                        "text-sm sm:text-base font-medium",
-                        "min-h-[100px]",
-                        "transition-all duration-200"
-                      )}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-rose-500 dark:text-rose-400 text-sm" />
+                  <FormLabel>Comment</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a comment how the video is?" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {descriptionOptions.map((option, index) => (
+                        <SelectItem key={index} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
                 </FormItem>
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="rating"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-x-2">
-                        <Star className="h-4 w-4 text-yellow-500 dark:text-yellow-400" />
-                        <FormDescription className="text-gray-600 dark:text-gray-400">
-                          Rate this video&apos;s explanation (1-5)
-                        </FormDescription>
-                      </div>
-                      <Input
-                        {...field}
-                        type="number"
-                        min="1"
-                        max="5"
-                        disabled={isSubmitting}
-                        placeholder="Rating (1-5)"
-                        className={cn(
-                          "bg-white dark:bg-gray-900/50",
-                          "border-gray-200 dark:border-gray-700/50",
-                          "text-gray-900 dark:text-gray-200",
-                          "placeholder:text-gray-500 dark:placeholder:text-gray-400",
-                          "focus:ring-blue-500/20",
-                          "text-sm sm:text-base font-medium",
-                          "transition-all duration-200"
-                        )}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-rose-500 dark:text-rose-400 text-sm" />
-                </FormItem>
-              )}
-            />
+            <div className="space-y-2">
+              <FormLabel>Video Rating</FormLabel>
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((rating) => (
+                  <Star
+                    key={rating}
+                    className={cn(
+                      "w-6 h-6 cursor-pointer transition-colors",
+                      rating <= (hoveredRating || selectedRating)
+                        ? "text-yellow-400 fill-yellow-400"
+                        : "text-gray-300 dark:text-gray-600"
+                    )}
+                    onMouseEnter={() => setHoveredRating(rating)}
+                    onMouseLeave={() => setHoveredRating(0)}
+                    onClick={() => setSelectedRating(rating)}
+                  />
+                ))}
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {selectedRating > 0 ? `You rated this video ${selectedRating} stars` : 'Click to rate this video'}
+              </p>
+            </div>
 
             <div className="flex items-center gap-x-2">
               <Button

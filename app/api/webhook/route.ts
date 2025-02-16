@@ -15,46 +15,55 @@ export async function POST(req: Request) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     );
-  } catch (error: any) {
-    return new Response(`Webhook Error: ${error.message}`, { status: 400 });
-  }
 
-  const session = event.data.object as Stripe.Checkout.Session;
-  const userId = session?.metadata?.userId;
-  const courseId = session?.metadata?.courseId;
+    console.log("Webhook event type:", event.type);
 
-  if (event.type === "checkout.session.completed") {
-    if (!userId || !courseId) {
-      return new Response("Webhook Error: Missing metadata", { status: 400 });
-    }
+    const session = event.data.object as Stripe.Checkout.Session;
+    const userId = session?.metadata?.userId;
+    const courseId = session?.metadata?.courseId;
 
-    try {
-      // Check if enrollment already exists
-      const existingEnrollment = await db.enrollment.findUnique({
-        where: {
-          userId_courseId: {
-            userId,
-            courseId,
-          }
-        }
-      });
+    console.log("Webhook metadata:", { userId, courseId });
 
-      if (!existingEnrollment) {
-        // Create enrollment
-        await db.enrollment.create({
-          data: {
-            userId: userId,
-            courseId: courseId,
-          }
-        });
+    if (event.type === "checkout.session.completed") {
+      if (!userId || !courseId) {
+        console.log("Missing metadata in webhook");
+        return new Response("Webhook Error: Missing metadata", { status: 400 });
       }
 
-      return new Response(null, { status: 200 });
-    } catch (error) {
-      console.log("[WEBHOOK_ERROR]", error);
-      return new Response("Webhook Error: Database error", { status: 500 });
-    }
-  }
+      try {
+        // Check if enrollment already exists
+        const existingEnrollment = await db.enrollment.findUnique({
+          where: {
+            userId_courseId: {
+              userId,
+              courseId,
+            }
+          }
+        });
 
-  return new Response(null, { status: 200 });
+        console.log("Existing enrollment:", existingEnrollment);
+
+        if (!existingEnrollment) {
+          // Create enrollment
+          const enrollment = await db.enrollment.create({
+            data: {
+              userId: userId,
+              courseId: courseId,
+            }
+          });
+          console.log("Created new enrollment:", enrollment);
+        }
+
+        return new Response(null, { status: 200 });
+      } catch (error) {
+        console.error("Webhook DB error:", error);
+        return new Response("Webhook Error: Database error", { status: 500 });
+      }
+    }
+
+    return new Response(null, { status: 200 });
+  } catch (error: any) {
+    console.error("Webhook construction error:", error);
+    return new Response(`Webhook Error: ${error.message}`, { status: 400 });
+  }
 }

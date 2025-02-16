@@ -8,9 +8,9 @@ export async function POST(
 ) {
   try {
     const session = await auth();
-    const values = await req.json();
+    const { title, blogUrl, description, rating } = await req.json();
 
-    console.log("Received blog data:", values);
+    console.log("Received blog data:", { title, blogUrl, description, rating });
     console.log("Params:", params);
 
     if (!session?.user?.id) {
@@ -31,10 +31,10 @@ export async function POST(
     // Create the blog with only the fields defined in the schema
     const blog = await db.blog.create({
       data: {
-        title: values.title,
-        url: values.blogUrl,
-        description: values.description,
-        rating: parseInt(values.rating),
+        title,
+        url: blogUrl,
+        description,
+        rating: Number(rating),
         sectionId: params.sectionId,
         userId: session.user.id,
         isPublished: true,
@@ -45,7 +45,7 @@ export async function POST(
     console.log("Created blog:", blog);
     return NextResponse.json(blog);
   } catch (error) {
-    console.error("[BLOG_CREATE_ERROR]:", error);
+    console.error("[BLOGS]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

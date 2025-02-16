@@ -1,135 +1,204 @@
-import { db } from "@/lib/db";
-import { Loader2, Video, BookOpen, FileText, Code } from "lucide-react";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
-import { cn } from "@/lib/utils";
-import SectionHeroPage from "@/app/[sectionId]/_components/section-hero-page";
-import SectionVideos from "@/app/[sectionId]/_sectionVideos/section-video-component";
-import SectionBlogs from "@/app/[sectionId]/_sectionBlogs/section-blog-component";
-import { CodeExplanation } from "./code-explanation";
+"use client";
 
-interface SectionContentProps {
-  sectionId: string;
-  section: any; // Type this properly based on your data structure
+import { motion } from "framer-motion";
+import { ArrowLeft, BookOpen, Video, FileText, Code, CheckCircle } from "lucide-react";
+import Link from "next/link";
+import { VideoPlayer } from "./video-player";
+import { BlogContent } from "./blog-content";
+import { CodeExplanation } from "./code-explanation";
+import { NoteContent } from "./note-content";
+import { cn } from "@/lib/utils";
+import { Section, Chapter, Video as VideoType, Blog, Article, Note, CodeExplanation as CodeExplanationType, UserProgress } from "@prisma/client";
+import { VideoContent } from "./video-content";
+
+interface SectionWithRelations extends Section {
+  chapter: Chapter & {
+    sections: Section[];
+  };
+  videos: VideoType[];
+  blogs: Blog[];
+  articles: Article[];
+  notes: Note[];
+  codeExplanations: CodeExplanationType[];
+  userProgress: UserProgress[];
 }
 
-export function SectionContent({ sectionId, section }: SectionContentProps) {
-  if (!section) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-secondary" />
-      </div>
-    );
-  }
+interface SectionContentProps {
+  courseId: string;
+  chapterId: string;
+  section: SectionWithRelations;
+  nextSection?: Section;
+  prevSection?: Section;
+}
 
-  const hasAdditionalContent = 
-    (section.videos?.length > 0) ||
-    (section.articles?.length > 0);
+export const SectionContent = ({
+  courseId,
+  chapterId,
+  section,
+  nextSection,
+  prevSection,
+}: SectionContentProps) => {
+  const getContentIcon = () => {
+    switch (section.type) {
+      case "video":
+        return <Video className="h-6 w-6 text-purple-500" />;
+      case "article":
+        return <FileText className="h-6 w-6 text-blue-500" />;
+      case "blog":
+        return <BookOpen className="h-6 w-6 text-pink-500" />;
+      case "code":
+        return <Code className="h-6 w-6 text-green-500" />;
+      default:
+        return <FileText className="h-6 w-6 text-gray-500" />;
+    }
+  };
 
   return (
-    <div className="space-y-12">
-      <div className={cn(
-        "rounded-2xl overflow-hidden",
-        "bg-gradient-to-br from-purple-50/50 to-pink-50/50",
-        "dark:from-purple-900/10 dark:to-pink-900/10",
-        "border border-purple-100/50 dark:border-purple-800/20"
-      )}>
-        <SectionHeroPage 
-          title={section.title}
-          description={section.type || null}
-          videoUrl={section.videoUrl}
-          isFree={section.isFree}
-          courseTitle={section.chapter.course.title}
-          chapterTitle={section.chapter.title}
-        />
-      </div>
+    <div className="max-w-5xl lg:max-w-7xl mx-auto p-6 mt-20">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="space-y-8"
+      >
+        {/* Back to Chapter Link */}
+        <div className="flex items-center justify-between">
+          <Link 
+            href={`/courses/${courseId}/learn/${chapterId}`}
+            className="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Chapter
+          </Link>
+        </div>
 
-      {section.codeExplanations && section.codeExplanations.length > 0 && (
-        <div className={cn(
-          "rounded-2xl",
-          "bg-white/80 dark:bg-gray-800/50",
-          "border border-gray-200/50 dark:border-gray-700/50",
-          "p-8 backdrop-blur-sm"
-        )}>
-          <div className="flex items-center gap-3 mb-8">
-            <div className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-900/20">
-              <Code className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-            </div>
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-              Code Examples & Explanations
-            </h2>
+        {/* Section Header */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            {getContentIcon()}
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 bg-clip-text text-transparent">
+              {section.title}
+            </h1>
           </div>
-
-          <div className="space-y-8">
-            {section.codeExplanations.map((item: any) => (
-              <CodeExplanation key={item.id} item={item} />
-            ))}
+          <div className="text-sm text-gray-500 dark:text-gray-400 capitalize pl-9">
+            {section.videoUrl && (
+              <VideoPlayer 
+                videoUrl={section.videoUrl}
+                courseId={courseId}
+                chapterId={chapterId}
+                sectionId={section.id}
+              />
+            )}
           </div>
         </div>
-      )}
 
-      {hasAdditionalContent && (
-        <div className={cn(
-          "rounded-2xl",
-          "bg-white/80 dark:bg-gray-800/50",
-          "border border-gray-200/50 dark:border-gray-700/50",
-          "p-8 backdrop-blur-sm"
-        )}>
-          <div className="flex items-center gap-3 mb-8">
-            <div className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-900/20">
-              <BookOpen className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-            </div>
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-              Additional Learning Resources
-            </h2>
-          </div>
-          
-          <div className="space-y-8">
-            {section.videos && section.videos.length > 0 && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-500/10 rounded-lg">
-                    <Video className="h-5 w-5 text-purple-400" />
-                  </div>
-                  <h3 className="text-xl font-medium text-white">Additional Videos</h3>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <SectionVideos videos={section.videos} />
+        
+
+        {/* Navigation */}
+        <div className="flex items-center justify-between pt-8 mt-8 border-t dark:border-gray-700">
+          {prevSection ? (
+            <Link
+              href={`/courses/${courseId}/learn/${chapterId}/sections/${prevSection.id}`}
+              className="group flex items-start gap-4 hover:bg-slate-100 dark:hover:bg-slate-800 p-4 rounded-lg transition-all"
+            >
+              <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
+              </div>
+              <div>
+                <div className="text-sm text-slate-500 dark:text-slate-400">Previous</div>
+                <div className="text-base font-medium text-slate-700 dark:text-slate-300 group-hover:text-purple-700 dark:group-hover:text-purple-400">
+                  {prevSection.title}
                 </div>
               </div>
+            </Link>
+          ) : (
+            <div />
+          )}
+
+          {nextSection && (
+            <Link
+              href={`/courses/${courseId}/learn/${chapterId}/sections/${nextSection.id}`}
+              className="group flex items-start gap-4 hover:bg-slate-100 dark:hover:bg-slate-800 p-4 rounded-lg transition-all text-right"
+            >
+              <div>
+                <div className="text-sm text-slate-500 dark:text-slate-400">Next</div>
+                <div className="text-base font-medium text-slate-700 dark:text-slate-300 group-hover:text-purple-700 dark:group-hover:text-purple-400">
+                  {nextSection.title}
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                <ArrowLeft className="h-5 w-5 rotate-180 transition-transform group-hover:translate-x-1" />
+              </div>
+            </Link>
+          )}
+        </div>
+        {/* Section Content */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
+        >
+          <div className="p-6">
+            <div className="mb-8 mx-auto flex flex-col items-center justify-center">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-400 bg-clip-text text-transparent inline-flex items-center gap-2">
+                <BookOpen className="h-6 w-6 text-purple-500" />
+                Additional Resources
+              </h2>
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                Explore supplementary materials to enhance your learning experience
+              </p>
+            </div>
+            
+            {section.videos && (
+              <VideoContent 
+                content={section.videos}
+                courseId={courseId}
+                chapterId={chapterId}
+                sectionId={section.id}
+              />
             )}
             
-            {section.articles && section.articles.length > 0 && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-500/10 rounded-lg">
-                    <FileText className="h-5 w-5 text-purple-400" />
-                  </div>
-                  <h3 className="text-xl font-medium text-white">Recommended Articles</h3>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {section.articles.map((article: any) => (
-                    <div 
-                      key={article.id}
-                      className="p-4 rounded-xl bg-gray-900/50 border border-gray-700/30 hover:bg-gray-900/70 transition-all duration-200"
-                    >
-                      <h4 className="text-lg font-medium text-white mb-2">
-                        {article.title}
-                      </h4>
-                      <p className="text-gray-400 text-sm line-clamp-2">
-                        {article.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            {section.blogs && (
+              <BlogContent 
+                content={section.blogs}
+                courseId={courseId}
+                chapterId={chapterId}
+                sectionId={section.id}
+              />
             )}
+
           </div>
-        </div>
-      )}
+        </motion.div>
+        {/* Code Explanation Section*/}
+        {section.codeExplanations && section.codeExplanations.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
+          >
+            <div className="p-4">
+              <div className="mb-8 mx-auto flex flex-col items-center justify-center">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-400 bg-clip-text text-transparent inline-flex items-center gap-2">
+                  <Code className="h-6 w-6 text-purple-500" />
+                  Code Explanations
+                </h2>
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                  Detailed explanations of code implementations and examples
+                </p>
+              </div>
+              
+              <CodeExplanation 
+                content={section.codeExplanations}
+                courseId={courseId}
+                chapterId={chapterId}
+                sectionId={section.id}
+              />
+            </div>
+          </motion.div>
+        )}
+      </motion.div>
     </div>
   );
-} 
+}; 

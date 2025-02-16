@@ -8,8 +8,14 @@ import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Editor } from "@/components/editor";
 import { toast } from "sonner";
+import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css";
+
+const ReactQuill = dynamic(() => import('react-quill'), {
+  ssr: false,
+  loading: () => <p>Loading editor...</p>
+});
 
 const formSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -84,10 +90,22 @@ export const DiscussionForm = ({ groupId, onSuccess }: DiscussionFormProps) => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Editor
+                <ReactQuill
+                  theme="snow"
+                  value={field.value}
                   onChange={field.onChange}
-                  disabled={isSubmitting}
+                  readOnly={isSubmitting}
                   placeholder="Share your thoughts..."
+                  className="bg-white dark:bg-gray-900"
+                  modules={{
+                    toolbar: [
+                      [{ 'header': [1, 2, 3, false] }],
+                      ['bold', 'italic', 'underline', 'strike'],
+                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                      ['link', 'code-block'],
+                      ['clean']
+                    ]
+                  }}
                 />
               </FormControl>
               <FormMessage />
