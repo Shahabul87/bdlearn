@@ -10,6 +10,7 @@ import { NoteContent } from "./note-content";
 import { cn } from "@/lib/utils";
 import { Section, Chapter, Video as VideoType, Blog, Article, Note, CodeExplanation as CodeExplanationType, UserProgress } from "@prisma/client";
 import { VideoContent } from "./video-content";
+import { useRouter } from "next/navigation";
 
 interface SectionWithRelations extends Section {
   chapter: Chapter & {
@@ -27,17 +28,23 @@ interface SectionContentProps {
   courseId: string;
   chapterId: string;
   section: SectionWithRelations;
-  nextSection?: Section;
-  prevSection?: Section;
 }
 
 export const SectionContent = ({
   courseId,
   chapterId,
   section,
-  nextSection,
-  prevSection,
 }: SectionContentProps) => {
+  const router = useRouter();
+
+  // Calculate next and prev sections from chapter's sections array
+  const currentSectionIndex = section.chapter.sections.findIndex(
+    (s) => s.id === section.id
+  );
+
+  const nextSection = section.chapter.sections[currentSectionIndex + 1] || null;
+  const prevSection = section.chapter.sections[currentSectionIndex - 1] || null;
+
   const getContentIcon = () => {
     switch (section.type) {
       case "video":
@@ -50,6 +57,18 @@ export const SectionContent = ({
         return <Code className="h-6 w-6 text-green-500" />;
       default:
         return <FileText className="h-6 w-6 text-gray-500" />;
+    }
+  };
+
+  // Handle navigation with loading state
+  const handleNavigation = (path: string) => {
+    try {
+      // Show loading state if needed
+      router.push(path);
+    } catch (error) {
+      console.error("Navigation failed:", error);
+      // Fallback to window.location
+      window.location.href = path;
     }
   };
 
@@ -95,8 +114,8 @@ export const SectionContent = ({
         
 
         {/* Navigation */}
-        <div className="flex items-center justify-between pt-8 mt-8 border-t dark:border-gray-700">
-          {prevSection ? (
+        <div className="flex items-center justify-between mt-8">
+          {prevSection && (
             <Link
               href={`/courses/${courseId}/learn/${chapterId}/sections/${prevSection.id}`}
               className="group flex items-start gap-4 hover:bg-slate-100 dark:hover:bg-slate-800 p-4 rounded-lg transition-all"
@@ -111,8 +130,6 @@ export const SectionContent = ({
                 </div>
               </div>
             </Link>
-          ) : (
-            <div />
           )}
 
           {nextSection && (

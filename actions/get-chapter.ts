@@ -1,102 +1,98 @@
-import { db } from "@/lib/db";
-import { Attachment, Chapter } from "@prisma/client";
+"use server";
 
-interface GetChapterProps {
-  userId: string;
-  courseId: string;
-  chapterId: string;
+import { db } from "@/lib/db";
+import { Chapter, Section, Course } from "@prisma/client";
+
+export type ChapterWithSectionsAndCourse = Chapter & {
+  sections: (Section & {
+    videos: any[];
+    blogs: any[];
+    articles: any[];
+    notes: any[];
+    codeExplanations: any[];
+    userProgress: any[];
+  })[];
+  course: Course;
 };
 
-export const getChapter = async ({
-  userId,
-  courseId,
-  chapterId,
-}: GetChapterProps) => {
+export async function getChapter(
+  chapterId: string,
+  courseId: string
+): Promise<{
+  chapter: ChapterWithSectionsAndCourse | null;
+  error?: string;
+}> {
   try {
-    const purchase = await db.purchase.findUnique({
-      where: {
-        userId_courseId: {
-          userId,
-          courseId,
-        }
-      }
-    });
-
-    const course = await db.course.findUnique({
-      where: {
-        isPublished: true,
-        id: courseId,
-      },
-      select: {
-        price: true,
-      }
-    });
+    if (!chapterId || !courseId) {
+      return {
+        chapter: null,
+        error: "Chapter ID and Course ID are required"
+      };
+    }
 
     const chapter = await db.chapter.findUnique({
       where: {
         id: chapterId,
-        isPublished: true,
-      }
-    });
-
-    if (!chapter || !course) {
-      throw new Error("Chapter or course not found");
-    }
-
-  
-    let attachments: Attachment[] = [];
-    let nextChapter: Chapter | null = null;
-
-    if (purchase) {
-      attachments = await db.attachment.findMany({
-        where: {
-          courseId: courseId
-        }
-      });
-    }
-
-    if (chapter.isFree || purchase) {
-     
-      nextChapter = await db.chapter.findFirst({
-        where: {
-          courseId: courseId,
-          isPublished: true,
-          position: {
-            gt: chapter?.position,
+        courseId: courseId
+      },
+      include: {
+        course: true,
+        sections: {
+          orderBy: {
+            position: 'asc'
+          },
+          include: {
+            videos: {
+              orderBy: {
+                createdAt: 'desc'
+              }
+            },
+            blogs: {
+              orderBy: {
+                createdAt: 'desc'
+              }
+            },
+            articles: {
+              orderBy: {
+                createdAt: 'desc'
+              }
+            },
+            notes: {
+              orderBy: {
+                createdAt: 'desc'
+              }
+            },
+            codeExplanations: {
+              orderBy: {
+                createdAt: 'desc'
+              }
+            },
+            userProgress: {
+              where: {
+                chapterId: chapterId
+              }
+            }
           }
-        },
-        orderBy: {
-          position: "asc",
-        }
-      });
-    }
-
-    const userProgress = await db.userProgress.findUnique({
-      where: {
-        userId_chapterId: {
-          userId,
-          chapterId,
         }
       }
     });
+
+    if (!chapter) {
+      return {
+        chapter: null,
+        error: "Chapter not found"
+      };
+    }
 
     return {
-      chapter,
-      course,
-      attachments,
-      nextChapter,
-      userProgress,
-      purchase,
+      chapter
     };
+
   } catch (error) {
-    console.log("[GET_CHAPTER]", error);
+    console.error("[GET_CHAPTER]", error);
     return {
       chapter: null,
-      course: null,
-      attachments: [],
-      nextChapter: null,
-      userProgress: null,
-      purchase: null,
-    }
+      error: "Failed to fetch chapter"
+    };
   }
 }

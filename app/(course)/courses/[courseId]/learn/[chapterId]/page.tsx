@@ -5,6 +5,7 @@ import { CourseNavbar } from "../_components/course-navbar";
 import { CourseSidebar } from "../_components/course-sidebar";
 import { ChapterContent } from "../_components/course-content";
 import ConditionalHeader from "@/app/(homepage)/user-header";
+import { getCourse } from "@/actions/get-course";
 
 interface ChapterPageProps {
   params: {
@@ -13,7 +14,7 @@ interface ChapterPageProps {
   };
 }
 
-export default async function ChapterPage({ params }: ChapterPageProps) {
+const ChapterIdPage = async ({ params }: ChapterPageProps) => {
   const user = await currentUser();
 
   if (!user?.id) {
@@ -34,34 +35,17 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
     return redirect(`/courses/${params.courseId}`);
   }
 
-  // Fetch course with chapters and sections
-  const course = await db.course.findUnique({
-    where: {
-      id: params.courseId,
-    },
-    include: {
-      category: true,
-      reviews: true,
-      chapters: {
-        where: {
-          isPublished: true,
-        },
-        orderBy: {
-          position: "asc",
-        },
-        include: {
-          sections: true,
-        },
-      },
-    },
-  });
+  // Fetch course with chapters and sections using the action
+  const { course, error } = await getCourse(params.courseId);
 
-  //console.log("Chapter sections:", course?.chapters.find(c => c.id === params.chapterId)?.sections);
+  if (error) {
+    console.error("[COURSE_FETCH_ERROR]", error);
+    return redirect("/error");
+  }
 
   if (!course || !course.chapters.length) {
     return redirect("/");
   }
-  //console.log(course);
 
   const chapter = course.chapters.find(chapter => chapter.id === params.chapterId);
 
@@ -72,21 +56,29 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
   return (
     <>
       <ConditionalHeader user={user} />
-      <div className="h-full mt-20">
-        <div className="hidden md:flex h-full w-80 flex-col fixed inset-y-0 z-50">
-          <CourseSidebar 
+      <div className="h-full">
+        <div className="hidden md:flex h-full w-80 flex-col fixed inset-y-0 z-50 mt-[70px]">
+          <CourseSidebar
             course={course}
             currentChapterId={params.chapterId}
           />
         </div>
-        <main className="md:pl-80 pt-[80px] h-full">
-          <ChapterContent 
-            chapter={chapter}
-            course={course}
-            userId={user.id}
-          />
-        </main>
+        <div className="md:ml-80 h-full">
+          <div className="h-full flex flex-col">
+            <div className="h-full flex flex-col">
+              <main className="md:pl-75 pt-[80px] h-full">
+                <ChapterContent 
+                  chapter={chapter}
+                  course={course}
+                  userId={user.id}
+                />
+              </main>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
-} 
+};
+
+export default ChapterIdPage; 

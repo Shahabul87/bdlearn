@@ -150,7 +150,7 @@ export const ChapterContent = ({
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 max-w-4xl lg:max-w-6xl mx-auto">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -165,12 +165,12 @@ export const ChapterContent = ({
         </div>
 
         {/* Chapter Description */}
-        <div className="prose prose-lg dark:prose-invert max-w-none">
+        <div className="prose prose-lg dark:prose-invert max-w-none ">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="bg-white/50 dark:bg-gray-800/50 rounded-xl p-6 shadow-lg backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 leading-relaxed text-base lg:text-lg"
+            className="bg-white/50 dark:bg-gray-800/50 rounded-xl p-6 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 leading-relaxed text-base lg:text-lg"
           >
             {chapter.description && parse(chapter.description, parseOptions)}
           </motion.div>
@@ -188,8 +188,8 @@ export const ChapterContent = ({
                 <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer group space-y-2 mt-2">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-medium group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors flex items-center gap-3">
-                        <span className="flex items-center justify-center bg-purple-100 dark:bg-purple-900/30 w-7 h-7 rounded-full text-purple-600 dark:text-purple-400 text-sm font-semibold">
+                      <h3 className="font-medium group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors flex items-center gap-3 md:text-md lg:text-lg ">
+                        <span className="flex items-center justify-center bg-purple-100 dark:bg-purple-900/30 w-7 h-7 rounded-full text-purple-600 dark:text-purple-400 text-base md:text-lg font-semibold">
                           {index + 1}
                         </span>
                         {section.title}
