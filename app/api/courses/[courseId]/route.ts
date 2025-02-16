@@ -47,13 +47,7 @@ export async function PATCH(
 ) {
   try {
     const session = await auth();
-    const values = await req.json();
-
-    console.log("Updating course:", {
-      courseId: params.courseId,
-      userId: session?.user?.id,
-      values
-    });
+    const { description } = await req.json();
 
     if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -62,21 +56,17 @@ export async function PATCH(
     const course = await db.course.update({
       where: {
         id: params.courseId,
-        userId: session.user.id
+        userId: session.user.id,
       },
       data: {
-        ...values,
-        // Ensure price is properly typed as a number
-        ...(values.price !== undefined && {
-          price: Number(values.price)
-        })
-      }
+        description,
+      },
     });
 
     console.log("Updated course:", course);
     return NextResponse.json(course);
   } catch (error) {
-    console.error("[COURSE_UPDATE]", error);
+    console.error("[COURSE_PATCH]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

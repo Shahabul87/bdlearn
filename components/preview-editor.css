@@ -1,0 +1,15 @@
+/* Light mode styles */
+.preview-editor .ql-editor {
+  color: #111827 !important; /* dark gray for light mode */
+}
+
+/* Dark mode styles */
+.dark .preview-editor .ql-editor {
+  color: #e5e7eb !important; /* light gray for dark mode */
+}
+
+/* Remove default Quill borders and backgrounds */
+.preview-editor .ql-container {
+  border: none !important;
+  background: transparent !important;
+} 

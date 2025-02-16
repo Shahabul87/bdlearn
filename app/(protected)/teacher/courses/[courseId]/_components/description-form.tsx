@@ -16,30 +16,18 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { cn } from "@/lib/utils";
+import { Course } from "@prisma/client";
 import dynamic from "next/dynamic";
+import "react-quill/dist/quill.bubble.css";
 
-// Import the CSS for react-quill
-import "react-quill/dist/quill.snow.css";
-import "./quill-dark.css"; // We'll create this file for dark mode styles
-
-// Dynamic import with proper loading component
-const ReactQuill = dynamic(
-  async () => {
-    const { default: RQ } = await import("react-quill");
-    return function comp({ forwardedRef, ...props }: any) {
-      return <RQ ref={forwardedRef} {...props} />;
-    };
-  },
-  {
-    ssr: false,
-    loading: () => <p>Loading editor...</p>
-  }
-);
+const ReactQuill = dynamic(() => import('react-quill'), {
+  ssr: false,
+  loading: () => <p>Loading...</p>,
+});
 
 interface DescriptionFormProps {
-  initialData: {
-    description: string | null;
-  };
+  initialData: Course;
   courseId: string;
 }
 
@@ -54,57 +42,37 @@ export const DescriptionForm = ({
   courseId,
 }: DescriptionFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const toggleEdit = () => setIsEditing((current) => !current);
+
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      description: initialData.description || "",
+      description: initialData?.description || "",
     },
   });
 
-  const { isSubmitting, isValid } = form.formState;
+  const { isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/courses/${courseId}/description`, values);
+      setIsSubmitting(true);
+      await axios.patch(`/api/courses/${courseId}`, values);
       toast.success("Course description updated");
       toggleEdit();
       router.refresh();
-    } catch {
+    } catch (error) {
       toast.error("Something went wrong");
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  const toggleEdit = () => {
-    if (isEditing) {
-      form.reset({ description: initialData.description || "" }); // Reset form when canceling
-    }
-    setIsEditing((current) => !current);
-  };
-
-  const modules = {
-    toolbar: [
-      [{ 'header': [1, 2, false] }],
-      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-      [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
-      ['link'],
-      ['clean']
-    ],
-    clipboard: {
-      matchVisual: false // Prevents unwanted HTML preservation
-    }
-  };
-
-  const formats = [
-    'header',
-    'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', 'indent',
-    'link'
-  ];
 
   return (
-    <div className="mt-6 border border-gray-200 dark:border-gray-700 bg-slate-100 dark:bg-gray-800/50 rounded-md p-4">
+    <div className="mt-6 border bg-slate-100 dark:bg-slate-900 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
         Course description
         <Button onClick={toggleEdit} variant="ghost">
@@ -118,18 +86,21 @@ export const DescriptionForm = ({
           )}
         </Button>
       </div>
-      {!isEditing && (
-        <div className="text-sm mt-2 text-gray-600 dark:text-gray-300">
-          {!initialData.description && "No description"}
-          {initialData.description && (
-            <div 
-              dangerouslySetInnerHTML={{ __html: initialData.description }} 
-              className="ql-editor dark:text-gray-300"
+      {!isEditing ? (
+        <div className={cn(
+          "text-sm mt-2",
+          !initialData.description && "text-slate-500 italic"
+        )}>
+          <div className="[&_.ql-editor]:!text-black dark:[&_.ql-editor]:!text-gray-200">
+            <ReactQuill
+              theme="bubble"
+              value={initialData.description || "No description"}
+              readOnly={true}
+              modules={{ toolbar: false }}
             />
-          )}
+          </div>
         </div>
-      )}
-      {isEditing && (
+      ) : (
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -138,27 +109,24 @@ export const DescriptionForm = ({
             <FormField
               control={form.control}
               name="description"
-              render={({ field: { onChange, value, ...field } }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <div className="rounded-md overflow-hidden">
+                    <div className="[&_.ql-editor]:!text-black dark:[&_.ql-editor]:!text-gray-200 bg-white dark:bg-slate-800 rounded-md">
                       <ReactQuill
+                        theme="bubble"
                         {...field}
-                        value={value}
-                        onChange={(content: string) => {
-                          onChange(content);
-                          form.trigger("description");
+                        modules={{
+                          toolbar: [
+                            ['bold', 'italic', 'underline'],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            ['link']
+                          ]
                         }}
-                        modules={modules}
-                        formats={formats}
-                        theme="snow"
-                        disabled={isSubmitting}
-                        className="prose max-w-none bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-200"
-                        placeholder="Enter course description..."
                       />
                     </div>
                   </FormControl>
-                  <FormMessage className="text-red-500 dark:text-red-400" />
+                  <FormMessage />
                 </FormItem>
               )}
             />
