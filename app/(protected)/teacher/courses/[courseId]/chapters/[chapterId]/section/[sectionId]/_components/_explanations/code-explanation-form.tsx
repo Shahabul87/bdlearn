@@ -8,27 +8,14 @@ import { Code2, BookOpen, Loader2, PlusCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { atomDark, prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { ExplanationForm } from "./components/explanation-form";
-import { DisplayExplanations } from "./components/display-explanations";
+
 
 interface CodeExplanationFormProps {
   courseId: string;
@@ -143,6 +130,19 @@ export const CodeExplanationForm = ({
     return 'typescript';
   };
 
+  const onEdit = (id: string) => {
+    router.push(`/teacher/courses/${courseId}/chapters/${chapterId}/section/${sectionId}/explanations/${id}`);
+  };
+
+  const onDelete = async (id: string) => {
+    try {
+      await axios.delete(`/api/courses/${courseId}/chapters/${chapterId}/sections/${sectionId}/explanations/${id}`);
+      router.refresh();
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return (
     <div className={cn(
       "p-4 mt-4 rounded-xl",
@@ -152,7 +152,8 @@ export const CodeExplanationForm = ({
       "transition-all duration-200",
       "backdrop-blur-sm"
     )}>
-      <div className="font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-2">
+      {/* Header section */}
+      <div className="font-medium flex items-center justify-between mb-6">
         <div className="flex items-center gap-x-2">
           <div className={cn(
             "p-2 w-fit rounded-lg",
@@ -161,7 +162,7 @@ export const CodeExplanationForm = ({
             <Code2 className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
           </div>
           <div>
-            <h3 className="text-base sm:text-lg font-semibold bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent">
+            <h3 className="text-lg font-semibold bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent">
               Code Explanations
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -178,8 +179,6 @@ export const CodeExplanationForm = ({
             "text-indigo-700 dark:text-indigo-300",
             "hover:bg-indigo-100 dark:hover:bg-indigo-500/20",
             "hover:text-indigo-800 dark:hover:text-indigo-200",
-            "w-full sm:w-auto",
-            "justify-center",
             "transition-all duration-200"
           )}
         >
@@ -194,13 +193,29 @@ export const CodeExplanationForm = ({
         </Button>
       </div>
 
+      {/* Form section */}
       {isCreating ? (
-        <ExplanationForm onSubmit={onSubmit} isSubmitting={isSubmitting} />
+        <div className="space-y-4">
+          <ExplanationForm onSubmit={onSubmit} isSubmitting={isSubmitting} />
+        </div>
       ) : (
-        <DisplayExplanations
-          items={initialData.codeExplanations || []}
-          onCreateClick={() => setIsCreating(true)}
-        />
+        <div className="flex items-center justify-center py-6">
+          <Button
+            onClick={() => setIsCreating(true)}
+            variant="ghost"
+            className={cn(
+              "bg-indigo-50 dark:bg-indigo-500/10",
+              "text-indigo-700 dark:text-indigo-300",
+              "hover:bg-indigo-100 dark:hover:bg-indigo-500/20",
+              "hover:text-indigo-800 dark:hover:text-indigo-200",
+              "transition-all duration-200",
+              "w-full max-w-md"
+            )}
+          >
+            <PlusCircle className="h-4 w-4 mr-2" />
+            Add new explanation
+          </Button>
+        </div>
       )}
     </div>
   );

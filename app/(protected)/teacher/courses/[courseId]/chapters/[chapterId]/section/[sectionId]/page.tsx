@@ -1,3 +1,5 @@
+"use server";
+
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -6,7 +8,6 @@ import { Header } from "@/app/(homepage)/header";
 import { HeaderAfterLogin } from "@/app/(homepage)/header-after-login";
 import { SidebarDemo } from "@/components/ui/sidebar-demo";
 import { db } from "@/lib/db";
-import { IconBadge } from "@/components/icon-badge";
 import { Banner } from "@/components/banner"
 import { SectionTitleForm } from "./_components/section-title-form";
 import { SectionAccessForm } from "./_components/section-access-form";
@@ -17,14 +18,15 @@ import { BlogSectionForm } from "./_components/_blogs/blog-section";
 import { GradientDivider } from "@/components/border";
 import { cn } from "@/lib/utils";
 import { CodeExplanationForm } from "./_components/_explanations/code-explanation-form";
-import type { JSX } from "react";
+import { ExplanationActions } from "./_components/explanation-actions";
 
 const SectionIdPage = async ({
   params
 }: {
-  params: { courseId: string; chapterId: string; sectionId:string }
+  params: { courseId: string; chapterId: string; sectionId: string }
 }) => {
     const user = await currentUser();
+
 
     if (!user?.id) {
         return redirect("/");
@@ -329,7 +331,12 @@ const SectionIdPage = async ({
               />
             </div>
 
-           
+            <ExplanationActions
+              courseId={params.courseId}
+              chapterId={params.chapterId}
+              sectionId={params.sectionId}
+              codeExplanations={section.codeExplanations}
+            />
 
             
           </div>

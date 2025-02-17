@@ -28,24 +28,9 @@ const features = [
     description: "Share your courses with others to help them grow and save their time",
   },
   {
-    icon: Users,
-    title: "Join Study Groups",
-    description: "Connect with peers who share your academic interests",
-  },
-  {
-    icon: Calendar,
-    title: "Schedule Sessions",
-    description: "Organize and participate in group study sessions",
-  },
-  {
     icon: BarChart3,
     title: "Track Progress",
     description: "Monitor your learning journey and celebrate achievements",
-  },
-  {
-    icon: GraduationCap,
-    title: "Expert Mentorship",
-    description: "Connect with experienced mentors for guidance and support",
   },
 ];
 

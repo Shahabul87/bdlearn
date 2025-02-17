@@ -1,11 +1,10 @@
 import { SidebarDemo } from "@/components/ui/sidebar-demo"
 import ConditionalHeader from "../(homepage)/user-header"
 import { currentUser } from '@/lib/auth'
-import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { ScrollableTabs } from "./_components/ScrollableTabs";
-
 import { Footer } from "../(homepage)/footer";
+import { getUserData } from "@/app/actions/get-user-data";
 import MyCourseCard from "./_components/my-course-card";
 import MyPostCard from "./_components/my-post-card";
 import MyFavoriteVideoCard from "./_components/my-favorite-video-card";
@@ -15,68 +14,26 @@ import MyFavoriteArticleCard from "./_components/my-favorite-article-card";
 import MySubscriptionCard from "./_components/my-subscription-card";
 import MySocialMediaCard from "./_components/my-social-media-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useState, useRef } from "react";
 import { TabsWrapper } from './_components/TabsWrapper';
 import { NavigationArrows } from "./_components/NavigationArrows";
+import { TodoList } from "./_components/todo/TodoList";
 
 type Props = {
   searchParams: { [key: string]: string | string[] | undefined }
 }
 
 const User = async ({ searchParams }: Props) => {
-
-  const user:any =await currentUser();
+  const user = await currentUser();
   
   if(!user?.id){
     return redirect("/");
   }
 
+  const userData = await getUserData(user.id);
   
-
-  const userId = user?.id; // Replace with the actual user ID
-
-  //console.log(userId);
-
-  const userData = await db.user.findUnique({
-    where: { id: userId },
-    include: {
-      accounts: true,
-      courses: true,
-      twoFactorConfirmation: true,
-      profileLinks: true,
-      posts: {
-        include: {
-          comments: true,
-          replies: true,
-          user: true,
-          reactions: true,
-          postchapter: true,
-          imageSections: true
-        }
-      },
-      comments: {
-        include: {
-          replies: true
-        }
-      },
-      videos: true,
-      blogs: true,
-      articles: true,
-      notes: true,
-      favoriteVideos: true,
-      favoriteAudios: true,
-      favoriteArticles: true,
-      favoriteBlogs: true,
-      favoriteImages: true,
-      subscriptions: true
-    }
-  });
-  
-  
-  
-
- //console.log(userData?.favoriteArticles)
+  if (!userData) {
+    return <div>Failed to load user data</div>;
+  }
 
   // Get the tab from URL or default to 'courses'
   const currentTab = searchParams?.tab?.toString() || 'courses';
@@ -219,6 +176,10 @@ const User = async ({ searchParams }: Props) => {
                 })}
               </div>
             </TabsContent>
+
+            <TabsContent value="todos">
+              <TodoList />
+            </TabsContent>
           </div>
         </TabsWrapper>
       </SidebarDemo>
@@ -226,6 +187,5 @@ const User = async ({ searchParams }: Props) => {
     </div>
   )
 }
-
 
 export default User

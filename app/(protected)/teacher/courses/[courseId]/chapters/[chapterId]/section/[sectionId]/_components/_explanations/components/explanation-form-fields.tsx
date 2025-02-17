@@ -43,7 +43,13 @@ const modules = {
     ['clean']
   ],
   clipboard: {
-    matchVisual: false
+    matchVisual: true
+  },
+  keyboard: {
+    bindings: {
+      tab: false,
+      'indent backwards': false
+    }
   }
 };
 
@@ -95,26 +101,28 @@ export const ExplanationFormFields = ({ form, isSubmitting }: ExplanationFormFie
           name="code"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel>Code</FormLabel>
-              <Select
-                value={language}
-                onValueChange={setLanguage}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select language" />
-                </SelectTrigger>
-                <SelectContent>
-                  {languageOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex items-center justify-between h-[30px]">
+                <FormLabel>Code</FormLabel>
+                <Select
+                  value={language}
+                  onValueChange={setLanguage}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {languageOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <FormControl>
-                <div className="border rounded-lg overflow-hidden">
+                <div className="border rounded-lg overflow-hidden h-[400px]">
                   <Editor
-                    height="300px"
+                    height="400px"
                     defaultLanguage="typescript"
                     language={language}
                     value={field.value}
@@ -139,16 +147,18 @@ export const ExplanationFormFields = ({ form, isSubmitting }: ExplanationFormFie
           )}
         />
 
-        {/* Explanation Column with React Quill */}
+        {/* Explanation Column */}
         <FormField
           control={form.control}
           name="explanation"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Explanation</FormLabel>
+              <div className="h-[30px]">
+                <FormLabel>Explanation</FormLabel>
+              </div>
               <FormControl>
                 <div className={cn(
-                  "border rounded-md overflow-hidden mt-[42px]", // Added margin-top to align with code editor
+                  "border rounded-md overflow-hidden h-[400px]",
                   "bg-white dark:bg-gray-900",
                   "[&_.ql-editor]:!text-black dark:[&_.ql-editor]:!text-white",
                   "[&_.ql-editor]:min-h-[300px] [&_.ql-editor]:max-h-[500px]",
@@ -177,27 +187,44 @@ export const ExplanationFormFields = ({ form, isSubmitting }: ExplanationFormFie
                   "[&_.ql-tooltip]:shadow-md",
                   "[&_.ql-tooltip]:rounded-md",
                   "[&_.ql-tooltip]:p-2",
-                  "[&_.ql-tooltip]:z-50"
+                  "[&_.ql-tooltip]:z-50",
+                  "[&_.ql-editor]:prose dark:[&_.ql-editor]:prose-invert",
+                  "[&_.ql-editor_span]:!text-inherit",
+                  "[&_.ql-editor_span]:!bg-inherit",
+                  "[&_.ql-color-picker]:!text-inherit",
+                  "[&_.ql-picker]:!text-inherit",
+                  "[&_.ql-snow_*]:!text-inherit",
+                  "[&_.ql-snow_span]:!text-inherit",
+                  "[&_.ql-toolbar]:p-3",
+                  "[&_.ql-toolbar_button]:!w-8 [&_.ql-toolbar_button]:!h-8",
+                  "[&_.ql-toolbar_button_svg]:!w-5 [&_.ql-toolbar_button_svg]:!h-5",
+                  "[&_.ql-toolbar_.ql-picker-label]:!text-base",
+                  "[&_.ql-toolbar_.ql-picker]:!h-8",
+                  "[&_.ql-toolbar_.ql-picker-label]:!h-8 [&_.ql-toolbar_.ql-picker-label]:!leading-8",
+                  "[&_.ql-toolbar]:flex [&_.ql-toolbar]:flex-wrap [&_.ql-toolbar]:items-center [&_.ql-toolbar]:gap-1",
+                  "[&_.ql-formats]:flex [&_.ql-formats]:items-center [&_.ql-formats]:gap-1"
                 )}>
-                <ReactQuill
-                  theme="snow"
-                  modules={modules}
-                  value={field.value}
-                  onChange={field.onChange}
-                  placeholder="Enter explanation here"
-                  className="!h-auto"
-                  style={{ 
-                    height: 'auto',
-                    minHeight: '300px',
-                    maxHeight: '550px'
-                  }}
-                />
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+                  <div className="border rounded-md overflow-hidden h-[400px]">
+                    <ReactQuill
+                      theme="snow"
+                      modules={modules}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Enter explanation here"
+                      className="!h-[400px]"
+                      style={{ 
+                        height: '400px',
+                        minHeight: '400px',
+                        maxHeight: '400px'
+                      }}
+                    />
+                  </div>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
     </>
   );

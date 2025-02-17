@@ -17,14 +17,23 @@ const formSchema = z.object({
 });
 
 interface ExplanationFormProps {
-  onSubmit: (values: z.infer<typeof formSchema>) => Promise<void>;
+  onSubmit: (values: any) => void;
   isSubmitting: boolean;
+  initialData?: {
+    heading: string;
+    code: string;
+    explanation: string;
+  };
 }
 
-export const ExplanationForm = ({ onSubmit, isSubmitting }: ExplanationFormProps) => {
+export const ExplanationForm = ({ 
+  onSubmit, 
+  isSubmitting,
+  initialData 
+}: ExplanationFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       heading: "",
       code: "",
       explanation: "",
