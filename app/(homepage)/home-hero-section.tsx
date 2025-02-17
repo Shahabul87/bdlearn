@@ -1,7 +1,16 @@
 "use client"
 
 import { motion } from "framer-motion";
-import { ArrowRight, Users, BookOpen, Calendar } from "lucide-react";
+import { 
+  ArrowRight, 
+  Users, 
+  BookOpen, 
+  Calendar, 
+  Pencil, 
+  Share2, 
+  BarChart3, 
+  GraduationCap 
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useInView } from "framer-motion";
@@ -9,19 +18,34 @@ import { useRef } from "react";
 
 const features = [
   {
+    icon: Pencil,
+    title: "Design Your Own Courses",
+    description: "Create your courses and build up your skills on your own",
+  },
+  {
+    icon: Share2,
+    title: "Share Your Resources",
+    description: "Share your courses with others to help them grow and save their time",
+  },
+  {
     icon: Users,
     title: "Join Study Groups",
     description: "Connect with peers who share your academic interests",
   },
   {
-    icon: BookOpen,
-    title: "Share Resources",
-    description: "Exchange study materials and learning resources",
-  },
-  {
     icon: Calendar,
     title: "Schedule Sessions",
     description: "Organize and participate in group study sessions",
+  },
+  {
+    icon: BarChart3,
+    title: "Track Progress",
+    description: "Monitor your learning journey and celebrate achievements",
+  },
+  {
+    icon: GraduationCap,
+    title: "Expert Mentorship",
+    description: "Connect with experienced mentors for guidance and support",
   },
 ];
 
@@ -112,7 +136,7 @@ export default function HomeHeroSection() {
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
             variants={buttonVariants}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full px-4 mb-12 md:mb-16"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full px-4 mb-12 md:mb-16 lg:mb-20"
           >
             <Link href="/auth/register" className="w-full sm:w-auto">
               <Button size="lg" className="bg-purple-600 hover:bg-purple-700 w-full sm:w-auto">
@@ -135,7 +159,7 @@ export default function HomeHeroSection() {
           <motion.div
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 w-full px-4"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 md:gap-8 w-full px-4 lg:mt-20"
           >
             {features.map((feature, index) => (
               <motion.div
