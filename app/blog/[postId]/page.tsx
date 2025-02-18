@@ -1,4 +1,3 @@
-import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { currentUser } from '@/lib/auth'
 import { Footer } from "@/app/(homepage)/footer";
@@ -10,67 +9,12 @@ import { FeaturedImage } from "./_components/featured-image";
 import { Metadata } from "next";
 import { PostHeader } from "./_components/post-header";
 import { PostMetadata } from "./_components/post-metadata";
+import { getPostData } from "@/app/actions/get-post-data";
+import { CommentModal } from "./_components/comment-modal";
 
 const PostIdPage = async ({params}: {params: { postId: string; }}) => {
-  const post = await db.post.findUnique({
-    where: {
-      id: params.postId,
-    },
-    include: {
-      user: true,
-      tags: true,
-      comments: {
-        include: {
-          user: true,
-          reactions: {
-            include: {
-              user: true,
-            },
-          },
-          replies: {
-            include: {
-              user: true,
-              reactions: {
-                include: {
-                  user: true,
-                },
-              },
-            },
-          },
-        },
-      },
-      replies: {
-        include: {
-          user: true,
-          reactions: {
-            include: {
-              user: true,
-            },
-          },
-        },
-      },
-      reactions: {
-        include: {
-          user: true,
-        },
-      },
-      postchapter: {
-        where: {
-          isPublished: true,
-        },
-        orderBy: {
-          position: "asc",
-        },
-      },
-      imageSections: {
-        orderBy: {
-          position: "asc",
-        },
-      },
-    },
-  });
-
-  const user:any = await currentUser();
+  const user = await currentUser();
+  const post = await getPostData(params.postId);
 
   if (!post) {
     return redirect("/");
@@ -128,9 +72,9 @@ const PostIdPage = async ({params}: {params: { postId: string; }}) => {
                   <div className="h-px w-full max-w-[200px] mx-auto bg-gray-200 dark:bg-gradient-to-r dark:from-transparent dark:via-purple-500/50 dark:to-transparent mt-4" />
                 </div>
 
-                {/* Comment Form */}
-                <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
-                  <PostComment initialData={post} postId={params.postId} />
+                {/* Comment Modal */}
+                <div className="flex justify-center">
+                  <CommentModal post={post} postId={params.postId} />
                 </div>
 
                 {/* Comments Display */}
@@ -151,15 +95,7 @@ const PostIdPage = async ({params}: {params: { postId: string; }}) => {
 export default PostIdPage;
 
 export async function generateMetadata({ params }: { params: { postId: string } }): Promise<Metadata> {
-  const post = await db.post.findUnique({
-    where: {
-      id: params.postId
-    },
-    select: {
-      title: true,
-      description: true
-    }
-  });
+  const post = await getPostData(params.postId);
 
   return {
     title: post?.title || "Blog Post",

@@ -1,60 +1,71 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { db } from "@/lib/db";
+import { currentUser } from "@/lib/auth";
 
 export async function POST(
   req: Request,
   { params }: { params: { postId: string; commentId: string } }
 ) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const user = await currentUser();
+    if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const { type, action } = await req.json();
+    const { commentId } = params;
 
-    // Find existing reaction
+    // Check if reaction already exists
     const existingReaction = await db.reaction.findFirst({
       where: {
-        userId: session.user.id,
-        commentId: params.commentId,
-        type
+        userId: user.id,
+        commentId: commentId,
+        type: type,
       },
     });
 
     if (action === 'remove' && existingReaction) {
-      // Remove reaction (decrement)
+      // Remove reaction
       await db.reaction.delete({
-        where: { id: existingReaction.id },
+        where: {
+          id: existingReaction.id,
+        },
       });
-      return NextResponse.json({ message: "Reaction removed" });
+
+      return NextResponse.json({ 
+        message: "Reaction removed",
+        action: "remove"
+      });
     } 
     
     if (action === 'add' && !existingReaction) {
-      // Add reaction (increment)
+      // Add new reaction
       const reaction = await db.reaction.create({
         data: {
           type,
-          userId: session.user.id,
-          commentId: params.commentId,
+          userId: user.id,
+          commentId,
         },
         include: {
           user: {
             select: {
               id: true,
               name: true,
-              email: true,
-            }
-          }
-        }
+            },
+          },
+        },
       });
-      return NextResponse.json(reaction);
+
+      return NextResponse.json({ 
+        message: "Reaction added",
+        action: "add",
+        reaction 
+      });
     }
 
     return NextResponse.json({ message: "No action taken" });
   } catch (error) {
-    console.error("[REACTION_POST]", error);
+    console.error("[COMMENT_REACTION]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 } 

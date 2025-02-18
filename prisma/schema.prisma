@@ -489,33 +489,48 @@ model PostChapterSection {
 }
 
 model Comment {
-  id               String            @id @default(cuid())
-  userId           String
-  comments         String?
-  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post             Post              @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId           String
+  id          String    @id @default(cuid())
+  userId      String
+  comments    String?
+  likes       Int       @default(0)
+  loves       Int       @default(0)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post        Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId      String
+  replies     Reply[]
+  likedBy     String[]  @default([])
+  lovedBy     String[]  @default([])
+  createdAt   DateTime  @default(now())
+  
+  // Add these relation fields
   reactions        Reaction[]
-  commentReactions CommentReaction[] // One-to-many relation with CommentReaction
-  replies          Reply[] // Keep only this one
-  createdAt        DateTime          @default(now())
+  commentReactions CommentReaction[]
+
+  @@index([userId])
+  @@index([postId])
 }
 
 model Reply {
-  id            String          @id @default(cuid())
-  replyContent  String?
-  userId        String
-  postId        String
-  commentId     String
+  id           String          @id @default(cuid())
+  content      String
+  userId       String
+  postId       String
+  commentId    String
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  user         User            @relation(fields: [userId], references: [id])
+  post         Post            @relation(fields: [postId], references: [id])
+  comment      Comment         @relation(fields: [commentId], references: [id])
+  reactions    Reaction[]
+  replyReactions ReplyReaction[]
   parentReplyId String?
-  createdAt     DateTime        @default(now())
-  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post          Post            @relation(fields: [postId], references: [id], onDelete: Cascade)
-  comment       Comment         @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  parentReply   Reply?          @relation("ReplyToReply", fields: [parentReplyId], references: [id], onDelete: SetNull)
-  replies       Reply[]         @relation("ReplyToReply")
-  reactions     ReplyReaction[] // One-to-many relation with ReplyReaction
-  reactionList  Reaction[] // Add this relation for the Reaction model
+  childReplies Reply[]         @relation("ReplyToReply")
+  parentReply  Reply?          @relation("ReplyToReply", fields: [parentReplyId], references: [id])
+
+  @@index([userId])
+  @@index([postId])
+  @@index([commentId])
+  @@index([parentReplyId])
 }
 
 model Reaction {

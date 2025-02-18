@@ -8,65 +8,44 @@ export async function POST(
 ) {
   try {
     const user = await currentUser();
-    if (!user || !user.id) {
+    if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const userId = user.id;
-    const { replyContent, parentReplyId } = await req.json();
+    const { content } = await req.json();
+    const { postId, commentId } = params;
 
-    // Validate that the reply content is provided
-    if (!replyContent || typeof replyContent !== "string" || replyContent.trim() === "") {
-      return new NextResponse("Reply content is required", { status: 400 });
+    if (!content) {
+      return new NextResponse("Content is required", { status: 400 });
     }
 
-    // Check if the post exists
-    const postExists = await db.post.findUnique({
-      where: { id: params.postId },
-      select: { id: true },
-    });
-
-    if (!postExists) {
-      return new NextResponse("Post not found", { status: 404 });
-    }
-
-    // Check if the comment exists and belongs to the specified post
-    const commentExists = await db.comment.findFirst({
-      where: {
-        id: params.commentId,
-        postId: params.postId,
-      },
-      select: { id: true },
-    });
-
-    if (!commentExists) {
-      return new NextResponse("Comment not found for the specified post", { status: 404 });
-    }
-
-    // Create the reply with optional parentReplyId
-    const newReply = await db.reply.create({
+    const reply = await db.reply.create({
       data: {
-        replyContent,
-        userId,
-        postId: params.postId,
-        commentId: params.commentId,
-        ...(parentReplyId ? { parentReplyId } : {}), // Only include if parentReplyId exists
+        content,
+        userId: user.id,
+        postId,
+        commentId,
       },
       include: {
         user: {
           select: {
+            id: true,
             name: true,
             image: true,
           },
         },
-        reactions: true,
+        reactions: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
 
-    return NextResponse.json(newReply);
+    return NextResponse.json(reply);
   } catch (error) {
-    console.error("[CREATE_REPLY_ERROR]", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    console.error("[REPLY_POST]", error);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }
 

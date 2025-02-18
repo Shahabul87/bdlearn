@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as z from "zod";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -22,8 +22,14 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { ThumbsUp, ThumbsDown } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageCircle } from 'lucide-react';
 import { currentUser } from '@/lib/auth'
+import { ReplyModal } from "./reply-modal";
+import { Textarea } from "@/components/ui/textarea";
+import { CommentHeader } from "./comments/comment-header";
+import { CommentContent } from "./comments/comment-content";
+import { CommentActions } from "./comments/comment-actions";
+import { CommentReplies } from "./comments/comment-replies";
 
 // Define the component props with replies as a separate field on initialData
 interface ReplyType {
@@ -92,8 +98,8 @@ interface NestedReplyValues {
 }
 
 // Add this sorting function at the top level
-const sortByDate = <T extends { createdAt: Date }>(items: T[] | null | undefined): T[] => {
-  if (!items) return [];
+const sortByDate = <T extends { createdAt: Date }>(items: T[] | undefined | null): T[] => {
+  if (!Array.isArray(items)) return [];
   return [...items].sort((a, b) => 
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
@@ -184,6 +190,8 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
     commentId: string;
     replyId: string;
   } | null>(null);
+  const [replyModalOpen, setReplyModalOpen] = useState(false);
+  const [activeComment, setActiveComment] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -208,17 +216,38 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
 
   const onSubmit = async (values: z.infer<typeof formSchema>, commentId: string) => {
     try {
-      const response = await axios.post(`/api/posts/${postId}/comments/${commentId}/replies`, values);
-      const newReply = response.data;
+      // Make sure we're sending the correct data structure
+      const response = await axios.post(`/api/posts/${postId}/comments/${commentId}/replies`, {
+        content: values.replyContent, // Changed from replyContent to content
+        postId: postId,
+        commentId: commentId,
+      });
 
-      setReply((prevReplies) => [...prevReplies, newReply]);
-      toast.success("Reply added");
-      setActiveReply(null);
-      form.reset();
-      router.refresh();
+      if (response.data) {
+        // Update the local state with the new reply
+        setComments(prevComments => 
+          prevComments.map(comment => {
+            if (comment.id === commentId) {
+              return {
+                ...comment,
+                replies: Array.isArray(comment.replies) 
+                  ? [...comment.replies, response.data]
+                  : [response.data]
+              };
+            }
+            return comment;
+          })
+        );
+
+        toast.success("Reply added successfully");
+        form.reset();
+        setReplyModalOpen(false);
+        setActiveComment(null);
+        router.refresh(); // Refresh the page to get updated data
+      }
     } catch (error) {
       console.error("Error adding reply:", error);
-      toast.error("Something went wrong. Please try again.");
+      toast.error("Failed to add reply");
     }
   };
 
@@ -229,8 +258,22 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
   };
 
   const reactions = [
-    { type: '👍', name: 'THUMBSUP', color: 'text-blue-400' },
-    { type: '❤️', name: 'HEART', color: 'text-red-400' }
+    {
+      type: "👍",
+      name: "THUMBSUP",
+      color: "blue",
+      label: "Like",
+      activeClass: "bg-blue-500/10 text-blue-500 dark:text-blue-400",
+      hoverClass: "hover:bg-blue-500/5 hover:text-blue-600 dark:hover:text-blue-300"
+    },
+    {
+      type: "❤️",
+      name: "HEART",
+      color: "red",
+      label: "Love",
+      activeClass: "bg-red-500/10 text-red-500 dark:text-red-400",
+      hoverClass: "hover:bg-red-500/5 hover:text-red-600 dark:hover:text-red-300"
+    }
   ];
 
   const handleReplyReaction = async (postId: string, replyId: string, type: string, reply: Reply, session: any) => {
@@ -267,7 +310,7 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
     commentId: string;
     level?: number;
   }) => {
-    const maxNestingLevel = 3; // Limit nesting depth
+    if (!reply) return null;  // Add this check
 
     return (
       <div 
@@ -296,39 +339,41 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
 
           {/* Reply Actions */}
           <div className="flex items-center gap-3 mt-3">
-            {reactions.map(({ type, name, color }) => (
+            {reactions.map(({ type, name, label, activeClass, hoverClass }) => (
               <motion.button
                 key={type}
                 onClick={() => handleReplyReaction(postId, reply.id, name, reply, session)}
                 className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1 rounded-lg",
+                  "flex items-center gap-2 px-3 py-1.5 rounded-full",
+                  "font-medium text-sm",
                   "transition-all duration-300",
+                  "border border-transparent",
                   reply.reactions.some(r => r.user?.id === session?.user?.id && r.type === name)
-                    ? name === 'HEART' 
-                      ? "bg-red-500/10 text-red-400" 
-                      : "bg-blue-500/10 text-blue-400"
-                    : "hover:bg-gray-800/50 text-gray-400 hover:text-gray-300"
+                    ? activeClass
+                    : cn(
+                        "text-gray-600 dark:text-gray-400",
+                        hoverClass,
+                        "hover:border-gray-200 dark:hover:border-gray-700"
+                      )
                 )}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <motion.span
-                  className="text-base"
-                  whileHover={{ 
-                    scale: 1.3,
-                    transition: { duration: 0.2 }
-                  }}
+                  className="text-lg"
+                  whileHover={{ scale: 1.2 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
                   {type}
                 </motion.span>
-                {reply.reactions.filter(r => r.type === name).length > 0 && (
-                  <span className={cn(
-                    "text-[10px]",
-                    reply.reactions.some(r => r.user?.id === session?.user?.id && r.type === name)
-                      ? name === 'HEART' ? "text-red-400" : "text-blue-400"
-                      : "text-gray-400"
-                  )}>
-                    {reply.reactions.filter(r => r.type === name).length}
-                  </span>
-                )}
+                <span className="relative top-px">
+                  {label}
+                  {reply.reactions.filter(r => r.type === name).length > 0 && (
+                    <span className="ml-1 text-xs">
+                      {reply.reactions.filter(r => r.type === name).length}
+                    </span>
+                  )}
+                </span>
               </motion.button>
             ))}
 
@@ -501,248 +546,72 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
     }
   };
 
+  // Add this effect to sync comments with initialData
+  useEffect(() => {
+    setComments(initialData.comments);
+  }, [initialData.comments]);
+
   return (
-    <div className={cn(
-      "space-y-6",
-      "bg-gray-100/80 dark:bg-gray-900/80",
-      "backdrop-blur-sm",
-      "rounded-xl",
-      "p-6"
-    )}>
-      {/* Updated Comments Counter */}
-      <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400">
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-            {getCommentCounts(initialData.comments, initialData.comments.flatMap(comment => comment.replies)).comments}
-          </span>
-          <span className="text-sm">
-            {getCommentCounts(initialData.comments, initialData.comments.flatMap(comment => comment.replies)).comments === 1 
-              ? 'Comment' 
-              : 'Comments'}
-          </span>
-        </div>
+    <div className="max-w-[800px] mx-auto">
+      <div className="space-y-6">
+        {comments.map((comment) => (
+          <div key={comment.id} className="group">
+            <CommentHeader 
+              userImage={comment.user?.image}
+              userName={comment.user?.name}
+              createdAt={comment.createdAt}
+            />
 
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-            {getCommentCounts(initialData.comments, initialData.comments.flatMap(comment => comment.replies)).replies}
-          </span>
-          <span className="text-sm">
-            {getCommentCounts(initialData.comments, initialData.comments.flatMap(comment => comment.replies)).replies === 1 
-              ? 'Reply' 
-              : 'Replies'}
-          </span>
-        </div>
+            <CommentContent content={comment.comments || ""} />
 
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500 dark:text-gray-500">Total:</span>
-          <span className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-            {getCommentCounts(initialData.comments, initialData.comments.flatMap(comment => comment.replies)).total}
-          </span>
-        </div>
-      </div>
+            <CommentActions 
+              comment={comment}
+              session={session}
+              postId={postId}
+              onReplyClick={() => {
+                setActiveComment(comment.id);
+                setReplyModalOpen(true);
+              }}
+            />
 
-      <div className="flex flex-col gap-y-4">
-        <div className="flex flex-col gap-y-6">
-          {/* Sort comments by most recent */}
-          {sortByDate(initialData.comments).map((comment) => (
-            <div 
-              key={comment.id}
-              className={cn(
-                "group rounded-xl p-6",
-                "bg-white/50 dark:bg-gray-800/50",
-                "border border-gray-200/50 dark:border-gray-700/50",
-                "backdrop-blur-sm",
-                "transition-all duration-300",
-                "hover:bg-gray-50/80 dark:hover:bg-gray-800/70"
-              )}
+            <ReplyModal
+              isOpen={replyModalOpen && activeComment === comment.id}
+              onClose={() => {
+                setReplyModalOpen(false);
+                setActiveComment(null);
+                form.reset();
+              }}
+              onSubmit={(values) => onSubmit(values, comment.id)}
+              form={form}
+              title={`Reply to ${comment.user?.name || 'Comment'}`}
+              isSubmitting={isSubmitting}
+              isValid={isValid}
             >
-              {/* Comment Header */}
-              <div className="flex items-center gap-4 mb-3">
-                <div className="relative">
-                  <Image
-                    src={comment.user?.image || "/default-avatar.png"}
-                    alt={comment.user?.name || "Anonymous"}
-                    width={40}
-                    height={40}
-                    className="rounded-full ring-2 ring-purple-500/20 transition-all duration-300 group-hover:ring-purple-500/40"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-blue-500/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-                <div>
-                  <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                    {comment.user?.name || "Anonymous"}
-                  </span>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm font-medium tracking-wide">
-                    {new Date(comment.createdAt).toLocaleDateString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
-                  </p>
-                </div>
-              </div>
-
-              {/* Comment Content */}
-              <p className="text-gray-700 dark:text-gray-300 text-base leading-relaxed tracking-wide font-light ml-14 mb-4">
-                {comment.comments}
-              </p>
-
-              {/* Reactions and Reply Button */}
-              <div className="flex items-center gap-3">
-                {reactions.map(({ type, name, color }) => (
-                  <motion.button
-                    key={type}
-                    onClick={() => handleReaction(comment.id, name as 'THUMBSUP' | 'HEART')}
-                    className={cn(
-                      "flex items-center gap-1.5 px-2.5 py-1 rounded-lg",
-                      "transition-all duration-300",
-                      comment.reactions.some(r => r.user?.id === session?.user?.id && r.type === name)
-                        ? name === 'HEART' 
-                          ? "bg-red-500/10 text-red-500 dark:text-red-400" 
-                          : "bg-blue-500/10 text-blue-500 dark:text-blue-400"
-                        : "hover:bg-gray-100/80 dark:hover:bg-gray-800/50 text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-                    )}
-                  >
-                    <motion.span
-                      className="text-base"
-                      whileHover={{ scale: 1.3, transition: { duration: 0.2 } }}
-                    >
-                      {type}
-                    </motion.span>
-                    {comment.reactions.filter(r => r.type === name).length > 0 && (
-                      <span className={cn(
-                        "text-[10px]",
-                        comment.reactions.some(r => r.user?.id === session?.user?.id && r.type === name)
-                          ? name === 'HEART' ? "text-red-500 dark:text-red-400" : "text-blue-500 dark:text-blue-400"
-                        : "text-gray-600 dark:text-gray-400"
-                      )}>
-                        {comment.reactions.filter(r => r.type === name).length}
-                      </span>
-                    )}
-                  </motion.button>
-                ))}
-
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors font-medium ml-2"
-                  onClick={() => setActiveReply(activeReply === comment.id ? null : comment.id)}
-                >
-                  Reply
-                </motion.button>
-              </div>
-
-              {/* Reply Form */}
-              {activeReply === comment.id && (
-                <div className="mt-4 ml-14">
-                  <Form {...form}>
-                    <form
-                      onSubmit={form.handleSubmit((values) => onSubmit(values, comment.id))}
-                      className="space-y-4"
-                    >
-                      <FormField
-                        control={form.control}
-                        name="replyContent"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                disabled={isSubmitting}
-                                placeholder="Write your reply..."
-                                className={cn(
-                                  "bg-white/50 dark:bg-gray-900/50",
-                                  "border-gray-200/50 dark:border-gray-700/50",
-                                  "text-gray-700 dark:text-gray-200",
-                                  "focus:border-blue-500/50 focus:ring-blue-500/20",
-                                  "placeholder:text-gray-500",
-                                  "transition-all"
-                                )}
-                              />
-                            </FormControl>
-                            <FormMessage className="text-red-500 dark:text-red-400" />
-                          </FormItem>
-                        )}
+              <FormField
+                control={form.control}
+                name="replyContent"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        disabled={isSubmitting}
+                        placeholder="Write your reply..."
+                        className="resize-none min-h-[150px] bg-background/50 focus:bg-background transition-all duration-300"
                       />
-                      <div className="flex items-center justify-between">
-                        <Button
-                          type="button"
-                          onClick={toggleEmojiPicker}
-                          variant="ghost"
-                          className="text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-                        >
-                          😊 Add Reaction
-                        </Button>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            type="button"
-                            onClick={() => setActiveReply(null)}
-                            variant="ghost"
-                            className="text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            disabled={!isValid || isSubmitting}
-                            type="submit"
-                            className={cn(
-                              "bg-blue-500/10 dark:bg-blue-500/10",
-                              "text-blue-600 dark:text-blue-300",
-                              "hover:bg-blue-500/20 dark:hover:bg-blue-500/20",
-                              "hover:text-blue-700 dark:hover:text-blue-200",
-                              "transition-all duration-200",
-                              "border border-blue-500/20"
-                            )}
-                          >
-                            Reply
-                          </Button>
-                        </div>
-                      </div>
-                      {showEmojiPicker && (
-                        <div className={cn(
-                          "absolute mt-2 rounded-lg shadow-lg p-3 backdrop-blur-sm z-10",
-                          "bg-white/95 dark:bg-gray-800/95",
-                          "border border-gray-200/50 dark:border-gray-700/50"
-                        )}>
-                          <div className="grid grid-cols-6 gap-2">
-                            {emojiOptions.map((emoji) => (
-                              <button
-                                key={emoji}
-                                onClick={() => handleReactionSelect(emoji)}
-                                className="text-xl hover:scale-125 transition-transform p-1 hover:bg-gray-100/50 dark:hover:bg-gray-700/50 rounded-lg"
-                              >
-                                {emoji}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </form>
-                  </Form>
-                </div>
-              )}
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </ReplyModal>
 
-              {/* Replies Section */}
-              <div className="mt-6 ml-14 space-y-4">
-                {sortByDate(comment.replies).map((reply) => {
-                  const childReplies = comment.replies.filter(
-                    (r) => r.parentReplyId === reply.id
-                  );
-                  
-                  return (
-                    <RenderReply 
-                      key={reply.id}
-                      reply={{
-                        ...reply,
-                        childReplies
-                      }}
-                      commentId={comment.id}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
+            <CommentReplies 
+              replies={sortByDate(comment.replies)}
+              commentId={comment.id}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
