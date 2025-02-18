@@ -8,11 +8,11 @@ export async function POST(
 ) {
   try {
     const user = await currentUser();
-    if (!user) {
+    if (!user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { type, action } = await req.json();
+    const { type } = await req.json();
     const { commentId } = params;
 
     // Check if reaction already exists
@@ -24,8 +24,8 @@ export async function POST(
       },
     });
 
-    if (action === 'remove' && existingReaction) {
-      // Remove reaction
+    if (existingReaction) {
+      // Remove reaction if it exists
       await db.reaction.delete({
         where: {
           id: existingReaction.id,
@@ -38,32 +38,28 @@ export async function POST(
       });
     } 
     
-    if (action === 'add' && !existingReaction) {
-      // Add new reaction
-      const reaction = await db.reaction.create({
-        data: {
-          type,
-          userId: user.id,
-          commentId,
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-            },
+    // Add new reaction
+    const reaction = await db.reaction.create({
+      data: {
+        type: type,
+        userId: user.id, // Now we know user.id is defined
+        commentId: commentId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
           },
         },
-      });
+      },
+    });
 
-      return NextResponse.json({ 
-        message: "Reaction added",
-        action: "add",
-        reaction 
-      });
-    }
-
-    return NextResponse.json({ message: "No action taken" });
+    return NextResponse.json({ 
+      message: "Reaction added",
+      action: "add",
+      reaction 
+    });
   } catch (error) {
     console.error("[COMMENT_REACTION]", error);
     return new NextResponse("Internal Error", { status: 500 });

@@ -79,7 +79,10 @@ const PostIdPage = async ({params}: {params: { postId: string; }}) => {
 
                 {/* Comments Display */}
                 <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-200 dark:border-gray-700/50 backdrop-blur-sm">
-                  <CommentDisplay initialData={post} postId={params.postId} />
+                  <CommentDisplay 
+                    initialData={post as any} 
+                    postId={params.postId} 
+                  />
                 </div>
               </div>
             </div>

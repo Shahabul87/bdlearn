@@ -8,7 +8,7 @@ export async function PATCH(
 ) {
   try {
     const user = await currentUser();
-    if (!user) {
+    if (!user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -36,16 +36,16 @@ export async function PATCH(
       updateData = {
         likes: hasLiked ? comment.likes - 1 : comment.likes + 1,
         likedBy: hasLiked 
-          ? comment.likedBy.filter(id => id !== user.id)
-          : [...comment.likedBy, user.id]
+          ? { set: comment.likedBy.filter(id => id !== user.id) }
+          : { push: user.id }
       };
     } else if (type === 'love') {
       const hasLoved = comment.lovedBy.includes(user.id);
       updateData = {
         loves: hasLoved ? comment.loves - 1 : comment.loves + 1,
         lovedBy: hasLoved
-          ? comment.lovedBy.filter(id => id !== user.id)
-          : [...comment.lovedBy, user.id]
+          ? { set: comment.lovedBy.filter(id => id !== user.id) }
+          : { push: user.id }
       };
     }
 

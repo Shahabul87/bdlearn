@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { ReplyComment } from "./reply-comments";
 import { Post, Reply } from "@prisma/client";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface ReplyDisplayProps {
   initialData: Post & { reply: Array<Reply & { user: { name: string; image: string | null }; reactions: Array<{ type: string; user?: { name: string } }> }> }
@@ -43,13 +44,27 @@ const ReplyDisplay: React.FC<ReplyDisplayProps> = ({ initialData, postId }) => {
                 "hover:bg-gray-50/90 dark:hover:bg-gray-800/90"
               )}
             >
-              <p className={cn(
-                "text-gray-700 dark:text-gray-200",
-                "text-base leading-relaxed",
-                "tracking-wide"
-              )}>
-                {singleReply.replyContent || "No content"}
-              </p>
+              <div className="flex items-center gap-3 mb-2">
+                <Image
+                  src={singleReply.user?.image || "/default-avatar.png"}
+                  alt={singleReply.user?.name || "Anonymous"}
+                  width={32}
+                  height={32}
+                  className="rounded-full ring-1 ring-blue-500/20"
+                />
+                <div className="flex-1">
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                    {singleReply.user?.name || "Anonymous"}
+                  </span>
+                  <p className={cn(
+                    "text-gray-600 dark:text-gray-400",
+                    "text-sm mt-1",
+                    "tracking-wide"
+                  )}>
+                    {singleReply.content || "No content"}
+                  </p>
+                </div>
+              </div>
 
               {/* Reaction emojis with count */}
               <div className="flex items-center gap-4 mt-3 text-gray-500 dark:text-gray-400">

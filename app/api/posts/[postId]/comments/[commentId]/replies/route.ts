@@ -1,6 +1,6 @@
-import { currentUser } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { currentUser } from "@/lib/auth";
 
 export async function POST(
   req: Request,
@@ -8,11 +8,11 @@ export async function POST(
 ) {
   try {
     const user = await currentUser();
-    if (!user) {
+    if (!user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { content } = await req.json();
+    const { content, parentReplyId } = await req.json();
     const { postId, commentId } = params;
 
     if (!content) {
@@ -25,6 +25,7 @@ export async function POST(
         userId: user.id,
         postId,
         commentId,
+        parentReplyId: parentReplyId || null,
       },
       include: {
         user: {
@@ -44,7 +45,7 @@ export async function POST(
 
     return NextResponse.json(reply);
   } catch (error) {
-    console.error("[REPLY_POST]", error);
+    console.error("[REPLY_CREATE]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

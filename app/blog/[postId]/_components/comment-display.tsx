@@ -34,8 +34,8 @@ import { CommentReplies } from "./comments/comment-replies";
 // Define the component props with replies as a separate field on initialData
 interface ReplyType {
   id: string;
+  content: string;  // Changed from replyContent to content
   userId: string;
-  replyContent: string | null;
   commentId: string;
   postId: string;
   parentReplyId: string | null;
@@ -59,7 +59,16 @@ interface ReplyType {
 
 interface CommentDisplayProps {
   initialData: Post & {
-    comments: Array<Comment & {
+    comments: Array<{
+      id: string;
+      createdAt: Date;
+      userId: string;
+      comments: string | null;
+      likes: number;
+      loves: number;
+      postId: string;
+      likedBy: string[];
+      lovedBy: string[];
       user: {
         id: string;
         name: string | null;
@@ -75,7 +84,7 @@ interface CommentDisplayProps {
           email: string | null;
         };
       }>;
-      replies: ReplyType[]; // Changed from reply to replies to match schema
+      replies: ReplyType[];
     }>;
   };
   postId: string;
@@ -276,7 +285,13 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
     }
   ];
 
-  const handleReplyReaction = async (postId: string, replyId: string, type: string, reply: Reply, session: any) => {
+  const handleReplyReaction = async (
+    postId: string, 
+    replyId: string, 
+    type: string, 
+    reply: ReplyType,  // Changed from Reply to ReplyType
+    session: any
+  ) => {
     try {
       const hasReaction = reply.reactions.some(
         r => r.user?.id === session?.user?.id && r.type === type
@@ -332,7 +347,7 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({ initialData, postId }) 
                 {reply.user?.name || "Anonymous"}
               </span>
               <p className="text-gray-300 text-sm leading-relaxed tracking-wide font-light mt-1">
-                {reply.replyContent}
+                {reply.content}
               </p>
             </div>
           </div>
