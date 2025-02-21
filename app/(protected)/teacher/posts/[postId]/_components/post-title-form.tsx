@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Pencil } from "lucide-react";
 import { useState } from "react";
-import {toast} from "sonner";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 import {
@@ -47,9 +47,6 @@ export const PostTitleForm = ({
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // console.log("Submitting values:", values);
-    // console.log("Post ID:", postId);
-  
     try {
       await axios.patch(`/api/posts/${postId}`, values);
       toast.success("Post updated");
@@ -62,24 +59,26 @@ export const PostTitleForm = ({
   };
 
   return (
-    <div className="p-4 bg-gray-800/40 rounded-xl border border-gray-700/50 hover:bg-gray-800/50 transition-all duration-200">
+    <div className="p-3 sm:p-4 lg:p-6 bg-white/50 dark:bg-gray-800/40 rounded-lg sm:rounded-xl border border-gray-200/50 dark:border-gray-700/50 hover:bg-white/60 dark:hover:bg-gray-800/50 transition-all duration-200">
       {!isEditing ? (
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
           <div className="space-y-1">
-            <div className="font-medium text-gray-200 flex items-center gap-x-2">
+            <div className="font-medium text-gray-900 dark:text-gray-200 flex items-center gap-x-2 text-sm sm:text-base">
               <span>Post Title</span>
               {!initialData.title && (
-                <span className="text-xs text-rose-500">(required)</span>
+                <span className="text-xs text-rose-500 dark:text-rose-400">
+                  (required)
+                </span>
               )}
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-500 dark:text-gray-400 break-words">
               {initialData.title || "No title set"}
             </p>
           </div>
           <Button
             onClick={() => setIsEditing(true)}
             variant="ghost"
-            className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10"
+            className="w-full sm:w-auto text-purple-600 dark:text-purple-400 hover:text-purple-700 hover:bg-purple-50 dark:hover:text-purple-300 dark:hover:bg-purple-500/10"
           >
             <Pencil className="h-4 w-4 mr-2" />
             Edit
@@ -101,19 +100,19 @@ export const PostTitleForm = ({
                       {...field}
                       disabled={isSubmitting}
                       placeholder="e.g. 'Introduction to Programming'"
-                      className="bg-gray-900/50 border-gray-700/50 text-gray-200 focus:ring-purple-500/50 focus:border-purple-500/50"
+                      className="bg-white dark:bg-gray-900/50 border-gray-200/50 dark:border-gray-700/50 text-gray-900 dark:text-gray-200 focus:ring-purple-500/20 dark:focus:ring-purple-500/30 focus:border-purple-500/30 dark:focus:border-purple-500/30 placeholder:text-gray-400 dark:placeholder:text-gray-500"
                     />
                   </FormControl>
-                  <FormMessage className="text-rose-500" />
+                  <FormMessage className="text-rose-500 dark:text-rose-400 text-sm" />
                 </FormItem>
               )}
             />
-            <div className="flex items-center gap-x-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-x-2">
               <Button
                 disabled={!isValid || isSubmitting}
                 type="submit"
                 variant="ghost"
-                className="bg-purple-500/10 text-purple-300 hover:bg-purple-500/20"
+                className="bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 dark:hover:bg-purple-500/20 hover:text-purple-700 dark:hover:text-purple-300 w-full sm:w-auto"
               >
                 Save
               </Button>
@@ -121,7 +120,7 @@ export const PostTitleForm = ({
                 type="button"
                 variant="ghost"
                 onClick={() => setIsEditing(false)}
-                className="text-gray-400 hover:text-gray-300"
+                className="text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-gray-800/50 w-full sm:w-auto"
               >
                 Cancel
               </Button>
@@ -131,4 +130,4 @@ export const PostTitleForm = ({
       )}
     </div>
   );
-}
+};

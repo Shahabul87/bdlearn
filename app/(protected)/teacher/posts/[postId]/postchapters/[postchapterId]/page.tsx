@@ -5,6 +5,7 @@ import { PostchapterTitleForm } from "./_components/postchapter-title-form";
 import { PostchapterDescriptionForm } from "./_components/postchapter-description-form";
 import { PostchapterAccessForm } from "./_components/postchapter-access-form";
 import { PostchapterActions } from "./_components/postchapter-actions";
+import { PostChapterImageUpload } from "./_components/post-chapter-image-upload";
 import { Banner } from "@/components/banner";
 import { Button } from "@/components/ui/button";
 import { db } from "@/lib/db";
@@ -49,6 +50,8 @@ const PostChapterIdPage = async ({ params }: PageProps) => {
   const requiredFields = [
     chapter.title,
     chapter.description,
+    chapter.imageUrl,
+    true
   ];
 
   const totalFields = requiredFields.length;
@@ -60,10 +63,10 @@ const PostChapterIdPage = async ({ params }: PageProps) => {
     <>
       <ConditionalHeader user={userForHeader} />
       <SidebarDemo>
-        <div className="min-h-screen pt-20 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="min-h-screen pt-20 bg-gradient-to-b from-gray-50 via-gray-100 to-white dark:from-gray-900 dark:via-gray-900/80 dark:to-gray-950">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
             {/* Header & Actions */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6 mb-8">
               <BackButton />
               <PostchapterActions
                 disabled={!isComplete}
@@ -75,23 +78,23 @@ const PostChapterIdPage = async ({ params }: PageProps) => {
 
             {/* Chapter Completion Status */}
             <div className="mb-8">
-              <div className="bg-gray-800/40 rounded-xl border border-gray-700/50 p-4">
-                <div className="flex items-center gap-x-2 mb-2">
-                  <div className="p-2 w-fit rounded-md bg-purple-500/10">
-                    <Video className="w-4 h-4 text-purple-400" />
+              <div className="bg-white/80 dark:bg-gray-800/40 backdrop-blur-sm rounded-xl border border-gray-200/60 dark:border-gray-700/40 p-6 shadow-sm dark:shadow-gray-900/20">
+                <div className="flex items-center gap-x-3 mb-4">
+                  <div className="p-2.5 rounded-lg bg-purple-50 dark:bg-purple-500/10 ring-1 ring-purple-100 dark:ring-purple-500/20">
+                    <Video className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-medium text-gray-200">
+                    <h3 className="text-base font-semibold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-gray-100 dark:via-gray-200 dark:to-gray-100">
                       Chapter Completion
                     </h3>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       Complete all fields {completionText}
                     </p>
                   </div>
                 </div>
-                <div className="h-2 bg-gray-700/50 rounded-full mt-4">
+                <div className="h-2 bg-gray-100 dark:bg-gray-700/50 rounded-full">
                   <div
-                    className="h-full bg-purple-500 rounded-full transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-purple-500 to-purple-600 dark:from-purple-500 dark:to-purple-400 rounded-full transition-all duration-500 shadow-sm"
                     style={{ width: `${(completedFields / totalFields) * 100}%` }}
                   />
                 </div>
@@ -109,40 +112,59 @@ const PostChapterIdPage = async ({ params }: PageProps) => {
             )}
 
             {/* Main Content */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
               <div className="space-y-6">
-                <div className="flex items-center gap-x-2">
-                  <LayoutDashboard className="h-5 w-5 text-purple-400" />
-                  <h2 className="text-xl font-semibold bg-gradient-to-r from-purple-200 to-cyan-200 bg-clip-text text-transparent">
+                <div className="flex items-center gap-x-3 pb-2 border-b border-gray-200/60 dark:border-gray-700/40">
+                  <div className="p-2 rounded-lg bg-purple-50 dark:bg-purple-500/10 ring-1 ring-purple-100 dark:ring-purple-500/20">
+                    <LayoutDashboard className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <h2 className="text-lg sm:text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-gray-100 dark:via-gray-200 dark:to-gray-100">
                     Customize your chapter
                   </h2>
                 </div>
 
-                <PostchapterTitleForm
-                  initialData={chapter}
-                  postId={params.postId}
-                  chapterId={params.postchapterId}
-                />
-                <PostchapterDescriptionForm
-                  initialData={chapter}
-                  postId={params.postId}
-                  chapterId={params.postchapterId}
-                />
+                <div className="bg-white/80 dark:bg-gray-800/40 backdrop-blur-sm rounded-xl border border-gray-200/60 dark:border-gray-700/40 p-6 shadow-sm dark:shadow-gray-900/20">
+                  <PostchapterTitleForm
+                    initialData={chapter}
+                    postId={params.postId}
+                    chapterId={params.postchapterId}
+                  />
+                </div>
+
+                <div className="bg-white/80 dark:bg-gray-800/40 backdrop-blur-sm rounded-xl border border-gray-200/60 dark:border-gray-700/40 p-6 shadow-sm dark:shadow-gray-900/20">
+                  <PostchapterDescriptionForm
+                    initialData={chapter}
+                    postId={params.postId}
+                    chapterId={params.postchapterId}
+                  />
+                </div>
               </div>
 
               <div className="space-y-6">
-                <div className="flex items-center gap-x-2">
-                  <ListChecks className="h-5 w-5 text-purple-400" />
-                  <h2 className="text-xl font-semibold bg-gradient-to-r from-purple-200 to-cyan-200 bg-clip-text text-transparent">
+                <div className="flex items-center gap-x-3 pb-2 border-b border-gray-200/60 dark:border-gray-700/40">
+                  <div className="p-2 rounded-lg bg-purple-50 dark:bg-purple-500/10 ring-1 ring-purple-100 dark:ring-purple-500/20">
+                    <ListChecks className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <h2 className="text-lg sm:text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-gray-100 dark:via-gray-200 dark:to-gray-100">
                     Chapter Setup
                   </h2>
                 </div>
 
-                <PostchapterAccessForm
-                  initialData={chapter}
-                  postId={params.postId}
-                  chapterId={params.postchapterId}
-                />
+                <div className="bg-white/80 dark:bg-gray-800/40 backdrop-blur-sm rounded-xl border border-gray-200/60 dark:border-gray-700/40 p-6 shadow-sm dark:shadow-gray-900/20">
+                  <PostchapterAccessForm
+                    initialData={chapter}
+                    postId={params.postId}
+                    chapterId={params.postchapterId}
+                  />
+                </div>
+                <div className="bg-white/80 dark:bg-gray-800/40 backdrop-blur-sm rounded-xl border border-gray-200/60 dark:border-gray-700/40 p-6 shadow-sm dark:shadow-gray-900/20">
+                  <PostChapterImageUpload
+                    initialData={chapter}
+                    postId={params.postId}
+                    chapterId={params.postchapterId}
+                  />
+                </div>
+
               </div>
             </div>
           </div>

@@ -13,6 +13,7 @@ import { IdeasContent } from "./ideas-content";
 import { MindsContent } from "./minds-content";
 import { ScriptsContent } from "./scripts-content";
 import { BillingContent } from "./billing-content";
+import { MakeAPlanContent } from "./make-a-plan-content";
 
 interface TabContentProps {
   selectedTab: string;
@@ -36,6 +37,8 @@ const TabContent = ({
   subscriptions,
 }: TabContentProps) => {
   switch (selectedTab) {
+    case "MAKE A PLAN":
+      return <MakeAPlanContent userId={userId} />;
     case "IDEAS":
       return <IdeasContent userId={userId} />;
     case "MINDS":

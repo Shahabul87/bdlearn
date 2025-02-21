@@ -29,6 +29,7 @@ const ProfileSettingsPage = async () => {
     return redirect("/");
   }
 
+
   return (
     <>
       <ConditionalHeader user={user}/>

@@ -111,20 +111,20 @@ export const PostChaptersForm = ({
   };
 
   return (
-    <div className="relative p-4 bg-gray-800/40 rounded-xl border border-gray-700/50 hover:bg-gray-800/50 transition-all duration-200">
+    <div className="relative p-3 sm:p-4 lg:p-6 bg-white/50 dark:bg-gray-800/40 rounded-lg sm:rounded-xl border border-gray-200/50 dark:border-gray-700/50 hover:bg-white/60 dark:hover:bg-gray-800/50 transition-all duration-200">
       {isUpdating && (
-        <div className="absolute h-full w-full bg-gray-900/50 top-0 right-0 rounded-xl flex items-center justify-center">
-          <Loader2 className="animate-spin h-6 w-6 text-purple-500" />
+        <div className="absolute h-full w-full bg-gray-50/50 dark:bg-gray-900/50 top-0 right-0 rounded-lg sm:rounded-xl flex items-center justify-center backdrop-blur-sm">
+          <Loader2 className="animate-spin h-5 w-5 sm:h-6 sm:w-6 text-purple-600 dark:text-purple-400" />
         </div>
       )}
-      <div className="font-medium flex items-center justify-between">
+      <div className="font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
         <div className="flex items-center gap-x-2">
-          <LayoutList className="h-5 w-5 text-purple-400" />
+          <LayoutList className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-400" />
           <div>
-            <h2 className="text-gray-200">
+            <h2 className="text-base sm:text-lg text-gray-900 dark:text-gray-200">
               Post Chapters
             </h2>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               Add and reorder your post chapters
             </p>
           </div>
@@ -132,7 +132,7 @@ export const PostChaptersForm = ({
         <Button
           onClick={toggleCreating}
           variant="ghost"
-          className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10"
+          className="w-full sm:w-auto text-purple-600 dark:text-purple-400 hover:text-purple-700 hover:bg-purple-50 dark:hover:text-purple-300 dark:hover:bg-purple-500/10"
         >
           {isCreating ? (
             <>Cancel</>
@@ -161,21 +161,31 @@ export const PostChaptersForm = ({
                       {...field}
                       disabled={isSubmitting}
                       placeholder="e.g. 'Introduction to the topic'"
-                      className="bg-gray-900/50 border-gray-700/50 text-gray-200 focus:ring-purple-500/50"
+                      className="bg-white dark:bg-gray-900/50 border-gray-200/50 dark:border-gray-700/50 text-gray-900 dark:text-gray-200 focus:ring-purple-500/20 dark:focus:ring-purple-500/30 focus:border-purple-500/30 dark:focus:border-purple-500/30 placeholder:text-gray-400 dark:placeholder:text-gray-500"
                     />
                   </FormControl>
-                  <FormMessage className="text-rose-500" />
+                  <FormMessage className="text-rose-500 dark:text-rose-400 text-sm" />
                 </FormItem>
               )}
             />
-            <Button
-              disabled={!isValid || isSubmitting}
-              type="submit"
-              variant="ghost"
-              className="bg-purple-500/10 text-purple-300 hover:bg-purple-500/20"
-            >
-              Create
-            </Button>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-x-2">
+              <Button
+                disabled={!isValid || isSubmitting}
+                type="submit"
+                variant="ghost"
+                className="bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 dark:hover:bg-purple-500/20 hover:text-purple-700 dark:hover:text-purple-300 w-full sm:w-auto"
+              >
+                Create
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={toggleCreating}
+                className="text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-gray-800/50 w-full sm:w-auto"
+              >
+                Cancel
+              </Button>
+            </div>
           </form>
         </Form>
       )}
@@ -183,15 +193,17 @@ export const PostChaptersForm = ({
       {!isCreating && (
         <div className={cn(
           "mt-4",
-          !initialData.postchapter.length && "text-sm italic text-gray-500"
+          !initialData.postchapter.length && "text-sm italic text-gray-500 dark:text-gray-400"
         )}>
           {!initialData.postchapter.length && "No chapters"}
-          <PostChapterList
-            onEdit={onEdit}
-            onReorder={onReorder}
-            onDelete={onDelete}
-            items={initialData.postchapter || []}
-          />
+          <div className="mt-2">
+            <PostChapterList
+              onEdit={onEdit}
+              onReorder={onReorder}
+              onDelete={onDelete}
+              items={initialData.postchapter || []}
+            />
+          </div>
         </div>
       )}
     </div>

@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Camera, Users, Zap, Lightbulb, Code } from "lucide-react";
+import { Users, Zap, Lightbulb, Code } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ProfileImageUpload } from "./profile-image-upload";
 
 interface ProfileHeaderProps {
   userId: string;
@@ -22,7 +23,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ userId, username, avatarU
 
   return (
     <div className={cn(
-      "relative w-full  p-8",
+      "relative w-full p-8",
       "bg-white/50 dark:bg-gray-900/50",
       "border border-gray-200 dark:border-gray-800",
       "backdrop-blur-sm"
@@ -32,33 +33,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ userId, username, avatarU
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col md:flex-row items-center gap-8"
       >
-        {/* Avatar Section */}
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          className="relative group"
-        >
-          <div className="w-32 h-32 rounded-full overflow-hidden ring-4 ring-purple-500/20 relative">
-            {avatarUrl ? (
-              <Image 
-                src={avatarUrl} 
-                alt="Avatar" 
-                fill 
-                className="object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center">
-                <span className="text-2xl font-bold text-gray-500 dark:text-white/50">
-                  {username?.charAt(0) || "A"}
-                </span>
-              </div>
-            )}
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <Camera className="w-8 h-8 text-white/70" />
-            </div>
-          </div>
-        </motion.div>
+        <ProfileImageUpload 
+          userId={userId}
+          initialImage={avatarUrl}
+        />
 
         {/* User Info Section */}
         <div className="flex-1 text-center md:text-left space-y-3">

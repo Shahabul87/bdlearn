@@ -41,7 +41,7 @@ interface PostCommentProps {
 }
 
 const formSchema = z.object({
-  comment: z.string().min(1, {
+  comments: z.string().min(1, {
     message: "Comment is required",
   }),
 });
@@ -73,7 +73,7 @@ export const PostComment = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      comment: "",
+      comments: "",
     },
   });
 
@@ -92,8 +92,8 @@ export const PostComment = ({
   };
 
   const handleReactionSelect = (emoji: string) => {
-    const currentComment = form.getValues("comment");
-    form.setValue("comment", `${currentComment}${emoji}`);
+    const currentComment = form.getValues("comments");
+    form.setValue("comments", `${currentComment}${emoji}`);
   };
 
   const handleClose = () => {
@@ -107,7 +107,7 @@ export const PostComment = ({
           <CardContent>
             <FormField
               control={form.control}
-              name="comment"
+              name="comments"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>

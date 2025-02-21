@@ -1,9 +1,10 @@
 import { 
   Lightbulb, Brain, Code, Link as LinkIcon, Video, Music, 
-  FileText, BookOpen, Users, UserPlus, Settings, Star 
+  FileText, BookOpen, Users, UserPlus, Settings, Star, Rocket 
 } from "lucide-react";
 
 export const defaultTabs = [
+  { id: "MAKE A PLAN", icon: Rocket, label: "Create Plan", isDefault: true },
   { id: "IDEAS", icon: Lightbulb, label: "Ideas", isDefault: true },
   { id: "MINDS", icon: Brain, label: "Minds", isDefault: true },
   { id: "SCRIPTS", icon: Code, label: "Scripts", isDefault: true },

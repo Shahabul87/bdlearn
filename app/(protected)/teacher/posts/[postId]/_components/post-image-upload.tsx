@@ -10,6 +10,7 @@ import { Post } from "@prisma/client";
 import Image from "next/image";
 import { FileUpload } from "@/fileupload/file-upload";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 
 // Define the type for each uploaded file
@@ -117,21 +118,25 @@ export const PostImageUpload = ({ initialData, postId }: ImageFormProps) => {
   };
 
   return (
-    <div className="p-6 bg-gray-800/40 rounded-xl border border-gray-700/50 hover:bg-gray-800/50 transition-all duration-200">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 sm:p-6 bg-white/50 dark:bg-gray-800/40 rounded-lg sm:rounded-xl border border-gray-200/50 dark:border-gray-700/50 hover:bg-white/60 dark:hover:bg-gray-800/50 transition-all duration-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 mb-6">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-purple-500/10 rounded-xl">
-            <ImageIcon className="h-6 w-6 text-purple-400" />
+          <div className="p-3 bg-purple-50 dark:bg-purple-500/10 rounded-xl">
+            <ImageIcon className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600 dark:text-purple-400" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-white">Post Image</h2>
-            <p className="text-sm text-gray-400">Upload a cover image for your post</p>
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
+              Post Image
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Upload a cover image for your post
+            </p>
           </div>
         </div>
         <Button 
           onClick={toggleEdit} 
           variant="ghost"
-          className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10"
+          className="w-full sm:w-auto text-purple-600 dark:text-purple-400 hover:text-purple-700 hover:bg-purple-50 dark:hover:text-purple-300 dark:hover:bg-purple-500/10"
         >
           {isEditing ? (
             <>Cancel</>
@@ -146,13 +151,15 @@ export const PostImageUpload = ({ initialData, postId }: ImageFormProps) => {
 
       {!isEditing && (
         !initialData.imageUrl ? (
-          <div className="flex flex-col items-center justify-center h-60 bg-gray-800/50 rounded-xl border-2 border-dashed border-gray-700/50">
-            <ImageIcon className="h-12 w-12 text-gray-600 mb-3" />
-            <p className="text-gray-500 text-sm">No image uploaded yet</p>
+          <div className="flex flex-col items-center justify-center h-40 sm:h-60 bg-gray-50 dark:bg-gray-800/50 rounded-lg sm:rounded-xl border-2 border-dashed border-gray-200/50 dark:border-gray-700/50">
+            <ImageIcon className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 dark:text-gray-600 mb-3" />
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
+              No image uploaded yet
+            </p>
           </div>
         ) : (
-          <div className="relative aspect-video rounded-xl overflow-hidden group">
-            <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors duration-200" />
+          <div className="relative aspect-video rounded-lg sm:rounded-xl overflow-hidden group">
+            <div className="absolute inset-0 bg-black/5 dark:bg-black/20 group-hover:bg-black/10 dark:group-hover:bg-black/30 transition-colors duration-200" />
             <Image
               alt="Post Cover"
               fill
@@ -165,23 +172,25 @@ export const PostImageUpload = ({ initialData, postId }: ImageFormProps) => {
 
       {isEditing && (
         <div className="space-y-4">
-          <div className="p-4 bg-gray-800/50 rounded-xl border border-gray-700/50">
+          <div className="p-4 bg-gray-50/50 dark:bg-gray-800/50 rounded-lg sm:rounded-xl border border-gray-200/50 dark:border-gray-700/50">
             <div className="w-full max-w-4xl mx-auto">
               <FileUpload 
                 onChange={handleFileUpload}
-                className="min-h-[200px] flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-700/50 rounded-xl bg-gray-800/30 hover:bg-gray-800/50 transition-colors"
+                className="min-h-[150px] sm:min-h-[200px] flex flex-col items-center justify-center p-4 sm:p-6 border-2 border-dashed border-gray-200/50 dark:border-gray-700/50 rounded-lg sm:rounded-xl bg-white/50 dark:bg-gray-800/30 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
               />
             </div>
 
-            <div className="flex justify-center mt-6">
+            <div className="flex justify-center mt-4 sm:mt-6">
               <Button
                 onClick={handleCombinedSubmit}
                 disabled={isSubmitting || files.length === 0}
-                className={`
-                  bg-purple-600 hover:bg-purple-700 text-white px-8
-                  disabled:bg-gray-700 disabled:text-gray-400
-                  transition-all duration-200
-                `}
+                className={cn(
+                  "bg-purple-600 hover:bg-purple-700 text-white px-6 sm:px-8",
+                  "disabled:bg-gray-200 dark:disabled:bg-gray-700",
+                  "disabled:text-gray-500 dark:disabled:text-gray-400",
+                  "transition-all duration-200",
+                  "w-full sm:w-auto"
+                )}
               >
                 {isSubmitting ? (
                   <div className="flex items-center gap-2">
@@ -196,16 +205,16 @@ export const PostImageUpload = ({ initialData, postId }: ImageFormProps) => {
           </div>
 
           {files.length > 0 && (
-            <div className="p-4 bg-purple-500/10 rounded-xl border border-purple-500/20">
+            <div className="p-3 sm:p-4 bg-purple-50 dark:bg-purple-500/10 rounded-lg sm:rounded-xl border border-purple-200/50 dark:border-purple-500/20">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-500/20 rounded-lg">
-                  <ImageIcon className="h-4 w-4 text-purple-400" />
+                <div className="p-2 bg-purple-100/50 dark:bg-purple-500/20 rounded-lg">
+                  <ImageIcon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-purple-300 truncate">
+                  <p className="text-sm font-medium text-purple-700 dark:text-purple-300 truncate">
                     {files[0].name}
                   </p>
-                  <p className="text-xs text-purple-400/70">
+                  <p className="text-xs text-purple-600/70 dark:text-purple-400/70">
                     {(files[0].size / (1024 * 1024)).toFixed(2)} MB
                   </p>
                 </div>

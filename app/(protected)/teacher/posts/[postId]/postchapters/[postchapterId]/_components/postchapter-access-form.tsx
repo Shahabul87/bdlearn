@@ -62,45 +62,55 @@ export const PostchapterAccessForm = ({
   };
 
   return (
-    <div className="p-4 bg-gray-800/40 rounded-xl border border-gray-700/50 hover:bg-gray-800/50 transition-all duration-200">
-      <div className="font-medium flex items-center justify-between">
+    <div className="relative">
+      <div className="flex items-start justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-x-2">
             {initialData.isFree ? (
-              <Unlock className="h-4 w-4 text-emerald-400" />
+              <div className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 ring-1 ring-emerald-100 dark:ring-emerald-500/20">
+                <Unlock className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+              </div>
             ) : (
-              <Lock className="h-4 w-4 text-purple-400" />
+              <div className="p-2 rounded-lg bg-purple-50 dark:bg-purple-500/10 ring-1 ring-purple-100 dark:ring-purple-500/20">
+                <Lock className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+              </div>
             )}
-            <p className="text-lg font-medium text-gray-200">Access Settings</p>
+            <div>
+              <p className="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100">
+                Access Settings
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Control who can access this chapter
+              </p>
+            </div>
           </div>
-          <p className="text-sm text-gray-400">
-            Control who can access this chapter
-          </p>
         </div>
         <Button
           onClick={() => setIsEditing(!isEditing)}
           variant="ghost"
-          className="text-purple-400 hover:text-purple-300"
+          size="sm"
+          className="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
         >
           {isEditing ? "Cancel" : "Edit"}
         </Button>
       </div>
+
       {isEditing && (
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 mt-4"
+            className="space-y-4 mt-6"
           >
             <FormField
               control={form.control}
               name="isFree"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border border-gray-700/50 p-4 bg-gray-900/20">
-                  <div className="space-y-0.5">
-                    <div className="font-medium text-gray-200">
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border border-gray-200/50 dark:border-gray-700/50 p-4 bg-white/50 dark:bg-gray-900/50">
+                  <div className="space-y-1">
+                    <div className="font-medium text-gray-900 dark:text-gray-100">
                       Free Chapter
                     </div>
-                    <FormDescription className="text-gray-400">
+                    <FormDescription className="text-sm text-gray-500 dark:text-gray-400">
                       Make this chapter free for preview
                     </FormDescription>
                   </div>
@@ -110,8 +120,9 @@ export const PostchapterAccessForm = ({
                       onCheckedChange={field.onChange}
                       disabled={isSubmitting}
                       className={cn(
-                        field.value && "bg-emerald-500",
-                        "data-[state=checked]:bg-emerald-500"
+                        "data-[state=checked]:bg-emerald-500 dark:data-[state=checked]:bg-emerald-600",
+                        "data-[state=unchecked]:bg-gray-200 dark:data-[state=unchecked]:bg-gray-700",
+                        "transition-colors"
                       )}
                     />
                   </FormControl>
@@ -123,9 +134,34 @@ export const PostchapterAccessForm = ({
                 disabled={isSubmitting}
                 type="submit"
                 variant="ghost"
-                className="bg-purple-500/10 text-purple-300 hover:bg-purple-500/20"
+                size="sm"
+                className={cn(
+                  "bg-purple-50 dark:bg-purple-500/10",
+                  "text-purple-600 dark:text-purple-400",
+                  "hover:bg-purple-100 dark:hover:bg-purple-500/20",
+                  "hover:text-purple-700 dark:hover:text-purple-300",
+                  "focus:ring-2 focus:ring-offset-2 focus:ring-purple-500/30 dark:focus:ring-purple-500/20",
+                  "disabled:opacity-50 disabled:pointer-events-none",
+                  "transition-all duration-200"
+                )}
               >
-                Save
+                {isSubmitting ? (
+                  <div className="flex items-center gap-x-2">
+                    <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    <span>Saving...</span>
+                  </div>
+                ) : (
+                  "Save"
+                )}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsEditing(false)}
+                className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+              >
+                Cancel
               </Button>
             </div>
           </form>
