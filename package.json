@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "set NODE_OPTIONS=--max-old-space-size=4096 && prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate"
@@ -19,7 +19,7 @@
     "@monaco-editor/react": "^4.7.0",
     "@mux/mux-node": "^8.0.0",
     "@mux/mux-player-react": "^2.3.2",
-    "@prisma/client": "^6.3.1",
+    "@prisma/client": "^6.6.0",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-avatar": "^1.0.4",
@@ -106,7 +106,7 @@
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
     "postcss": "^8",
-    "prisma": "^6.3.1",
+    "prisma": "^6.6.0",
     "tailwindcss": "^3.3.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
