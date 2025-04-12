@@ -38,7 +38,7 @@ export default async function RootLayout({
       </head>
       <body className={clsx(
         dmSans.className,
-        "min-h-screen bg-white/30 dark:bg-gray-900 transition-colors duration-300"
+        "min-h-screen bg-white/30 dark:bg-gray-900 transition-colors duration-300 overflow-x-hidden"
       )}>
         <SessionProvider session={session}>
           <Providers>

@@ -57,8 +57,6 @@ export const MobileMenuButton = ({ dashboardLink, isOpen, setIsOpen }: MobileMen
             </div>
             <nav className="space-y-2">
               {[
-                { href: "/features", label: "Features" },
-                { href: "/discover", label: "Discover" },
                 { href: "/about", label: "About" },
                 { href: "/blog", label: "Blog" },
                 { href: dashboardLink, label: "Dashboard" },
