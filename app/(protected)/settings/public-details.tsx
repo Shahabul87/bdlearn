@@ -200,19 +200,19 @@ export const PublicSettingsPage = () => {
                           <SelectValue placeholder="Select a role" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value={UserRole.ADMIN}>
+                          <SelectItem value="ADMIN">
                             Admin
                           </SelectItem>
-                          <SelectItem value={UserRole.USER}>
+                          <SelectItem value="USER">
                             User
                           </SelectItem>
-                          <SelectItem value={UserRole.STUDENT}>
+                          <SelectItem value="STUDENT">
                             Student
                           </SelectItem>
-                          <SelectItem value={UserRole.TEACHER}>
+                          <SelectItem value="TEACHER">
                             Teacher
                           </SelectItem>
-                          <SelectItem value={UserRole.PARENT}>
+                          <SelectItem value="PARENT">
                             Parent
                           </SelectItem>
                         </SelectContent>
