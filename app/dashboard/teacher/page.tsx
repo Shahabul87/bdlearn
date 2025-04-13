@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { currentUser } from "@/lib/auth";
+import { currentUser, hasRole } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import ConditionalHeader from "@/app/(homepage)/user-header";
@@ -15,8 +15,8 @@ export default async function TeacherDashboard() {
   }
 
   // Redirect if not a teacher
-  if (user.role !== UserRole.TEACHER) {
-    if (user.role === UserRole.STUDENT) {
+  if (!hasRole(user.role, UserRole.TEACHER)) {
+    if (hasRole(user.role, UserRole.STUDENT)) {
       return redirect("/dashboard/student");
     } else {
       return redirect("/dashboard");
