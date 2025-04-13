@@ -31,6 +31,20 @@ import { NavItem, MobileNavItem } from './_components/nav-item';
 import { HeaderContainer } from './_components/header-container';
 import { MobileMenu } from './_components/mobile-menu';
 import { IconDisplay } from './_components/icon-display';
+import { Prisma } from "@prisma/client";
+
+// Define types using Prisma's inferred types
+type Course = Prisma.CourseGetPayload<{}>;
+type Category = Prisma.CategoryGetPayload<{}>;
+
+// For simple types
+type User = Prisma.UserGetPayload<{}>;
+type Post = Prisma.PostGetPayload<{}>;
+
+// For types with relations
+type UserWithPosts = Prisma.UserGetPayload<{
+  include: { posts: true }
+}>;
 
 // Define the menu items
 const menuItems = [
@@ -297,7 +311,7 @@ export const Header = () => {
 
           {/* Theme Toggle */}
           <div className="ml-1">
-            <ThemeToggle size="lg" className="flex items-center justify-center" />
+            <ThemeToggle size="sm" className="flex items-center justify-center" />
           </div>
         </div>
       </nav>

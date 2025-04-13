@@ -1,6 +1,10 @@
-import { Course, Category } from "@prisma/client";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
+import { Prisma } from "@prisma/client";
+
+// Define types using Prisma's inferred types
+type Course = Prisma.CourseGetPayload<{}>;
+type Category = Prisma.CategoryGetPayload<{}>;
 
 type CourseWithProgressWithCategory = Course & {
   category: Category | null;
