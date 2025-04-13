@@ -6,6 +6,7 @@ import ConditionalHeader from "@/app/(homepage)/user-header";
 import { TeacherDashboardContent } from "./_components/teacher-dashboard-content";
 import { cn } from "@/lib/utils";
 import { UserRole } from "@prisma/client";
+import { ROLES } from "@/lib/constants";
 
 export default async function TeacherDashboard() {
   const user = await currentUser();
@@ -15,8 +16,8 @@ export default async function TeacherDashboard() {
   }
 
   // Redirect if not a teacher
-  if (!hasRole(user.role, UserRole.TEACHER)) {
-    if (hasRole(user.role, UserRole.STUDENT)) {
+  if (!hasRole(user.role, ROLES.TEACHER)) {
+    if (hasRole(user.role, ROLES.STUDENT)) {
       return redirect("/dashboard/student");
     } else {
       return redirect("/dashboard");

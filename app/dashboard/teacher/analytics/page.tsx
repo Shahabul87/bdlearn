@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import ConditionalHeader from "@/app/(homepage)/user-header";
 import { TeacherAnalyticsContent } from "./_components/teacher-analytics-content";
 import { UserRole } from "@prisma/client";
+import { ROLES } from "@/lib/constants";
 
 // Dummy data for testing when no real courses are available
 const generateDummyData = (teacherId: string) => {
@@ -136,8 +137,8 @@ export default async function TeacherAnalyticsPage() {
   }
 
   // Redirect if not a teacher
-  if (!hasRole(user.role, UserRole.TEACHER)) {
-    if (hasRole(user.role, UserRole.STUDENT)) {
+  if (!hasRole(user.role, ROLES.TEACHER)) {
+    if (hasRole(user.role, ROLES.STUDENT)) {
       return redirect("/dashboard/student");
     } else {
       return redirect("/dashboard");
