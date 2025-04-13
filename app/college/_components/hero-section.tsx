@@ -102,7 +102,7 @@ export default function HeroSection() {
             </motion.p>
             
             <div className="flex flex-wrap gap-3 sm:gap-4 mb-8 sm:mb-10">
-              <Link href="/courses/college/hsc">
+              <Link href="/college/courses/hsc">
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.98 }}
