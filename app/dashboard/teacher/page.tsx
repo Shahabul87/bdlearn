@@ -14,8 +14,8 @@ export default async function TeacherDashboard() {
   }
 
   // Redirect if not a teacher
-  if (user.role !== UserRole.TEACHER) {
-    if (user.role === UserRole.STUDENT) {
+  if (user.role !== "TEACHER") {
+    if (user.role === "STUDENT") {
       return redirect("/dashboard/student");
     } else {
       return redirect("/dashboard");

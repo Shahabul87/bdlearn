@@ -1,6 +1,6 @@
 import * as z from "zod";
-import { UserRole } from "@prisma/client";
 
+// Define the roles directly in the schema
 // export const SettingsSchema = z.object({
 //   name: z.optional(z.string()),
 //   isTwoFactorEnabled: z.optional(z.boolean()),
