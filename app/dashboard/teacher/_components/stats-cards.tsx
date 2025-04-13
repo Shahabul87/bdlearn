@@ -26,15 +26,27 @@ interface StatsCardsProps {
   courses: Course[];
 }
 
+interface StatCardProps {
+  labelBn: string;
+  labelEn: string;
+  value: number;
+  icon: React.ElementType;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+  index: number;
+}
+
 const StatCard = ({ 
-  label, 
+  labelBn, 
+  labelEn,
   value, 
   icon: Icon, 
   color, 
   bgColor, 
   borderColor,
   index 
-}: any) => {
+}: StatCardProps) => {
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
@@ -76,18 +88,24 @@ const StatCard = ({
           bgColor,
           "bg-opacity-50"
         )}>
-          <Icon className={cn("w-8 h-8", color)} />
+          <Icon className={cn("w-10 h-10", color)} />
         </div>
         <div>
-          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-            {label}
-          </p>
           <h3 className={cn(
-            "text-2xl font-bold",
+            "text-xl font-bold",
             color
           )}>
-            {displayValue.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+            {labelBn}
           </h3>
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+            {labelEn}
+          </p>
+          <p className={cn(
+            "text-3xl font-bold",
+            color
+          )}>
+            {displayValue.toLocaleString('en-US', { maximumFractionDigits: 1 })}
+          </p>
         </div>
       </div>
     </motion.div>
@@ -108,8 +126,8 @@ export const StatsCards = ({ courses }: StatsCardsProps) => {
         const courseRatings = course.reviews.reduce((sum: number, review: any) => 
           sum + review.rating, 0
         );
-        return acc + (courseRatings / course.reviews.length);
-      }, 0) / courses.length
+        return acc + (courseRatings / (course.reviews.length || 1));
+      }, 0) / (courses.length || 1)
     : 0;
 
   const totalSections = courses.reduce((acc: number, course: Course) =>
@@ -120,43 +138,47 @@ export const StatsCards = ({ courses }: StatsCardsProps) => {
 
   const stats = [
     {
-      label: "Total Students",
+      labelBn: "মোট শিক্ষার্থী",
+      labelEn: "Total Students",
       value: totalStudents,
       icon: Users,
-      color: "text-blue-500",
+      color: "text-blue-600",
       bgColor: "bg-blue-50 dark:bg-blue-500/10",
       borderColor: "border-blue-200 dark:border-blue-500/20"
     },
     {
-      label: "Active Courses",
+      labelBn: "সক্রিয় কোর্স",
+      labelEn: "Active Courses",
       value: courses.length,
       icon: BookOpen,
-      color: "text-emerald-500",
+      color: "text-emerald-600",
       bgColor: "bg-emerald-50 dark:bg-emerald-500/10",
       borderColor: "border-emerald-200 dark:border-emerald-500/20"
     },
     {
-      label: "Total Sections",
+      labelBn: "মোট বিভাগ",
+      labelEn: "Total Sections",
       value: totalSections,
       icon: GraduationCap,
-      color: "text-violet-500",
+      color: "text-violet-600",
       bgColor: "bg-violet-50 dark:bg-violet-500/10",
       borderColor: "border-violet-200 dark:border-violet-500/20"
     },
     {
-      label: "Average Rating",
+      labelBn: "গড় রেটিং",
+      labelEn: "Average Rating",
       value: averageRating,
       icon: Star,
-      color: "text-yellow-500",
+      color: "text-yellow-600",
       bgColor: "bg-yellow-50 dark:bg-yellow-500/10",
       borderColor: "border-yellow-200 dark:border-yellow-500/20"
     }
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map((stat, index) => (
-        <StatCard key={stat.label} {...stat} index={index} />
+        <StatCard key={stat.labelEn} {...stat} index={index} />
       ))}
     </div>
   );

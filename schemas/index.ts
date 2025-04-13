@@ -35,7 +35,7 @@ export const SettingsSchema = z.object({
   email: z.optional(z.string().email()),
   password: z.optional(z.string().min(6)),
   newPassword: z.optional(z.string().min(6)),
-  role: z.enum(["ADMIN", "USER"]), // Only include roles that exist in Prisma schema
+  role: z.enum(["ADMIN", "USER", "STUDENT", "TEACHER", "PARENT"]), // Include all roles from Prisma schema
   isTwoFactorEnabled: z.optional(z.boolean())
 });
 

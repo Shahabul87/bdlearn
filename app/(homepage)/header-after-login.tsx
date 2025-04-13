@@ -85,37 +85,37 @@ const courseSubmenuItems = [
     subItems: [
       {
         title: 'প্রাথমিক',
-        href: '/courses/school/primary',
+        href: '/school/primary',
         icon: School2,
         description: 'Class 1 to 5',
         subItems: [
           {
             title: 'প্রথম শ্রেণী',
-            href: '/courses/school/primary/class-1',
+            href: '/school/primary/class-1',
             icon: BookOpen,
             description: 'Class One',
           },
           {
             title: 'দ্বিতীয় শ্রেণী',
-            href: '/courses/school/primary/class-2',
+            href: '/school/primary/class-2',
             icon: BookOpen,
             description: 'Class Two',
           },
           {
             title: 'তৃতীয় শ্রেণী',
-            href: '/courses/school/primary/class-3',
+            href: '/school/primary/class-3',
             icon: BookOpen,
             description: 'Class Three',
           },
           {
             title: 'চতুর্থ শ্রেণী',
-            href: '/courses/school/primary/class-4',
+            href: '/school/primary/class-4',
             icon: BookOpen,
             description: 'Class Four',
           },
           {
             title: 'পঞ্চম শ্রেণী',
-            href: '/courses/school/primary/class-5',
+            href: '/school/primary/class-5',
             icon: BookOpen,
             description: 'Class Five',
           },
@@ -123,37 +123,37 @@ const courseSubmenuItems = [
       },
       {
         title: 'হাই স্কুল',
-        href: '/courses/school/high',
+        href: '/school/high',
         icon: BookOpen,
         description: 'Class 6 to 10',
         subItems: [
           {
             title: 'ষষ্ঠ শ্রেণী',
-            href: '/courses/school/high/class-6',
+            href: '/school/high/class-6',
             icon: BookOpen,
             description: 'Class Six',
           },
           {
             title: 'সপ্তম শ্রেণী',
-            href: '/courses/school/high/class-7',
+            href: '/school/high/class-7',
             icon: BookOpen,
             description: 'Class Seven',
           },
           {
             title: 'অষ্টম শ্রেণী',
-            href: '/courses/school/high/class-8',
+            href: '/school/high/class-8',
             icon: BookOpen,
             description: 'Class Eight',
           },
           {
             title: 'নবম শ্রেণী',
-            href: '/courses/school/high/class-9',
+            href: '/school/high/class-9',
             icon: BookOpen,
             description: 'Class Nine',
           },
           {
             title: 'দশম শ্রেণী',
-            href: '/courses/school/high/class-10',
+            href: '/school/high/class-10',
             icon: BookOpen,
             description: 'Class Ten',
           },

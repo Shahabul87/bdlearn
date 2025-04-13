@@ -206,6 +206,15 @@ export const PublicSettingsPage = () => {
                           <SelectItem value={UserRole.USER}>
                             User
                           </SelectItem>
+                          <SelectItem value={UserRole.STUDENT}>
+                            Student
+                          </SelectItem>
+                          <SelectItem value={UserRole.TEACHER}>
+                            Teacher
+                          </SelectItem>
+                          <SelectItem value={UserRole.PARENT}>
+                            Parent
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

@@ -123,9 +123,12 @@ export default function PostChapterList({
                       {chapter.title}
                     </div>
                     <div className="flex items-center gap-x-2 pr-2">
-                      <Badge 
-                        variant={chapter.isPublished ? "success" : "secondary"}
-                        className="hidden sm:flex"
+                      <Badge
+                        variant={chapter.isPublished ? "default" : "secondary"}
+                        className={cn(
+                          "hidden sm:flex",
+                          chapter.isPublished && "bg-green-600 hover:bg-green-700 text-white"
+                        )}
                       >
                         {chapter.isPublished ? "Published" : "Draft"}
                       </Badge>

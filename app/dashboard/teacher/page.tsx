@@ -4,12 +4,22 @@ import { db } from "@/lib/db";
 import ConditionalHeader from "@/app/(homepage)/user-header";
 import { TeacherDashboardContent } from "./_components/teacher-dashboard-content";
 import { cn } from "@/lib/utils";
+import { UserRole } from "@prisma/client";
 
 export default async function TeacherDashboard() {
   const user = await currentUser();
 
   if (!user) {
-    return redirect("/");
+    return redirect("/auth/login");
+  }
+
+  // Redirect if not a teacher
+  if (user.role !== UserRole.TEACHER) {
+    if (user.role === UserRole.STUDENT) {
+      return redirect("/dashboard/student");
+    } else {
+      return redirect("/dashboard");
+    }
   }
 
   const courses = await db.course.findMany({

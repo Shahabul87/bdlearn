@@ -112,8 +112,11 @@ export default function ChaptersList({
                     </div>
                     <div className="flex items-center gap-x-2 pr-2">
                       <Badge
-                        variant={chapter.isPublished ? "success" : "secondary"}
-                        className="text-xs"
+                        variant={chapter.isPublished ? "default" : "secondary"}
+                        className={cn(
+                          "text-xs",
+                          chapter.isPublished && "bg-green-600 hover:bg-green-700 text-white"
+                        )}
                       >
                         {chapter.isPublished ? "Published" : "Draft"}
                       </Badge>
