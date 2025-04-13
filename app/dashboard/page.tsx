@@ -74,11 +74,7 @@ export default async function Dashboard() {
   if (!user) {
     redirect("/auth/login");
   }
-  
-  // Redirect to student dashboard if user is a student
-  if (user.role === "STUDENT") {
-    redirect("/dashboard/student");
-  }
+
   
   return (
     <>
@@ -104,6 +100,8 @@ export default async function Dashboard() {
         {/* Dashboard Content */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {/* Teacher Dashboard */}
+          {user.role === "STUDENT" && (redirect("/dashboard/student"))}
+         
           {user.role === "TEACHER" && (
             <>
               <DashboardCard 

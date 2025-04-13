@@ -37,17 +37,20 @@ interface StatCardProps {
 interface Course {
   id: string;
   title: string;
-  description?: string;
+  titleBn?: string;
+  description: string;
+  descriptionBn?: string;
   imageUrl?: string;
-  category?: {
-    name: string;
-  };
+  thumbnailUrl?: string;
   chapters: Chapter[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface Chapter {
   id: string;
   title: string;
+  description: string;
   userProgress?: UserProgress[];
 }
 
@@ -56,6 +59,7 @@ interface UserProgress {
   userId: string;
   chapterId: string;
   isCompleted: boolean;
+  completedAt?: Date;
 }
 
 interface Enrollment {
@@ -63,6 +67,7 @@ interface Enrollment {
   userId: string;
   courseId: string;
   course: Course;
+  createdAt?: Date;
 }
 
 interface ActionCardProps {
@@ -75,13 +80,7 @@ interface ActionCardProps {
   color: string;
 }
 
-const StatCard = ({ title, titleBn, value, icon: Icon, color }: {
-  title: string;
-  titleBn: string;
-  value: string | number;
-  icon: IconType;
-  color: string;
-}) => {
+const StatCard = ({ title, titleBn, value, icon: Icon, color }: StatCardProps) => {
   const colorClass = color.startsWith('#') ? '' : color;
   const colorStyle = color.startsWith('#') ? { color } : {};
   
@@ -218,14 +217,14 @@ const t = (key: string): string => {
 // Define event type
 interface Event {
   id: string;
-  type: 'exam' | 'assignment' | 'class';
+  type: 'exam' | 'assignment' | 'class' | 'other';
   title: string;
   titleBn: string;
   description?: string;
   descriptionBn?: string;
   date: Date;
-  location?: string;
-  locationBn?: string;
+  location: string;
+  locationBn: string;
   course?: string;
   link?: string;
 }
