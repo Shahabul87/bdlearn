@@ -136,8 +136,8 @@ export default async function TeacherAnalyticsPage() {
   }
 
   // Redirect if not a teacher
-  if (user.role !== "TEACHER") {
-    if (user.role === "STUDENT") {
+  if (user.role !== UserRole.TEACHER) {
+    if (user.role === UserRole.STUDENT) {
       return redirect("/dashboard/student");
     } else {
       return redirect("/dashboard");
