@@ -9,6 +9,7 @@ import { getUserByEmail, getUserById } from "@/data/user";
 import { currentUser } from "@/lib/auth";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/mail";
+import { UserRole } from "@prisma/client";
 
 export const settings = async (
   values: z.infer<typeof SettingsSchema>
@@ -71,7 +72,11 @@ export const settings = async (
   const updatedUser = await db.user.update({
     where: { id: dbUser.id },
     data: {
-      ...values,
+      name: values.name,
+      email: values.email,
+      password: values.password,
+      isTwoFactorEnabled: values.isTwoFactorEnabled,
+      role: values.role as UserRole,
     }
   });
 
