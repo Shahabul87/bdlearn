@@ -322,7 +322,7 @@ export const HeaderAfterLogin = ({ user }: HeaderAfterLoginProps) => {
 
           <div className="pt-2">
             <div className="mb-3">
-              <ThemeToggle size="lg" className="w-full py-2 flex items-center justify-center" />
+              <ThemeToggle size="sm" className="w-full flex items-center justify-center py-2" />
             </div>
             <LogoutButton>
               <motion.div
@@ -411,7 +411,7 @@ export const HeaderAfterLogin = ({ user }: HeaderAfterLoginProps) => {
         {/* User Actions */}
         <div className="flex items-center space-x-4">
           <div className="ml-1">
-            <ThemeToggle size="lg" className="flex items-center justify-center" />
+            <ThemeToggle size="sm" />
           </div>
 
           {/* Hide these components on mobile (<768px) */}

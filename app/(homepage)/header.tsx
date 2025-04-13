@@ -194,7 +194,7 @@ export const Header = () => {
             </Link>
             
             <div className="pt-2">
-              <ThemeToggle size="lg" className="w-full py-2 flex items-center justify-center" />
+              <ThemeToggle size="sm" className="w-full py-2 flex items-center justify-center" />
             </div>
           </div>
         </MobileMenu>

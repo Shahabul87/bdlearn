@@ -2,11 +2,10 @@ import type { Metadata } from 'next'
 import { Inter, DM_Sans } from 'next/font/google'
 import './globals.css'
 import clsx from "clsx";
-import { SessionProvider } from 'next-auth/react'
 import { auth } from '@/auth'
 import { Toaster } from "@/components/ui/sonner";
 import { ConfettiProvider } from '@/components/providers/confetti-provider';
-import { Providers } from "@/components/providers";
+import Providers from "@/app/providers";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -25,10 +24,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await auth();
-
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="light">
       <head>
         <link 
           rel="preload" 
@@ -38,17 +35,15 @@ export default async function RootLayout({
       </head>
       <body className={clsx(
         dmSans.className,
-        "min-h-screen bg-white/30 dark:bg-gray-900 transition-colors duration-300 overflow-x-hidden"
+        "min-h-screen bg-background text-foreground transition-colors duration-300 overflow-x-hidden"
       )}>
-        <SessionProvider session={session}>
-          <Providers>
-            <ConfettiProvider />
-            <Toaster />
-            <main className="min-h-screen">
-                {children}
-            </main> 
-          </Providers>
-        </SessionProvider>
+        <Providers>
+          <ConfettiProvider />
+          <Toaster />
+          <main className="min-h-screen">
+              {children}
+          </main> 
+        </Providers>
       </body>
     </html>
   )

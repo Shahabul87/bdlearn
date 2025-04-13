@@ -11,6 +11,18 @@ import {
   Shield,
   Trophy
 } from "lucide-react";
+import { useState, useEffect } from "react";
+
+// Define the type for a particle
+interface Particle {
+  id: number;
+  initialX: number;
+  initialY: number;
+  animateX: number;
+  animateY: number;
+  duration: number;
+  delay: number;
+}
 
 const steps = [
   {
@@ -44,6 +56,35 @@ export default function GetStartedPage() {
     triggerOnce: true,
     threshold: 0.1
   });
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const [mounted, setMounted] = useState(false);
+  
+  // Handle mounting to avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  // Generate particles after component mounts to avoid window reference errors
+  useEffect(() => {
+    if (!mounted) return;
+    
+    // Create particles only on client-side
+    const generateParticles = (): Particle[] => {
+      if (typeof window === 'undefined') return [];
+      
+      return Array.from({ length: 20 }).map((_, index) => ({
+        id: index,
+        initialX: Math.random() * window.innerWidth,
+        initialY: Math.random() * window.innerHeight,
+        animateX: Math.random() * window.innerWidth,
+        animateY: Math.random() * window.innerHeight,
+        duration: 4 + Math.random() * 2,
+        delay: Math.random() * 2
+      }));
+    };
+    
+    setParticles(generateParticles());
+  }, [mounted]);
 
   return (
     <div className="min-h-screen bg-gray-950">
@@ -57,25 +98,25 @@ export default function GetStartedPage() {
             className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900 via-gray-900 to-gray-900"
           />
           {/* Animated particles */}
-          {Array.from({ length: 20 }).map((_, index) => (
+          {particles.length > 0 && particles.map((particle) => (
             <motion.div
-              key={index}
+              key={particle.id}
               className="absolute w-2 h-2 bg-purple-500 rounded-full"
               initial={{
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * window.innerHeight,
+                x: particle.initialX,
+                y: particle.initialY,
                 scale: 0
               }}
               animate={{
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * window.innerHeight,
+                x: particle.animateX,
+                y: particle.animateY,
                 scale: [0, 1, 0],
               }}
               transition={{
-                duration: 4 + Math.random() * 2,
+                duration: particle.duration,
                 repeat: Infinity,
                 repeatType: "loop",
-                delay: Math.random() * 2
+                delay: particle.delay
               }}
             />
           ))}
