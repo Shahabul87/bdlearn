@@ -76,7 +76,7 @@ export default async function Dashboard() {
   }
   
   // Redirect to student dashboard if user is a student
-  if (user.role === "STUDENT") {
+  if (user.role === UserRole.STUDENT) {
     redirect("/dashboard/student");
   }
   

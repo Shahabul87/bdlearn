@@ -56,7 +56,7 @@ const getDefaultRedirect = (role?: string): string => {
  * The default redirect path after logging in
  * @type {string}
  */
-export const DEFAULT_LOGIN_REDIRECT = "/user";
+export const DEFAULT_LOGIN_REDIRECT = "/dashboard";
 
 /**
  * Get redirect URL based on role

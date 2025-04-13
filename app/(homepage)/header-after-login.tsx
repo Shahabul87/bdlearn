@@ -321,6 +321,9 @@ export const HeaderAfterLogin = ({ user }: HeaderAfterLoginProps) => {
           </div>
 
           <div className="pt-2">
+            <div className="mb-3">
+              <ThemeToggle size="lg" className="w-full py-2 flex items-center justify-center" />
+            </div>
             <LogoutButton>
               <motion.div
                 whileTap={{ scale: 0.95 }}
@@ -407,7 +410,9 @@ export const HeaderAfterLogin = ({ user }: HeaderAfterLoginProps) => {
 
         {/* User Actions */}
         <div className="flex items-center space-x-4">
-          <ThemeToggle />
+          <div className="ml-1">
+            <ThemeToggle size="lg" className="flex items-center justify-center" />
+          </div>
 
           {/* Hide these components on mobile (<768px) */}
           <div className="hidden md:flex items-center gap-4">
