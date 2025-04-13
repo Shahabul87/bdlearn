@@ -76,7 +76,7 @@ export default async function Dashboard() {
   }
   
   // Redirect to student dashboard if user is a student
-  if (user.role === UserRole.STUDENT) {
+  if (user.role === "STUDENT") {
     redirect("/dashboard/student");
   }
   
@@ -88,23 +88,23 @@ export default async function Dashboard() {
         {/* Header Section with gradient background */}
         <div className="rounded-2xl p-6 bg-gradient-to-r from-blue-600 to-indigo-700 shadow-xl">
           <h1 className="text-3xl font-bold tracking-tight text-white mb-1.5">
-            {user.role === UserRole.TEACHER && "শিক্ষক ড্যাশবোর্ড"}
-            {user.role === UserRole.PARENT && "অভিভাবক ড্যাশবোর্ড"}
+            {user.role === "TEACHER" && "শিক্ষক ড্যাশবোর্ড"}
+            {user.role === "PARENT" && "অভিভাবক ড্যাশবোর্ড"}
           </h1>
           <p className="text-lg text-white/90">
-            {user.role === UserRole.TEACHER && "আপনার শিক্ষাদান কার্যক্রমের সকল তথ্য।"}
-            {user.role === UserRole.PARENT && "আপনার সন্তানের শিক্ষা অগ্রগতি সম্পর্কে সকল তথ্য।"}
+            {user.role === "TEACHER" && "আপনার শিক্ষাদান কার্যক্রমের সকল তথ্য।"}
+            {user.role === "PARENT" && "আপনার সন্তানের শিক্ষা অগ্রগতি সম্পর্কে সকল তথ্য।"}
           </p>
           <p className="text-sm text-white/70 mt-1">
-            {user.role === UserRole.TEACHER && "Access all information about your teaching activities."}
-            {user.role === UserRole.PARENT && "See all information about your child's educational progress."}
+            {user.role === "TEACHER" && "Access all information about your teaching activities."}
+            {user.role === "PARENT" && "See all information about your child's educational progress."}
           </p>
         </div>
         
         {/* Dashboard Content */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {/* Teacher Dashboard */}
-          {user.role === UserRole.TEACHER && (
+          {user.role === "TEACHER" && (
             <>
               <DashboardCard 
                 title="আমার কোর্স" 
@@ -158,7 +158,7 @@ export default async function Dashboard() {
           )}
           
           {/* Parent Dashboard */}
-          {user.role === UserRole.PARENT && (
+          {user.role === "PARENT" && (
             <>
               <DashboardCard 
                 title="সন্তানের সংখ্যা" 
@@ -200,12 +200,12 @@ export default async function Dashboard() {
                 title="গড় উপস্থিতি" 
                 titleEn="Average Attendance"
                 description="গত মাসের উপস্থিতি"
-                value="৯২%"
+                value="৮৭%"
                 linkText="উপস্থিতি রিপোর্ট"
                 linkTextEn="Attendance report"
                 linkHref="/dashboard/parent/attendance"
                 icon={<Clock className="w-5 h-5" />}
-                bgGradient="bg-gradient-to-br from-emerald-500 to-teal-600"
+                bgGradient="bg-gradient-to-br from-teal-400 to-cyan-600"
                 textColor="text-white"
               />
             </>
@@ -216,16 +216,16 @@ export default async function Dashboard() {
           <div className="rounded-xl border border-indigo-100 dark:border-indigo-900/30 bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-900/20 dark:to-gray-800/50 shadow-md p-6 transition-all duration-300 hover:shadow-lg">
             <div className="flex flex-col space-y-1.5 mb-4">
               <h3 className="text-xl font-bold text-indigo-900 dark:text-indigo-300 mb-1">
-                {user.role === UserRole.TEACHER && "আপনার সময়সূচী"}
-                {user.role === UserRole.PARENT && "সন্তানের শিক্ষা অগ্রগতি"}
+                {user.role === "TEACHER" && "আপনার সময়সূচী"}
+                {user.role === "PARENT" && "সন্তানের শিক্ষা অগ্রগতি"}
               </h3>
               <p className="text-xs text-gray-600 dark:text-gray-400">
-                {user.role === UserRole.TEACHER && "Your Schedule"}
-                {user.role === UserRole.PARENT && "Child's Education Progress"}
+                {user.role === "TEACHER" && "Your Schedule"}
+                {user.role === "PARENT" && "Child's Education Progress"}
               </p>
               <p className="text-sm text-indigo-700 dark:text-indigo-400 mt-1">
-                {user.role === UserRole.TEACHER && "আগামী ৭ দিনের লাইভ ক্লাস ও ইভেন্ট"}
-                {user.role === UserRole.PARENT && "আপনার সন্তানদের সর্বশেষ কার্যকলাপ এবং ফলাফল"}
+                {user.role === "TEACHER" && "আগামী ৭ দিনের লাইভ ক্লাস ও ইভেন্ট"}
+                {user.role === "PARENT" && "আপনার সন্তানদের সর্বশেষ কার্যকলাপ এবং ফলাফল"}
               </p>
             </div>
             <div className="flex items-center justify-center h-40 bg-white/80 dark:bg-gray-800/30 rounded-lg text-indigo-500 dark:text-indigo-400 font-medium">
@@ -239,16 +239,16 @@ export default async function Dashboard() {
           <div className="rounded-xl border border-purple-100 dark:border-purple-900/30 bg-gradient-to-br from-purple-50 to-white dark:from-purple-900/20 dark:to-gray-800/50 shadow-md p-6 transition-all duration-300 hover:shadow-lg">
             <div className="flex flex-col space-y-1.5 mb-4">
               <h3 className="text-xl font-bold text-purple-900 dark:text-purple-300 mb-1">
-                {user.role === UserRole.TEACHER && "অনিষ্পন্ন মূল্যায়ন"}
-                {user.role === UserRole.PARENT && "সন্তানদের পরীক্ষার ফলাফল"}
+                {user.role === "TEACHER" && "অনিষ্পন্ন মূল্যায়ন"}
+                {user.role === "PARENT" && "সন্তানদের পরীক্ষার ফলাফল"}
               </h3>
               <p className="text-xs text-gray-600 dark:text-gray-400">
-                {user.role === UserRole.TEACHER && "Pending Evaluations"}
-                {user.role === UserRole.PARENT && "Children's Exam Results"}
+                {user.role === "TEACHER" && "Pending Evaluations"}
+                {user.role === "PARENT" && "Children's Exam Results"}
               </p>
               <p className="text-sm text-purple-700 dark:text-purple-400 mt-1">
-                {user.role === UserRole.TEACHER && "শিক্ষার্থীদের জমা দেওয়া অ্যাসাইনমেন্ট মূল্যায়ন করুন"}
-                {user.role === UserRole.PARENT && "সর্বশেষ পরীক্ষার ফলাফল দেখুন"}
+                {user.role === "TEACHER" && "শিক্ষার্থীদের জমা দেওয়া অ্যাসাইনমেন্ট মূল্যায়ন করুন"}
+                {user.role === "PARENT" && "সর্বশেষ পরীক্ষার ফলাফল দেখুন"}
               </p>
             </div>
             <div className="flex items-center justify-center h-40 bg-white/80 dark:bg-gray-800/30 rounded-lg text-purple-500 dark:text-purple-400 font-medium">

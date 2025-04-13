@@ -11,9 +11,10 @@ import Link from "next/link";
 import { UpcomingClasses } from "./_components/upcoming-classes";
 import { RecentProgress } from "./_components/recent-progress";
 import { SearchIcon, BookmarkIcon, CalendarIcon, HelpCircleIcon } from "lucide-react";
-import { FiSearch, FiBookmark, FiCalendar, FiHelpCircle, FiBook, FiBarChart2, FiClock, FiAward, FiChevronRight, FiBookOpen, FiPieChart, FiPlayCircle } from "react-icons/fi";
+import { FiSearch, FiBookmark, FiCalendar, FiHelpCircle, FiBook, FiBarChart2, FiClock, FiAward, FiChevronRight, FiBookOpen, FiPieChart, FiPlayCircle, FiZap, FiClipboard, FiFileText } from "react-icons/fi";
 import Image from "next/image";
 import { IconType } from "react-icons";
+import { CheckCircle, ChevronRight } from "lucide-react";
 
 interface PageProps {
   searchParams: {
@@ -35,7 +36,7 @@ interface Course {
   id: string;
   title: string;
   description?: string;
-  thumbnailUrl?: string;
+  imageUrl?: string;
   category?: {
     name: string;
   };
@@ -72,44 +73,48 @@ interface ActionCardProps {
   color: string;
 }
 
-const StatCard = ({ title, titleBn, value, icon: Icon, color }: StatCardProps) => {
+function StatCard({ title, value, titleBn, icon: Icon, color, bgColor }: {
+  title: string;
+  value: string | number;
+  titleBn: string;
+  icon: React.ElementType;
+  color: string;
+  bgColor: string;
+}) {
   return (
-    <div className={`p-6 rounded-xl shadow-sm relative overflow-hidden`} 
-         style={{ 
-           background: `linear-gradient(145deg, ${color}22 0%, ${color}11 100%)`,
-           borderLeft: `4px solid ${color}`
-         }}>
-      <div className="flex justify-between items-start">
-        <div>
-          <p className="text-2xl font-bold">{titleBn}</p>
-          <p className="text-xs text-gray-500">{title}</p>
-          <p className="text-3xl font-bold mt-2">{value}</p>
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 transition-transform duration-300 hover:scale-105">
+      <div className={`p-5`} style={{ background: `linear-gradient(135deg, ${color} 0%, ${bgColor} 100%)` }}>
+        <div className="flex justify-between">
+          <div>
+            <h4 className="text-2xl font-bold text-white mb-1">{titleBn}</h4>
+            <p className="text-xs text-white opacity-75">{title}</p>
+          </div>
+          <div className="p-3 rounded-full bg-white/20 text-white">
+            <Icon className="w-5 h-5" />
+          </div>
         </div>
-        <div className="p-3 rounded-lg" style={{ backgroundColor: `${color}22` }}>
-          <Icon className="h-6 w-6" style={{ color: color }} />
+        <div className="mt-4">
+          <p className="text-xl md:text-2xl font-bold text-white">{value}</p>
         </div>
       </div>
     </div>
   );
-};
+}
 
 const ActionCard = ({ title, titleBn, description, descriptionBn, icon: Icon, href, color }: ActionCardProps) => {
   return (
     <Link href={href}>
-      <div className="relative p-6 rounded-xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md"
-           style={{ 
-             background: `linear-gradient(145deg, ${color}18 0%, ${color}08 100%)`,
-             borderLeft: `4px solid ${color}`
-           }}>
-        <div className="flex justify-between items-start">
-          <div>
-            <p className="text-xl font-bold">{titleBn}</p>
-            <p className="text-xs text-gray-500">{title}</p>
-            <p className="text-sm mt-2 text-gray-600">{descriptionBn}</p>
-            <p className="text-xs text-gray-500">{description}</p>
-          </div>
-          <div className="p-3 rounded-lg" style={{ backgroundColor: `${color}22` }}>
-            <Icon className="h-5 w-5" style={{ color: color }} />
+      <div className="p-6 rounded-xl shadow-md overflow-hidden relative transition-all duration-300 hover:shadow-lg hover:translate-y-[-5px]"
+        style={{ background: `linear-gradient(135deg, ${color} 0%, ${color}DD 100%)` }}>
+        <div className="absolute top-0 right-0 mt-3 mr-3 p-2 rounded-full bg-white/20">
+          <Icon className="h-5 w-5 text-white" />
+        </div>
+        <div className="text-white mt-2">
+          <h3 className="text-xl font-bold mb-1">{titleBn}</h3>
+          <p className="text-xs opacity-80">{title}</p>
+          <div className="mt-4">
+            <p className="text-sm font-medium">{descriptionBn}</p>
+            <p className="text-xs opacity-75 mt-1">{description}</p>
           </div>
         </div>
       </div>
@@ -158,7 +163,16 @@ const t = (key: string): string => {
     'find_new_courses': 'নতুন কোর্স খুঁজুন',
     'explore_catalog': 'ক্যাটালগুলো অন্বেষণ করুন',
     'continue_learning': 'অগ্রগতি চালিয়ে যান',
-    'resume_course': 'শেষ কোর্স পুনরায় শুরু করুন'
+    'resume_course': 'শেষ কোর্স পুনরায় শুরু করুন',
+    'find_courses': 'নতুন কোর্স খুঁজুন',
+    'find_courses_desc': 'নতুন শিক্ষার সুযোগ খুঁজুন',
+    'view_assignments': 'টাস্ক দেখুন',
+    'view_assignments_desc': 'আপনার অপেক্ষাযোগ্য টাস্ক দেখুন',
+    'my_notes': 'নোট দেখুন',
+    'my_notes_desc': 'আপনার অধ্যয়নের নোট দেখুন',
+    'contact_support': 'সহায়তা প্রাপ্তি',
+    'contact_support_desc': 'আপনার অধ্যয়নের সহায়তা প্রাপ্তি',
+    'complete': 'সম্পন্ন'
   };
   
   return translations[key] || key;
@@ -234,231 +248,232 @@ export default async function StudentDashboard({ searchParams }: PageProps) {
   const mostRecentCourse = enrolledCourses.length > 0 ? enrolledCourses[0].course : null;
 
   // Override the calculateProgress function implementation here
-  const calculateCourseProgress = (courseId: string, completedChapterCount: number): number => {
-    // Find the enrollment with matching courseId
-    const enrollment = enrolledCourses.find(e => e.courseId === courseId);
+  const calculateCourseProgress = (courseId: string, chapters: any[]): number => {
+    if (!chapters || chapters.length === 0) return 0;
     
-    if (!enrollment || !enrollment.course.chapters || enrollment.course.chapters.length === 0) {
-      return 0;
-    }
+    const completedChapters = chapters.filter(chapter => 
+      chapter.userProgress?.[0]?.isCompleted
+    ).length;
     
-    // Count completed chapters for this specific course
-    const courseCompletedChapters = enrollment.course.chapters.reduce((acc: number, chapter: Chapter) => {
-      return chapter.userProgress?.[0]?.isCompleted ? acc + 1 : acc;
-    }, 0);
-    
-    return Math.round((courseCompletedChapters / enrollment.course.chapters.length) * 100);
+    return Math.round((completedChapters / chapters.length) * 100);
   };
 
   return (
-    <div className="mt-20 min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900">
-      <ConditionalHeader user={user} />
-      <SidebarDemo>
-        <Suspense fallback={<LoadingSpinner />}>
-          <main className="container mx-auto px-4 py-8">
-            {/* Welcome Banner */}
-            <div className="p-6 md:p-8 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white mb-8">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-                <div>
-                  <h1 className="text-2xl md:text-3xl font-bold">
-                    <span className="text-3xl md:text-4xl block mb-1">{t('welcome')}, {user?.name || 'Student'}!</span>
-                    <span className="text-lg md:text-xl font-medium opacity-90">{formatDate(new Date())}</span>
-                  </h1>
-                  <p className="mt-2 text-blue-100">
-                    {isEnrollmentSuccess ? 
-                      t('enrollment.successMessage') : 
-                      t('dashboard.welcomeMessage')}
-                  </p>
-                </div>
-                <div className="mt-4 md:mt-0">
-                  <Link href="/courses" passHref>
-                    <button className="px-6 py-3 bg-white text-blue-700 font-medium rounded-lg hover:bg-blue-50 transition duration-200 shadow-lg">
-                      {t('exploreCourses')}
-                    </button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-            
-            {/* Statistics Grid */}
-            <div className="mt-8">
-              <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
-                <span className="mr-2">আপনার পরিসংখ্যান</span>
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Your Statistics</span>
-              </h3>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-                <StatCard
-                  title="Enrolled Courses"
-                  titleBn={t('enrolled_courses')}
-                  value={enrolledCourses.length}
-                  icon={FiBook}
-                  color="#4C6FFF"
-                />
-                <StatCard
-                  title="Overall Progress"
-                  titleBn={t('overall_progress')}
-                  value={`${overallProgress}%`}
-                  icon={FiPieChart}
-                  color="#FF6B6B"
-                />
-                <StatCard
-                  title="Study Hours"
-                  titleBn={t('study_hours')}
-                  value={`${totalHours}h`}
-                  icon={FiClock}
-                  color="#36B37E"
-                />
-                <StatCard
-                  title="Achievements"
-                  titleBn={t('achievements')}
-                  value="3"
-                  icon={FiAward}
-                  color="#FFAB00"
-                />
-              </div>
-            </div>
-            
-            {/* Course Section */}
-            <div className="mt-8">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-                    <span className="text-3xl block">{t('your_courses')}</span>
-                    <span className="text-sm block font-medium text-gray-500 dark:text-gray-300">{t('continueProgress')}</span>
-                  </h2>
-                </div>
-                <Link href="/courses" passHref className="mt-2 md:mt-0">
-                  <span className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium flex items-center">
-                    {t('viewAll')} <FiChevronRight className="ml-1" />
-                  </span>
-                </Link>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* Welcome Banner */}
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden mb-8">
+          <div className="px-8 py-10 sm:p-10">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                  {t('welcome')} {user.name || 'Student'}!
+                </h1>
+                <p className="text-lg text-white/80 max-w-2xl">
+                  {t('dashboard.welcomeMessage')}
+                </p>
+                
+                {/* Success Message */}
+                {isEnrollmentSuccess && (
+                  <div className="mt-4 p-4 bg-white/20 rounded-lg border border-white/30">
+                    <p className="text-white font-medium flex items-center">
+                      <CheckCircle className="w-5 h-5 mr-2 text-green-300" />
+                      {t('enrollment.successMessage')}
+                    </p>
+                  </div>
+                )}
               </div>
               
-              {enrolledCourses.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {enrolledCourses.slice(0, 3).map((enrollment) => (
-                    <div 
-                      key={enrollment.courseId} 
-                      className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-shadow overflow-hidden border border-gray-200 dark:border-gray-700"
-                    >
-                      <div className="relative h-40 bg-gradient-to-r from-indigo-500 to-purple-600">
-                        <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-                        <div className="absolute top-4 right-4 bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-full text-sm font-medium">
-                          {calculateCourseProgress(enrollment.courseId, completedChapters)}%
-                        </div>
-                      </div>
+              <Link 
+                href="/courses" 
+                className="hidden md:flex mt-6 md:mt-0 px-6 py-3 bg-white/20 hover:bg-white/30 
+                  text-white rounded-full transition-all duration-300 items-center font-medium"
+              >
+                {t('exploreCourses')}
+                <ChevronRight className="ml-2 w-5 h-5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+        
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <StatCard 
+            title="Enrolled Courses" 
+            titleBn={t('enrolled_courses')}
+            value={enrolledCourses.length} 
+            icon={FiBook}
+            color="#4361EE" 
+            bgColor="#3A86FF"
+          />
+          <StatCard 
+            title="Overall Progress" 
+            titleBn={t('overall_progress')}
+            value={`${overallProgress}%`} 
+            icon={FiBarChart2}
+            color="#F72585" 
+            bgColor="#7209B7"
+          />
+          <StatCard 
+            title="Study Hours" 
+            titleBn={t('study_hours')}
+            value={totalHours} 
+            icon={FiClock}
+            color="#4CC9F0" 
+            bgColor="#4895EF"
+          />
+          <StatCard 
+            title="Achievements" 
+            titleBn={t('achievements')}
+            value="3" 
+            icon={FiAward}
+            color="#F77F00" 
+            bgColor="#FCBF49"
+          />
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+              
+              {/* Quick Actions */}
+              <div className="mt-8">
+                <h3 className="flex items-center gap-2 text-xl font-bold mb-5">
+                  <FiZap className="text-yellow-500" />
+                  <span className="text-xl font-semibold">{t('quick_actions')}</span>
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Quick Actions</span>
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <ActionCard
+                    title="Find New Courses"
+                    titleBn={t('find_courses')}
+                    description="Discover new learning opportunities"
+                    descriptionBn={t('find_courses_desc')}
+                    icon={FiSearch}
+                    href="/courses"
+                    color="#4C6FFF"
+                  />
+                  <ActionCard
+                    title="View Assignments"
+                    titleBn={t('view_assignments')}
+                    description="Check your pending tasks"
+                    descriptionBn={t('view_assignments_desc')}
+                    icon={FiClipboard}
+                    href="/assignments"
+                    color="#FF6B6B"
+                  />
+                  <ActionCard
+                    title="My Notes"
+                    titleBn={t('my_notes')}
+                    description="Access your study notes"
+                    descriptionBn={t('my_notes_desc')}
+                    icon={FiFileText}
+                    href="/notes"
+                    color="#00CFDD"
+                  />
+                  <ActionCard
+                    title="Contact Support"
+                    titleBn={t('contact_support')}
+                    description="Get help with your studies"
+                    descriptionBn={t('contact_support_desc')}
+                    icon={FiHelpCircle}
+                    href="/support"
+                    color="#FFB545"
+                  />
+                </div>
+              </div>
+              
+              {/* Your Courses */}
+              <div>
+                <h3 className="flex items-center gap-2 text-xl font-bold mb-5">
+                  <FiBookOpen className="text-blue-500" />
+                  <span className="text-xl font-semibold">{t('your_courses')}</span>
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Your Courses</span>
+                </h3>
+                
+                {enrolledCourses.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {enrolledCourses.map((enrollment) => {
+                      const progress = calculateCourseProgress(
+                        enrollment.courseId,
+                        enrollment.course.chapters
+                      );
                       
-                      <div className="p-4">
-                        <h3 className="font-bold text-lg text-gray-800 dark:text-white mb-1 line-clamp-1">
-                          {enrollment.course.title || "Course Title"}
-                        </h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">
-                          {enrollment.course.category?.name || "General"}
-                        </p>
-                        
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center">
-                            <div className="bg-indigo-100 dark:bg-indigo-900 p-2 rounded-full">
-                              <FiBook className="text-indigo-500 dark:text-indigo-400 w-4 h-4" />
+                      return (
+                        <div key={enrollment.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-300">
+                          <div className="flex h-36 overflow-hidden relative">
+                            <Image
+                              src={enrollment.course.imageUrl || "/placeholder-course.jpg"}
+                              alt={enrollment.course.title}
+                              fill
+                              sizes="(max-width: 768px) 100vw, 50vw"
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                            <div className="absolute bottom-3 left-4 right-4">
+                              <div className="flex justify-between items-center">
+                                <h4 className="text-white font-bold line-clamp-1 text-lg">{enrollment.course.title}</h4>
+                                <span className="bg-blue-600 text-white text-xs font-medium px-2.5 py-1 rounded">
+                                  {progress}% {t('complete')}
+                                </span>
+                              </div>
                             </div>
-                            <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">
-                              {enrollment.course.chapters ? enrollment.course.chapters.length : 0} {t('chapters')}
-                            </span>
                           </div>
-                          <Link href={`/courses/${enrollment.courseId}`} passHref>
-                            <button className="text-sm bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900 dark:hover:bg-indigo-800 text-indigo-600 dark:text-indigo-300 px-4 py-2 rounded-lg font-medium transition-colors">
+                          
+                          <div className="p-4">
+                            <div className="flex justify-between items-center mb-4">
+                              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                                {enrollment.course.chapters.length} {t('chapters')}
+                              </span>
+                              <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                                {enrollment.course.category?.name}
+                              </span>
+                            </div>
+                            
+                            <div className="mb-4">
+                              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                                <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
+                              </div>
+                            </div>
+                            
+                            <Link
+                              href={`/courses/${enrollment.courseId}`}
+                              className="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-300"
+                            >
                               {t('continue')}
-                            </button>
-                          </Link>
+                              <ChevronRight className="ml-1 w-4 h-4" />
+                            </Link>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-8 text-center">
-                  <div className="bg-indigo-100 dark:bg-indigo-900 p-3 rounded-full inline-block mb-4">
-                    <FiBookOpen className="text-indigo-500 dark:text-indigo-400 w-6 h-6" />
+                      );
+                    })}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">{t('noCourses.title')}</h3>
-                  <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">{t('noCourses.message')}</p>
-                  
-                  <Link href="/courses" passHref>
-                    <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-lg transition-colors">
-                      {t('exploreCourses')}
-                    </button>
-                  </Link>
-                </div>
-              )}
-            </div>
-            
-            {/* Quick Actions */}
-            <div className="mt-8">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-2xl font-bold text-gray-800">
-                  {t('quick_actions')}
-                  <span className="block text-sm font-medium text-gray-600">Quick Actions</span>
-                </h3>
+                ) : (
+                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 text-center border border-gray-200 dark:border-gray-700">
+                    <div className="flex flex-col items-center justify-center">
+                      <FiBookOpen className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" />
+                      <h4 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">{t('noCourses.title')}</h4>
+                      <p className="text-gray-600 dark:text-gray-400 mb-6">{t('noCourses.message')}</p>
+                      <Link 
+                        href="/courses" 
+                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-300 inline-flex items-center"
+                      >
+                        {t('exploreCourses')}
+                        <ChevronRight className="ml-2 w-5 h-5" />
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <ActionCard
-                  title="Find New Courses"
-                  titleBn={t('find_new_courses')}
-                  description={t('explore_catalog')}
-                  descriptionBn={t('explore_catalog')}
-                  icon={FiSearch}
-                  href="/courses"
-                  color="#4C6FFF"
-                />
-                <ActionCard
-                  title="Continue Learning"
-                  titleBn={t('continue_learning')}
-                  description={t('resume_course')}
-                  descriptionBn={t('resume_course')}
-                  icon={FiPlayCircle}
-                  href={mostRecentCourse ? `/courses/${mostRecentCourse.id}` : '/courses'}
-                  color="#FF6B6B"
-                />
-              </div>
-            </div>
+          </div>
 
-            {/* Progress and Upcoming Classes Grid */}
-            <div className="grid md:grid-cols-2 gap-8">
-              <UpcomingClasses />
-              <RecentProgress />
-            </div>
-
-            <div className="mt-8">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-2xl font-bold text-gray-800">
-                  {t('upcoming_events')}
-                  <span className="block text-sm font-medium text-gray-600">Exam Schedule</span>
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <ActionCard
-                  title="Midterm Exams"
-                  titleBn="মধ্যবর্তী পরীক্ষা"
-                  description="Next week"
-                  descriptionBn="আগামী সপ্তাহে"
-                  icon={FiCalendar}
-                  href="/exams"
-                  color="#00CFDD"
-                />
-                <ActionCard
-                  title="Study Resources"
-                  titleBn="পড়াশোনার উপকরণ"
-                  description="Access learning materials"
-                  descriptionBn="শিক্ষা উপকরণ দেখুন"
-                  icon={FiBookOpen}
-                  href="/resources"
-                  color="#FFB545"
-                />
-              </div>
-            </div>
-          </main>
-        </Suspense>
-      </SidebarDemo>
+          {/* Progress and Upcoming Classes Grid */}
+          <div className="grid md:grid-cols-2 gap-8">
+            <UpcomingClasses />
+            <RecentProgress />
+          </div>
+        </div>
+      </div>
     </div>
   );
 } 
