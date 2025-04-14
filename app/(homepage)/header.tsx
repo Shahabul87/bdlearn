@@ -165,6 +165,9 @@ export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeItem, setActiveItem] = useState("");
 
+  // Ensure we're running in the browser environment
+  if (typeof window === 'undefined') return;
+
   return (
     <HeaderContainer
       isMenuOpen={isMenuOpen}
